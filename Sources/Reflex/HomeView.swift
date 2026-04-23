@@ -7,6 +7,7 @@ struct HomeView: View {
     @State private var overallBest: Double? = nil
     @State private var completedCount: Int = 0
     @State private var showSettings = false
+    @State private var showRankings = false
     @State private var historyMode: TestMode? = nil
 
     // Group modes by tier
@@ -55,6 +56,9 @@ struct HomeView: View {
         .sheet(isPresented: $showSettings, onDismiss: loadStats) {
             SettingsView { showSettings = false }
         }
+        .sheet(isPresented: $showRankings, onDismiss: loadStats) {
+            RankingsView { showRankings = false }
+        }
         .sheet(item: $historyMode) { mode in
             ModeHistoryView(mode: mode) { historyMode = nil }
         }
@@ -70,9 +74,19 @@ struct HomeView: View {
 
     private var heroSection: some View {
         VStack(spacing: 0) {
-            // Top row: spacer + gear
+            // Top row: spacer + rankings + gear
             HStack {
                 Spacer()
+                Button {
+                    showRankings = true
+                } label: {
+                    Image(systemName: "trophy.fill")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(RTheme.muted)
+                        .frame(width: 36, height: 36)
+                        .background(RTheme.surface)
+                        .clipShape(Circle())
+                }
                 Button {
                     showSettings = true
                 } label: {
