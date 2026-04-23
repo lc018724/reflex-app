@@ -19,6 +19,7 @@
 		86F7E2EE9E8B3C7A8A388DFC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C73340D38CC6C717F3EFE6 /* ContentView.swift */; };
 		8B0ED9694C46E19FF4A95EA1 /* DropArcadeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE323ACE7373D004E300FFF /* DropArcadeView.swift */; };
 		8ED785712FA7B52B359AEC00 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D9A4050392FC3654AA94DD /* OnboardingView.swift */; };
+		95D8BD977263CC5F5E864FF6 /* ConfettiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14AFAE06CE74A46284E1A657 /* ConfettiView.swift */; };
 		98074BADE6EDEF98A1D2DEC8 /* GridArcadeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763BD3F681D428B47AC56F7 /* GridArcadeView.swift */; };
 		AC64987EDEADC85E30C0038D /* ReflexApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19B50FE40FAAAA58F039ED6 /* ReflexApp.swift */; };
 		CAA1D71521767F411F1AA180 /* TestStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCBE76E5BFA15569BF83E1E0 /* TestStore.swift */; };
@@ -30,6 +31,7 @@
 
 /* Begin PBXFileReference section */
 		0EE323ACE7373D004E300FFF /* DropArcadeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropArcadeView.swift; sourceTree = "<group>"; };
+		14AFAE06CE74A46284E1A657 /* ConfettiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiView.swift; sourceTree = "<group>"; };
 		1A611F5D8FF81F09137983C9 /* WhackArcadeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhackArcadeView.swift; sourceTree = "<group>"; };
 		3EAE784E8E35762E81C8317F /* Reflex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Reflex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3EC22A60AEA2098E42E2D29E /* TestEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEngine.swift; sourceTree = "<group>"; };
@@ -74,6 +76,7 @@
 			children = (
 				B6369809370D3ED17F0AD503 /* AvoidArcadeView.swift */,
 				4CA0CBA76F34BF4632AC4F19 /* ChainArcadeView.swift */,
+				14AFAE06CE74A46284E1A657 /* ConfettiView.swift */,
 				F4C73340D38CC6C717F3EFE6 /* ContentView.swift */,
 				0EE323ACE7373D004E300FFF /* DropArcadeView.swift */,
 				E763BD3F681D428B47AC56F7 /* GridArcadeView.swift */,
@@ -154,6 +157,7 @@
 			files = (
 				2FD5E5DBE733338CC0D071A7 /* AvoidArcadeView.swift in Sources */,
 				867327A28914184F852CF7A3 /* ChainArcadeView.swift in Sources */,
+				95D8BD977263CC5F5E864FF6 /* ConfettiView.swift in Sources */,
 				86F7E2EE9E8B3C7A8A388DFC /* ContentView.swift in Sources */,
 				8B0ED9694C46E19FF4A95EA1 /* DropArcadeView.swift in Sources */,
 				98074BADE6EDEF98A1D2DEC8 /* GridArcadeView.swift in Sources */,

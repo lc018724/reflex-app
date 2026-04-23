@@ -483,6 +483,7 @@ struct SessionSummaryView: View {
 
     @State private var displayedAvg: Double = 999
     @State private var appeared = false
+    @State private var showConfetti = false
 
     private var isNewBest: Bool {
         guard avg > 0, let prev = previousBest else { return previousBest == nil && avg > 0 }
@@ -498,7 +499,8 @@ struct SessionSummaryView: View {
     private var feet: Double { ReactionBenchmarks.drivingFeet(ms: avg) }
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
+        ZStack {
+            ScrollView(showsIndicators: false) {
             VStack(spacing: 24) {
 
                 // Score
@@ -715,6 +717,20 @@ struct SessionSummaryView: View {
             }
             .padding(.horizontal, RTheme.pad)
             .padding(.top, 12)
+        }
+        // Confetti overlay
+        if showConfetti {
+            ConfettiView(isActive: $showConfetti)
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
+        }
+        }
+        .onAppear {
+            if isNewBest {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    showConfetti = true
+                }
+            }
         }
     }
 
