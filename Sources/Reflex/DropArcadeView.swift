@@ -78,21 +78,30 @@ struct DropArcadeView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            // Score
+            // Score + combo
             VStack(spacing: 2) {
                 Text("\(game.score)")
                     .font(RTheme.mono(40, weight: .bold))
                     .foregroundStyle(RTheme.gold)
                     .contentTransition(.numericText())
                     .animation(.spring(response: 0.3), value: game.score)
-                Text("SCORE")
-                    .font(RTheme.mono(9))
-                    .foregroundStyle(RTheme.faint)
-                    .tracking(3)
+                if game.combo >= 3 {
+                    Text("x\(game.combo) COMBO")
+                        .font(RTheme.mono(9, weight: .bold))
+                        .foregroundStyle(RTheme.green)
+                        .tracking(2)
+                        .transition(.scale.combined(with: .opacity))
+                } else {
+                    Text("SCORE")
+                        .font(RTheme.mono(9))
+                        .foregroundStyle(RTheme.faint)
+                        .tracking(3)
+                }
             }
+            .animation(.spring(response: 0.2), value: game.combo)
             .frame(maxWidth: .infinity)
 
-            // Best / Speed
+            // Level + best
             VStack(spacing: 2) {
                 Text("LV \(game.level)")
                     .font(RTheme.mono(22, weight: .bold))
@@ -101,7 +110,7 @@ struct DropArcadeView: View {
                     .animation(.spring(response: 0.3), value: game.level)
                 Text("BEST \(game.best)")
                     .font(RTheme.mono(9))
-                    .foregroundStyle(RTheme.faint)
+                    .foregroundStyle(game.isNewBest ? RTheme.gold : RTheme.faint)
                     .tracking(2)
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
@@ -242,9 +251,25 @@ struct DropArcadeView: View {
                     .foregroundStyle(RTheme.red)
                     .tracking(6)
 
+                if game.score >= game.best && game.score > 0 {
+                    HStack(spacing: 6) {
+                        Image(systemName: "crown.fill")
+                            .font(.system(size: 13))
+                            .foregroundStyle(RTheme.bg)
+                        Text("NEW HIGH SCORE!")
+                            .font(RTheme.mono(11, weight: .bold))
+                            .foregroundStyle(RTheme.bg)
+                            .tracking(2)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 7)
+                    .background(RTheme.gold)
+                    .clipShape(Capsule())
+                }
+
                 VStack(spacing: 16) {
                     scoreRow(label: "SCORE", value: "\(game.score)", color: RTheme.gold)
-                    scoreRow(label: "BEST", value: "\(game.best)", color: RTheme.green)
+                    scoreRow(label: "HIGH SCORE", value: "\(game.best)", color: RTheme.green)
                     scoreRow(label: "LEVEL", value: "\(game.level)", color: levelColor)
                 }
                 .padding(RTheme.pad)
@@ -331,6 +356,8 @@ final class DropArcadeGame: ObservableObject {
     @Published var best: Int = 0
     @Published var lives: Int = 3
     @Published var level: Int = 1
+    @Published var combo: Int = 0
+    @Published var isNewBest: Bool = false
     @Published var fallingIndex: Int = -1
     @Published var dropProgress: CGFloat = 0
     @Published var isGameOver: Bool = false
@@ -344,12 +371,18 @@ final class DropArcadeGame: ObservableObject {
     @Published var missScale: CGFloat = 1.0
     @Published var missOpacity: Double = 1.0
 
-    var fallDuration: Double { max(0.55, 2.0 - Double(level - 1) * 0.2) }
+    var fallDuration: Double { max(0.45, 2.0 - Double(level - 1) * 0.18) }
 
+    private static let bestKey = "dropArcade_highScore"
+    private let defaults = UserDefaults.standard
     private var fallTask: Task<Void, Never>?
     private var impactHeavy = UIImpactFeedbackGenerator(style: .heavy)
     private var impactLight = UIImpactFeedbackGenerator(style: .light)
     private var notif       = UINotificationFeedbackGenerator()
+
+    init() {
+        best = defaults.integer(forKey: Self.bestKey)
+    }
 
     func startRound() {
         guard !isGameOver else { return }
@@ -363,8 +396,8 @@ final class DropArcadeGame: ObservableObject {
         dropProgress = 0
         fallingIndex = -1
 
-        // Brief pause before next drop
-        let pause: Double = score == 0 ? 0.6 : 0.35
+        // Brief pause before next drop — shorter when in combo
+        let pause: Double = score == 0 ? 0.6 : (combo >= 3 ? 0.2 : 0.3)
 
         fallTask = Task {
             try? await Task.sleep(nanoseconds: UInt64(pause * 1_000_000_000))
@@ -397,9 +430,17 @@ final class DropArcadeGame: ObservableObject {
 
         let tappedIdx = index
         fallingIndex = -1
-        score += 1
-        if score > best { best = score }
+        combo += 1
+        // Bonus point for combo streaks
+        let bonus = combo >= 5 ? 2 : 1
+        score += bonus
         level = (score / 5) + 1
+
+        if score > best {
+            best = score
+            isNewBest = true
+            defaults.set(best, forKey: Self.bestKey)
+        }
 
         // Hit animation
         hitIndex = tappedIdx
@@ -416,7 +457,7 @@ final class DropArcadeGame: ObservableObject {
             }
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
             self.startRound()
         }
     }
@@ -425,6 +466,7 @@ final class DropArcadeGame: ObservableObject {
         impactHeavy.impactOccurred()
 
         fallingIndex = -1
+        combo = 0
         lives -= 1
         missedIndex = index
 
@@ -449,6 +491,8 @@ final class DropArcadeGame: ObservableObject {
         score = 0
         lives = 3
         level = 1
+        combo = 0
+        isNewBest = false
         fallingIndex = -1
         dropProgress = 0
         isGameOver = false
