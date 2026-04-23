@@ -159,19 +159,32 @@ struct TestView: View {
     private func resultMoment(ms: Double, trial: Int, total: Int, isError: Bool) -> some View {
         VStack(spacing: 20) {
             if isError {
-                Text("✗")
-                    .font(RTheme.mono(72, weight: .bold))
-                    .foregroundStyle(RTheme.red)
+                VStack(spacing: 8) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 52))
+                        .foregroundStyle(RTheme.red)
+                    Text("WRONG")
+                        .font(RTheme.mono(18, weight: .bold))
+                        .foregroundStyle(RTheme.red)
+                        .tracking(4)
+                }
             } else {
-                HStack(alignment: .lastTextBaseline, spacing: 6) {
-                    Text(String(format: "%.0f", ms))
-                        .font(.system(size: 80, weight: .bold, design: .monospaced))
-                        .foregroundStyle(msColor(ms))
-                        .minimumScaleFactor(0.6)
-                        .lineLimit(1)
-                    Text("ms")
-                        .font(RTheme.mono(24))
-                        .foregroundStyle(RTheme.muted)
+                VStack(spacing: 6) {
+                    HStack(alignment: .lastTextBaseline, spacing: 6) {
+                        Text(String(format: "%.0f", ms))
+                            .font(.system(size: 80, weight: .bold, design: .monospaced))
+                            .foregroundStyle(msColor(ms))
+                            .minimumScaleFactor(0.6)
+                            .lineLimit(1)
+                        Text("ms")
+                            .font(RTheme.mono(24))
+                            .foregroundStyle(RTheme.muted)
+                    }
+                    // Contextual label
+                    Text(speedLabel(ms))
+                        .font(RTheme.mono(11, weight: .medium))
+                        .foregroundStyle(msColor(ms).opacity(0.7))
+                        .tracking(3)
                 }
             }
 
@@ -272,6 +285,17 @@ struct TestView: View {
         default: return RTheme.red
         }
     }
+
+    private func speedLabel(_ ms: Double) -> String {
+        switch ms {
+        case ..<175: return "ELITE"
+        case 175..<200: return "EXCELLENT"
+        case 200..<230: return "GREAT"
+        case 230..<270: return "AVERAGE"
+        case 270..<320: return "SLOW"
+        default: return "SLUGGISH"
+        }
+    }
 }
 
 // MARK: - Instruction View
@@ -280,10 +304,13 @@ struct InstructionView: View {
     let mode: TestMode
     let onStart: () -> Void
 
+    private let store = TestStore()
+
     var body: some View {
         VStack(spacing: 28) {
             Text(mode.emoji)
-                .font(.system(size: 56))
+                .font(.system(size: 64))
+                .shadow(color: RTheme.gold.opacity(0.3), radius: 20)
 
             VStack(spacing: 10) {
                 Text(mode.title)
@@ -300,11 +327,29 @@ struct InstructionView: View {
                 .font(RTheme.mono(14))
                 .foregroundStyle(RTheme.white.opacity(0.75))
                 .multilineTextAlignment(.center)
-                .lineSpacing(4)
+                .lineSpacing(5)
                 .padding(.horizontal, 8)
 
+            // Personal best badge
+            if let pb = store.bestMS(for: mode) {
+                HStack(spacing: 8) {
+                    Image(systemName: "trophy.fill")
+                        .font(.system(size: 11))
+                        .foregroundStyle(RTheme.gold)
+                    Text("PERSONAL BEST  \(Int(pb))ms")
+                        .font(RTheme.mono(11, weight: .bold))
+                        .foregroundStyle(RTheme.gold)
+                        .tracking(2)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .background(RTheme.gold.opacity(0.12))
+                .clipShape(Capsule())
+                .overlay(Capsule().stroke(RTheme.gold.opacity(0.3), lineWidth: 1))
+            }
+
             GoldButton(label: "START", action: onStart, fullWidth: false)
-                .padding(.top, 8)
+                .padding(.top, 4)
         }
         .padding(.horizontal, 32)
     }
