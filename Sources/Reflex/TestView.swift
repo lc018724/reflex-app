@@ -258,6 +258,7 @@ struct TestView: View {
                 store.updateBest(ms: avg, for: mode)
                 store.appendSession(avg: avg, for: mode)
                 store.totalSessions += 1
+                store.recordSessionDay()
             }
 
         case .tooSoon:

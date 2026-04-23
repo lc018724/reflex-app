@@ -46,4 +46,46 @@ final class TestStore {
         get { defaults.integer(forKey: "totalSessions") }
         set { defaults.set(newValue, forKey: "totalSessions") }
     }
+
+    // MARK: - Daily streak
+
+    /// Returns the current streak (consecutive calendar days with at least one session).
+    var streak: Int {
+        get { defaults.integer(forKey: "streak") }
+        set { defaults.set(newValue, forKey: "streak") }
+    }
+
+    /// ISO date string of the last session day.
+    private var lastSessionDay: String? {
+        get { defaults.string(forKey: "lastSessionDay") }
+        set { defaults.set(newValue, forKey: "lastSessionDay") }
+    }
+
+    /// Call after each session completes to update streak.
+    func recordSessionDay() {
+        let today = isoDay(Date())
+        guard let last = lastSessionDay else {
+            // First ever session
+            streak = 1
+            lastSessionDay = today
+            return
+        }
+        if last == today {
+            // Already recorded today, no change
+            return
+        }
+        let yesterday = isoDay(Calendar.current.date(byAdding: .day, value: -1, to: Date())!)
+        if last == yesterday {
+            streak += 1
+        } else {
+            streak = 1  // Gap — reset
+        }
+        lastSessionDay = today
+    }
+
+    private func isoDay(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        return f.string(from: date)
+    }
 }

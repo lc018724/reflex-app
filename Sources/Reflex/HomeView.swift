@@ -71,7 +71,7 @@ struct HomeView: View {
                 Divider().overlay(RTheme.faint).frame(height: 28)
                 heroStat(label: "DONE", value: "\(completedCount)")
                 Divider().overlay(RTheme.faint).frame(height: 28)
-                heroStat(label: "SESSIONS", value: "\(store.totalSessions)")
+                heroStat(label: "STREAK", value: "\(store.streak)🔥")
             }
             .padding(.horizontal, RTheme.pad)
             .padding(.top, 20)
