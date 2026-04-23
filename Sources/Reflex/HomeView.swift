@@ -5,6 +5,7 @@ struct HomeView: View {
 
     private let store = TestStore()
     @State private var overallBest: Double? = nil
+    @State private var completedCount: Int = 0
 
     // Group modes by tier
     private let tiers: [(String, [TestMode])] = [
@@ -37,39 +38,71 @@ struct HomeView: View {
                     .padding(.bottom, 60)
             }
         }
-        .onAppear {
-            let bests = TestMode.allCases.compactMap { store.bestMS(for: $0) }
-            overallBest = bests.min()
-        }
+        .onAppear { loadStats() }
+    }
+
+    private func loadStats() {
+        let bests = TestMode.allCases.compactMap { store.bestMS(for: $0) }
+        overallBest = bests.min()
+        completedCount = bests.count
     }
 
     // MARK: - Hero
 
     private var heroSection: some View {
-        VStack(spacing: 10) {
-            Text("REFLEX")
-                .font(RTheme.serif(52, weight: .black))
-                .foregroundStyle(RTheme.gold)
-                .tracking(12)
+        VStack(spacing: 0) {
+            // Title lockup
+            VStack(spacing: 6) {
+                Text("REFLEX")
+                    .font(RTheme.serif(56, weight: .black))
+                    .foregroundStyle(RTheme.gold)
+                    .tracking(14)
 
-            Text("21 cognitive challenges")
-                .font(RTheme.mono(12))
-                .foregroundStyle(RTheme.muted)
-                .tracking(2)
+                Text("REACTION TRAINING")
+                    .font(RTheme.mono(10, weight: .medium))
+                    .foregroundStyle(RTheme.muted)
+                    .tracking(5)
+            }
+            .padding(.top, 56)
+
+            // Stats row
+            HStack(spacing: 0) {
+                heroStat(label: "TESTS", value: "21")
+                Divider().overlay(RTheme.faint).frame(height: 28)
+                heroStat(label: "DONE", value: "\(completedCount)")
+                Divider().overlay(RTheme.faint).frame(height: 28)
+                heroStat(label: "SESSIONS", value: "\(store.totalSessions)")
+            }
+            .padding(.horizontal, RTheme.pad)
+            .padding(.top, 20)
 
             if let ms = overallBest {
                 bestBadge(ms: ms)
-                    .padding(.top, 12)
+                    .padding(.top, 16)
+                    .padding(.horizontal, RTheme.pad)
             } else {
                 Text("Complete a test to establish your baseline")
-                    .font(RTheme.mono(12))
+                    .font(RTheme.mono(11))
                     .foregroundStyle(RTheme.faint)
-                    .padding(.top, 12)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 16)
+                    .padding(.horizontal, RTheme.pad)
             }
         }
-        .padding(.top, 60)
         .padding(.bottom, 32)
-        .padding(.horizontal, RTheme.pad)
+    }
+
+    private func heroStat(label: String, value: String) -> some View {
+        VStack(spacing: 3) {
+            Text(value)
+                .font(RTheme.mono(22, weight: .bold))
+                .foregroundStyle(RTheme.white)
+            Text(label)
+                .font(RTheme.mono(9))
+                .foregroundStyle(RTheme.faint)
+                .tracking(2)
+        }
+        .frame(maxWidth: .infinity)
     }
 
     private func bestBadge(ms: Double) -> some View {
@@ -137,14 +170,42 @@ struct HomeView: View {
     // MARK: - Footer
 
     private var benchmarkFooter: some View {
-        VStack(spacing: 4) {
-            Text("Average: 200-250ms  •  F1 driver: 150ms")
-                .font(RTheme.mono(10))
+        VStack(spacing: 12) {
+            Text("BENCHMARKS")
+                .font(RTheme.mono(9, weight: .bold))
                 .foregroundStyle(RTheme.faint)
-            Text("Impaired driver: 300ms+  •  Elite athlete: <175ms")
-                .font(RTheme.mono(10))
-                .foregroundStyle(RTheme.faint)
+                .tracking(4)
+
+            HStack(spacing: 8) {
+                benchmarkBubble("F1 driver", "150ms", RTheme.green)
+                benchmarkBubble("Elite athlete", "175ms", RTheme.gold)
+                benchmarkBubble("Average", "235ms", RTheme.muted)
+                benchmarkBubble("Impaired", "300ms+", RTheme.red)
+            }
+            .padding(.horizontal, RTheme.pad)
+
+            Text("Times are simple reaction. Cognitive tests will be higher.")
+                .font(RTheme.mono(9))
+                .foregroundStyle(RTheme.faint.opacity(0.6))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, RTheme.pad)
         }
+    }
+
+    private func benchmarkBubble(_ label: String, _ value: String, _ color: Color) -> some View {
+        VStack(spacing: 3) {
+            Text(value)
+                .font(RTheme.mono(11, weight: .bold))
+                .foregroundStyle(color)
+            Text(label)
+                .font(RTheme.mono(8))
+                .foregroundStyle(RTheme.faint)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .background(RTheme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     // MARK: - Arcade section

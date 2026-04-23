@@ -13,6 +13,7 @@ struct TestView: View {
 
     @State private var bgFlash: Color = RTheme.bg
     @State private var suppressTimer: Task<Void, Never>? = nil
+    @State private var previousBest: Double? = nil
 
     var body: some View {
         ZStack {
@@ -59,6 +60,7 @@ struct TestView: View {
                     case .sessionDone(let avg, let best, let results):
                         SessionSummaryView(
                             mode: mode, avg: avg, best: best, results: results,
+                            previousBest: previousBest,
                             onReplay: { engine.startSession(mode: mode) },
                             onHome: onDismiss
                         )
@@ -219,6 +221,7 @@ struct TestView: View {
             suppressTimer?.cancel()
             bgFlash = RTheme.bg
             if avg > 0 {
+                previousBest = store.bestMS(for: mode)  // capture before overwrite
                 store.updateBest(ms: avg, for: mode)
                 store.appendSession(avg: avg, for: mode)
                 store.totalSessions += 1
@@ -294,8 +297,19 @@ struct SessionSummaryView: View {
     let avg: Double
     let best: Double
     let results: [Double]
+    let previousBest: Double?
     let onReplay: () -> Void
     let onHome: () -> Void
+
+    private var isNewBest: Bool {
+        guard avg > 0, let prev = previousBest else { return previousBest == nil && avg > 0 }
+        return avg < prev
+    }
+
+    private var improvement: Double? {
+        guard let prev = previousBest, avg > 0 else { return nil }
+        return prev - avg  // positive = faster = better
+    }
 
     private var validResults: [Double] { results.filter { $0 < 999 } }
     private var feet: Double { ReactionBenchmarks.drivingFeet(ms: avg) }
@@ -306,6 +320,23 @@ struct SessionSummaryView: View {
 
                 // Score
                 VStack(spacing: 8) {
+                    // New best banner
+                    if isNewBest {
+                        HStack(spacing: 6) {
+                            Image(systemName: "crown.fill")
+                                .font(.system(size: 13))
+                                .foregroundStyle(RTheme.bg)
+                            Text("NEW PERSONAL BEST!")
+                                .font(RTheme.mono(11, weight: .bold))
+                                .foregroundStyle(RTheme.bg)
+                                .tracking(2)
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 7)
+                        .background(RTheme.gold)
+                        .clipShape(Capsule())
+                    }
+
                     Text("YOUR AVERAGE")
                         .font(RTheme.mono(10, weight: .medium))
                         .foregroundStyle(RTheme.muted)
@@ -338,7 +369,14 @@ struct SessionSummaryView: View {
                     HStack(spacing: 0) {
                         statCell("PERCENTILE", "TOP \(100 - ReactionBenchmarks.percentile(ms: avg))%")
                         Divider().overlay(RTheme.faint).frame(height: 40)
-                        statCell("BEST", String(format: "%.0fms", best))
+                        if let delta = improvement {
+                            statCell("vs BEST", delta > 0
+                                ? String(format: "+%.0fms", delta)
+                                : String(format: "%.0fms", delta),
+                                color: delta > 0 ? RTheme.green : RTheme.red)
+                        } else {
+                            statCell("BEST", String(format: "%.0fms", best))
+                        }
                         Divider().overlay(RTheme.faint).frame(height: 40)
                         statCell("60MPH", String(format: "%.1f ft", feet))
                     }
@@ -412,7 +450,7 @@ struct SessionSummaryView: View {
         }
     }
 
-    private func statCell(_ label: String, _ value: String) -> some View {
+    private func statCell(_ label: String, _ value: String, color: Color = RTheme.white) -> some View {
         VStack(spacing: 3) {
             Text(label)
                 .font(RTheme.mono(8, weight: .medium))
@@ -420,7 +458,7 @@ struct SessionSummaryView: View {
                 .tracking(2)
             Text(value)
                 .font(RTheme.mono(15, weight: .bold))
-                .foregroundStyle(RTheme.white)
+                .foregroundStyle(color)
         }
         .frame(maxWidth: .infinity)
     }
