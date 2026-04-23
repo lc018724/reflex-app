@@ -10,7 +10,12 @@ struct StimulusRouter: View {
     var body: some View {
         switch data {
         case .flash:
-            FlashStimulusView()
+            // Rhythm mode reuses flash data but shows its own view
+            if mode == .rhythm {
+                RhythmView { engine.handleTap() }
+            } else {
+                FlashStimulusView()
+            }
         case .fallingBall(let index, let count):
             FallingBallView(fallingIndex: index, total: count, engine: engine)
         case .antiTap:
@@ -969,6 +974,91 @@ extension DualPhase: Equatable {
         case (.showSecond(let a), .showSecond(let b)): return a == b
         case (.awaitTaps(let a), .awaitTaps(let b)): return a == b
         default: return false
+        }
+    }
+}
+
+// MARK: - Rhythm (beat prediction)
+// 3 beats play visually. Tap when you predict the 4th beat.
+
+struct RhythmView: View {
+    let onTap: () -> Void
+
+    @State private var beatsShown: Int = 0
+    @State private var pulseScales: [CGFloat] = [1.0, 1.0, 1.0, 1.0]
+    @State private var canTap = false
+    @State private var intervalMs: Double = 0
+    @State private var lastBeatTime: Double = 0
+
+    private let bpm: Int = Int.random(in: 70...130)
+
+    var body: some View {
+        VStack(spacing: 36) {
+            Text("PREDICT THE BEAT")
+                .font(RTheme.mono(11, weight: .medium))
+                .foregroundStyle(RTheme.muted)
+                .tracking(3)
+
+            // Beat indicators
+            HStack(spacing: 14) {
+                ForEach(0..<4, id: \.self) { i in
+                    ZStack {
+                        Circle()
+                            .fill(i < beatsShown ? RTheme.gold : RTheme.surface)
+                            .shadow(color: i < beatsShown ? RTheme.gold.opacity(0.7) : .clear,
+                                    radius: i < beatsShown ? 12 : 0)
+                            .frame(width: 44, height: 44)
+                            .scaleEffect(pulseScales[i])
+
+                        if i == 3 {
+                            Image(systemName: canTap ? "hand.tap.fill" : "questionmark")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundStyle(canTap ? RTheme.bg : RTheme.faint)
+                        }
+                    }
+                }
+            }
+
+            if canTap {
+                Text("TAP NOW!")
+                    .font(RTheme.rounded(22, weight: .bold))
+                    .foregroundStyle(RTheme.gold)
+                    .transition(.scale.combined(with: .opacity))
+                    .onTapGesture { onTap() }
+            } else {
+                Text("\(bpm) BPM")
+                    .font(RTheme.mono(13))
+                    .foregroundStyle(RTheme.muted.opacity(0.5))
+                    .tracking(2)
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture { if canTap { onTap() } }
+        .onAppear { startBeats() }
+    }
+
+    private func startBeats() {
+        let interval = 60.0 / Double(bpm)
+        intervalMs = interval
+
+        for i in 0..<3 {
+            let delay = Double(i) * interval
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                withAnimation(.easeOut(duration: 0.08)) {
+                    pulseScales[i] = 1.5
+                }
+                withAnimation(.easeIn(duration: 0.12).delay(0.08)) {
+                    pulseScales[i] = 1.0
+                }
+                beatsShown = i + 1
+                lastBeatTime = CACurrentMediaTime()
+            }
+        }
+
+        // After 3 beats, enable tap window
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5 * interval) {
+            withAnimation(.spring(response: 0.2)) { canTap = true }
+            withAnimation(.easeOut(duration: 0.12)) { pulseScales[3] = 1.5 }
         }
     }
 }

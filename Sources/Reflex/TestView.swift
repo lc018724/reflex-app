@@ -112,17 +112,14 @@ struct TestView: View {
     }
 
     private var waitingView: some View {
-        // For modes that show active waiting indicator
-        VStack(spacing: 16) {
+        VStack(spacing: 24) {
             if mode == .peripheral {
                 Text("WATCH THE EDGES")
                     .font(RTheme.mono(13, weight: .medium))
                     .foregroundStyle(RTheme.muted)
                     .tracking(4)
             }
-            Text("...")
-                .font(RTheme.mono(48))
-                .foregroundStyle(RTheme.faint)
+            PulsingWaitDot()
         }
     }
 
@@ -350,28 +347,39 @@ struct SessionSummaryView: View {
                     .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
                 }
 
-                // Trial breakdown
+                // Trial breakdown with bar chart
                 SurfaceCard {
-                    VStack(spacing: 10) {
+                    VStack(spacing: 14) {
                         Text("TRIAL BREAKDOWN")
                             .font(RTheme.mono(9, weight: .medium))
                             .foregroundStyle(RTheme.muted)
                             .tracking(3)
                             .frame(maxWidth: .infinity, alignment: .leading)
 
+                        // Bar chart
+                        if validResults.count > 0 {
+                            TrialBarChart(results: results)
+                        }
+
                         ForEach(Array(results.enumerated()), id: \.0) { i, ms in
                             HStack {
-                                Text("Trial \(i+1)")
-                                    .font(RTheme.mono(12))
-                                    .foregroundStyle(RTheme.muted)
+                                Text("T\(i+1)")
+                                    .font(RTheme.mono(11))
+                                    .foregroundStyle(RTheme.faint)
+                                    .frame(width: 22, alignment: .leading)
                                 Spacer()
                                 if ms >= 999 {
-                                    Text("MISS")
-                                        .font(RTheme.mono(12, weight: .bold))
-                                        .foregroundStyle(RTheme.red)
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .font(.system(size: 11))
+                                            .foregroundStyle(RTheme.red)
+                                        Text("MISS")
+                                            .font(RTheme.mono(12, weight: .bold))
+                                            .foregroundStyle(RTheme.red)
+                                    }
                                 } else {
                                     Text(String(format: "%.0f ms", ms))
-                                        .font(RTheme.mono(12, weight: .bold))
+                                        .font(RTheme.mono(13, weight: .bold))
                                         .foregroundStyle(msColor(ms))
                                 }
                             }
@@ -422,6 +430,86 @@ struct SessionSummaryView: View {
         case ..<200: return RTheme.green
         case 200..<270: return RTheme.gold
         default: return RTheme.red
+        }
+    }
+}
+
+// MARK: - Pulsing wait indicator
+
+struct PulsingWaitDot: View {
+    @State private var scale1: CGFloat = 1.0
+    @State private var scale2: CGFloat = 1.0
+    @State private var scale3: CGFloat = 1.0
+
+    var body: some View {
+        HStack(spacing: 12) {
+            dot.scaleEffect(scale1)
+            dot.scaleEffect(scale2)
+            dot.scaleEffect(scale3)
+        }
+        .onAppear { animate() }
+    }
+
+    private var dot: some View {
+        Circle()
+            .fill(RTheme.gold.opacity(0.6))
+            .frame(width: 10, height: 10)
+    }
+
+    private func animate() {
+        let dur: Double = 0.5
+        withAnimation(.easeInOut(duration: dur).repeatForever().delay(0)) {
+            scale1 = 1.6
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.17) {
+            withAnimation(.easeInOut(duration: dur).repeatForever()) {
+                scale2 = 1.6
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.34) {
+            withAnimation(.easeInOut(duration: dur).repeatForever()) {
+                scale3 = 1.6
+            }
+        }
+    }
+}
+
+// MARK: - Trial bar chart
+
+struct TrialBarChart: View {
+    let results: [Double]
+
+    private var validResults: [Double] { results.filter { $0 < 999 } }
+    private var maxVal: Double { validResults.max() ?? 500 }
+    private var minVal: Double { validResults.min() ?? 100 }
+
+    @State private var animated = false
+
+    var body: some View {
+        HStack(alignment: .bottom, spacing: 8) {
+            ForEach(Array(results.enumerated()), id: \.0) { i, ms in
+                let isError = ms >= 999
+                let pct: Double = isError ? 0.1 : (maxVal > minVal ? (ms - minVal) / (maxVal - minVal) * 0.7 + 0.15 : 0.5)
+                VStack(spacing: 4) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(isError ? RTheme.red.opacity(0.6) : barColor(ms))
+                        .frame(height: animated ? CGFloat(pct) * 70 : 4)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.7).delay(Double(i) * 0.07), value: animated)
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+        .frame(height: 74)
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { animated = true }
+        }
+    }
+
+    private func barColor(_ ms: Double) -> Color {
+        switch ms {
+        case ..<200: return RTheme.green
+        case 200..<270: return RTheme.gold
+        default: return RTheme.red.opacity(0.8)
         }
     }
 }
