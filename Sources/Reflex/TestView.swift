@@ -481,6 +481,9 @@ struct SessionSummaryView: View {
     let onReplay: () -> Void
     let onHome: () -> Void
 
+    @State private var displayedAvg: Double = 999
+    @State private var appeared = false
+
     private var isNewBest: Bool {
         guard avg > 0, let prev = previousBest else { return previousBest == nil && avg > 0 }
         return avg < prev
@@ -524,11 +527,13 @@ struct SessionSummaryView: View {
 
                     if avg > 0 {
                         HStack(alignment: .lastTextBaseline, spacing: 4) {
-                            Text(String(format: "%.0f", avg))
+                            Text(String(format: "%.0f", displayedAvg < 990 ? displayedAvg : avg))
                                 .font(.system(size: 80, weight: .bold, design: .monospaced))
                                 .foregroundStyle(msColor(avg))
                                 .minimumScaleFactor(0.5)
                                 .lineLimit(1)
+                                .contentTransition(.numericText(countsDown: true))
+                                .animation(.spring(response: 1.2, dampingFraction: 0.8), value: displayedAvg)
                             Text("ms")
                                 .font(RTheme.mono(22))
                                 .foregroundStyle(RTheme.muted)
@@ -541,6 +546,15 @@ struct SessionSummaryView: View {
                         Text("NO VALID RESULTS")
                             .font(RTheme.mono(20, weight: .bold))
                             .foregroundStyle(RTheme.red)
+                    }
+                }
+                .onAppear {
+                    guard avg > 0 else { return }
+                    displayedAvg = avg + 200
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        withAnimation(.spring(response: 1.0, dampingFraction: 0.75)) {
+                            displayedAvg = avg
+                        }
                     }
                 }
 
