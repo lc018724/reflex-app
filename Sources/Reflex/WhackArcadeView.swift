@@ -129,12 +129,43 @@ struct WhackArcadeView: View {
                     .position(x: target.x * geo.size.width,
                                y: target.y * geo.size.height)
                 }
+
+                // Floating score popups
+                ForEach(game.floatingPoints) { fp in
+                    FloatingScoreView(fp: fp)
+                        .position(x: fp.x * geo.size.width,
+                                   y: fp.y * geo.size.height - 30)
+                }
+
+                // Combo banner
+                if game.combo >= 5 {
+                    comboIndicator
+                        .position(x: geo.size.width / 2, y: 22)
+                }
             }
             .frame(width: geo.size.width, height: geo.size.height)
             .contentShape(Rectangle())
         }
         .padding(.horizontal, 12)
         .padding(.bottom, 40)
+    }
+
+    private var comboIndicator: some View {
+        HStack(spacing: 5) {
+            Image(systemName: "bolt.fill")
+                .font(.system(size: 10, weight: .bold))
+                .foregroundStyle(RTheme.bg)
+            Text("x\(game.combo) COMBO")
+                .font(RTheme.mono(11, weight: .bold))
+                .foregroundStyle(RTheme.bg)
+                .tracking(2)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 5)
+        .background(RTheme.gold)
+        .clipShape(Capsule())
+        .shadow(color: RTheme.gold.opacity(0.5), radius: 8)
+        .transition(.scale(scale: 0.7).combined(with: .opacity))
     }
 
     // MARK: - Game Over
@@ -254,7 +285,37 @@ struct WhackTargetView: View {
     }
 }
 
-// MARK: - Target model
+// MARK: - Floating score popup view
+
+struct FloatingScoreView: View {
+    let fp: FloatingScore
+    @State private var offsetY: CGFloat = 0
+    @State private var opacity: Double = 1
+
+    var body: some View {
+        Text(fp.isCombo ? "+2 🔥" : "+1")
+            .font(RTheme.mono(fp.isCombo ? 16 : 13, weight: .bold))
+            .foregroundStyle(fp.isCombo ? RTheme.gold : RTheme.green)
+            .offset(y: offsetY)
+            .opacity(opacity)
+            .onAppear {
+                withAnimation(.easeOut(duration: 0.85)) {
+                    offsetY = -45
+                    opacity = 0
+                }
+            }
+    }
+}
+
+// MARK: - Floating score indicator
+
+struct FloatingScore: Identifiable {
+    let id = UUID()
+    let x: CGFloat  // normalized
+    let y: CGFloat
+    let points: Int
+    let isCombo: Bool
+}
 
 struct WhackTarget: Identifiable {
     let id = UUID()
@@ -274,6 +335,8 @@ final class WhackGame: ObservableObject {
     @Published var level: Int = 1
     @Published var targets: [WhackTarget] = []
     @Published var isGameOver: Bool = false
+    @Published var combo: Int = 0
+    @Published var floatingPoints: [FloatingScore] = []
 
     private static let bestKey = "whackArcade_highScore"
     private let defaults = UserDefaults.standard
@@ -361,6 +424,7 @@ final class WhackGame: ObservableObject {
 
     func tapTarget(id: UUID) {
         guard let idx = targets.firstIndex(where: { $0.id == id }) else { return }
+        let tappedTarget = targets[idx]
         decayTasks[id]?.cancel()
         decayTasks.removeValue(forKey: id)
 
@@ -370,8 +434,17 @@ final class WhackGame: ObservableObject {
         }
 
         impactLight.impactOccurred()
-        score += 1
+        combo += 1
+        let points = combo >= 5 ? 2 : 1
+        score += points
         level = (score / 8) + 1
+
+        // Floating score indicator
+        let fp = FloatingScore(x: tappedTarget.x, y: tappedTarget.y, points: points, isCombo: combo >= 5)
+        floatingPoints.append(fp)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+            self.floatingPoints.removeAll { $0.id == fp.id }
+        }
 
         if score > best {
             best = score
@@ -381,6 +454,7 @@ final class WhackGame: ObservableObject {
 
     private func handleMiss() {
         impactHeavy.impactOccurred()
+        combo = 0  // reset combo on miss
         lives -= 1
         if lives <= 0 {
             stop()
@@ -395,7 +469,9 @@ final class WhackGame: ObservableObject {
         score = 0
         lives = 3
         level = 1
+        combo = 0
         targets = []
+        floatingPoints = []
         isGameOver = false
         decayTasks.removeAll()
     }

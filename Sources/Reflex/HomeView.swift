@@ -272,33 +272,42 @@ struct ModeCard: View {
 
     var body: some View {
         Button(action: onTap) {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text(mode.emoji)
-                        .font(.system(size: 22))
-                    Spacer()
-                    if let ms = best {
-                        Text(String(format: "%.0f", ms))
-                            .font(RTheme.mono(13, weight: .bold))
-                            .foregroundStyle(msColor(ms))
-                    } else {
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(RTheme.faint)
+            HStack(spacing: 0) {
+                // Left tier-color accent bar
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(tierEdgeColor)
+                    .frame(width: 3)
+                    .padding(.leading, 8)
+                    .padding(.vertical, 10)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text(mode.emoji)
+                            .font(.system(size: 22))
+                        Spacer()
+                        if let ms = best {
+                            Text(String(format: "%.0f", ms))
+                                .font(RTheme.mono(13, weight: .bold))
+                                .foregroundStyle(msColor(ms))
+                        } else {
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(RTheme.faint)
+                        }
                     }
+
+                    Text(mode.title)
+                        .font(RTheme.rounded(15, weight: .bold))
+                        .foregroundStyle(RTheme.white)
+                        .tracking(1)
+
+                    Text(mode.subtitle)
+                        .font(RTheme.mono(10))
+                        .foregroundStyle(RTheme.muted)
+                        .lineLimit(1)
                 }
-
-                Text(mode.title)
-                    .font(RTheme.rounded(15, weight: .bold))
-                    .foregroundStyle(RTheme.white)
-                    .tracking(1)
-
-                Text(mode.subtitle)
-                    .font(RTheme.mono(10))
-                    .foregroundStyle(RTheme.muted)
-                    .lineLimit(1)
+                .padding(RTheme.padSm)
             }
-            .padding(RTheme.padSm)
             .background(RTheme.surface)
             .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
             .scaleEffect(pressed ? 0.96 : 1.0)
@@ -309,6 +318,17 @@ struct ModeCard: View {
                 .onChanged { _ in withAnimation(.easeIn(duration: 0.07)) { pressed = true } }
                 .onEnded   { _ in withAnimation(.easeOut(duration: 0.15)) { pressed = false } }
         )
+    }
+
+    private var tierEdgeColor: Color {
+        switch mode.tier {
+        case 1: return RTheme.gold
+        case 2: return RTheme.green
+        case 3: return Color(red: 0.55, green: 0.35, blue: 0.95)
+        case 4: return Color(red: 0.30, green: 0.70, blue: 0.95)
+        case 5: return RTheme.red
+        default: return RTheme.faint
+        }
     }
 
     private func msColor(_ ms: Double) -> Color {
@@ -328,30 +348,14 @@ struct ArcadeCard: View {
 
     @State private var pressed = false
     @State private var animBall: CGFloat = 0
+    @State private var animTargets: [CGFloat] = [0, 0, 0]
 
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 16) {
-                // Animated mini ball preview
-                ZStack {
-                    RTheme.bg
-                        .frame(width: 64, height: 90)
-                        .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
-
-                    // Ghost balls row + one animated drop
-                    HStack(spacing: 4) {
-                        ForEach(0..<5, id: \.self) { i in
-                            Circle()
-                                .fill(i == 2 ? RTheme.gold : RTheme.surface)
-                                .overlay(Circle().stroke(i == 2 ? Color.clear : RTheme.faint, lineWidth: 1))
-                                .frame(width: 9, height: 9)
-                                .shadow(color: i == 2 ? RTheme.gold.opacity(0.7) : .clear, radius: 5)
-                                .offset(y: i == 2 ? animBall * 55 : 0)
-                        }
-                    }
-                    .offset(y: -22)
-                }
-                .frame(width: 64, height: 90)
+                // Animated mini preview — differs per mode
+                arcadePreview
+                    .frame(width: 64, height: 90)
 
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(alignment: .firstTextBaseline, spacing: 6) {
@@ -410,8 +414,87 @@ struct ArcadeCard: View {
                 .onEnded   { _ in withAnimation(.easeOut(duration: 0.15)) { pressed = false } }
         )
         .onAppear {
-            withAnimation(.easeIn(duration: 1.4).repeatForever(autoreverses: false)) {
-                animBall = 1.0
+            if mode == .dropArcade {
+                withAnimation(.easeIn(duration: 1.4).repeatForever(autoreverses: false)) {
+                    animBall = 1.0
+                }
+            } else if mode == .whackArcade {
+                startWhackPreviewAnimation()
+            }
+        }
+    }
+
+    // MARK: - Mode-specific preview animations
+
+    @ViewBuilder
+    private var arcadePreview: some View {
+        ZStack {
+            RTheme.bg
+                .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
+
+            if mode == .dropArcade {
+                dropPreview
+            } else if mode == .whackArcade {
+                whackPreview
+            }
+        }
+    }
+
+    private var dropPreview: some View {
+        // Ghost balls row + one animated drop
+        HStack(spacing: 4) {
+            ForEach(0..<5, id: \.self) { i in
+                Circle()
+                    .fill(i == 2 ? RTheme.gold : RTheme.surface)
+                    .overlay(Circle().stroke(i == 2 ? Color.clear : RTheme.faint, lineWidth: 1))
+                    .frame(width: 9, height: 9)
+                    .shadow(color: i == 2 ? RTheme.gold.opacity(0.7) : .clear, radius: 5)
+                    .offset(y: i == 2 ? animBall * 55 : 0)
+            }
+        }
+        .offset(y: -22)
+    }
+
+    private let whackColors: [Color] = [RTheme.gold, RTheme.green, RTheme.red]
+    private let whackPositions: [(CGFloat, CGFloat)] = [(0.3, 0.2), (0.7, 0.55), (0.35, 0.78)]
+
+    private var whackPreview: some View {
+        GeometryReader { geo in
+            ForEach(0..<3, id: \.self) { i in
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [Color.white.opacity(0.7), whackColors[i]],
+                            center: .center,
+                            startRadius: 1,
+                            endRadius: 8
+                        )
+                    )
+                    .frame(width: 16, height: 16)
+                    .shadow(color: whackColors[i].opacity(0.9), radius: 6)
+                    .scaleEffect(animTargets[i])
+                    .opacity(animTargets[i])
+                    .position(
+                        x: whackPositions[i].0 * geo.size.width,
+                        y: whackPositions[i].1 * geo.size.height
+                    )
+            }
+        }
+    }
+
+    private func startWhackPreviewAnimation() {
+        let delays = [0.0, 0.45, 0.9]
+        for i in 0..<3 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delays[i]) {
+                withAnimation(.easeInOut(duration: 0.3)) { animTargets[i] = 1.0 }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    withAnimation(.easeIn(duration: 0.25)) { animTargets[i] = 0 }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                        withAnimation(.easeInOut(duration: 1.8).repeatForever(autoreverses: false).delay(delays[i])) {
+                            animTargets[i] = 1.0
+                        }
+                    }
+                }
             }
         }
     }
