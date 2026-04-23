@@ -9,8 +9,18 @@ struct ContentView: View {
             RTheme.bg.ignoresSafeArea()
 
             if let mode = activeMode {
-                if mode.isArcade {
+                if mode == .dropArcade {
                     DropArcadeView {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            activeMode = nil
+                        }
+                    }
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .bottom).combined(with: .opacity),
+                        removal: .move(edge: .bottom).combined(with: .opacity)
+                    ))
+                } else if mode == .whackArcade {
+                    WhackArcadeView {
                         withAnimation(.easeInOut(duration: 0.2)) {
                             activeMode = nil
                         }

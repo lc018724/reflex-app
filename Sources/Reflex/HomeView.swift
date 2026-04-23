@@ -16,7 +16,7 @@ struct HomeView: View {
         ("EXPERT",    [.simon, .speedSort, .rhythm, .dualTrack]),
     ]
 
-    private let arcadeModes: [TestMode] = [.dropArcade]
+    private let arcadeModes: [TestMode] = [.dropArcade, .whackArcade]
 
     var body: some View {
         ScrollView(showsIndicators: false) {
