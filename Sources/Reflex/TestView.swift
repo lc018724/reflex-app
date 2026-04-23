@@ -215,6 +215,10 @@ struct TestView: View {
                             .foregroundStyle(msColor(ms))
                             .minimumScaleFactor(0.6)
                             .lineLimit(1)
+                            .transition(.asymmetric(
+                                insertion: .scale(scale: 0.7).combined(with: .opacity),
+                                removal: .opacity
+                            ))
                         Text("ms")
                             .font(RTheme.mono(24))
                             .foregroundStyle(RTheme.muted)
@@ -286,12 +290,20 @@ struct TestView: View {
                 break
             }
 
-        case .result(let _, let trial, _, let isError):
+        case .result(let ms, let trial, _, let isError):
             suppressTimer?.cancel()
             bgFlash = RTheme.bg
             trialsDone = trial
-            if isError { notif.notificationOccurred(.error) }
-            else { impactHeavy.impactOccurred() }
+            if isError {
+                notif.notificationOccurred(.error)
+            } else {
+                impactHeavy.impactOccurred()
+                // Subtle bg tint based on speed
+                if ms < 200 {
+                    bgFlash = RTheme.green.opacity(0.15)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { bgFlash = RTheme.bg }
+                }
+            }
 
         case .sessionDone(let avg, _, _):
             suppressTimer?.cancel()
