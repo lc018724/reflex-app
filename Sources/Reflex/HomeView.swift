@@ -124,6 +124,30 @@ struct HomeView: View {
                     .padding(.top, 16)
                     .padding(.horizontal, RTheme.pad)
             }
+
+            // Progress bar
+            if completedCount > 0 {
+                VStack(spacing: 6) {
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 3)
+                                .fill(RTheme.faint.opacity(0.3))
+                                .frame(height: 4)
+                            RoundedRectangle(cornerRadius: 3)
+                                .fill(RTheme.gold)
+                                .frame(width: geo.size.width * CGFloat(completedCount) / 21.0, height: 4)
+                                .animation(.spring(response: 0.5), value: completedCount)
+                        }
+                    }
+                    .frame(height: 4)
+                    Text("\(completedCount) of 21 tests completed")
+                        .font(RTheme.mono(9))
+                        .foregroundStyle(RTheme.faint)
+                        .tracking(1)
+                }
+                .padding(.top, 14)
+                .padding(.horizontal, RTheme.pad)
+            }
         }
         .padding(.bottom, 32)
     }

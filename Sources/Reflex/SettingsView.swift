@@ -83,11 +83,16 @@ struct SettingsView: View {
                             .padding(.horizontal, RTheme.padSm)
                         }
 
+                        // Arcade high scores
+                        settingsSection("ARCADE HIGH SCORES") {
+                            arcadeHighScores
+                        }
+
                         // App info
                         settingsSection("ABOUT") {
                             settingsInfoRow("Version", "1.0")
                             Divider().overlay(RTheme.faint)
-                            settingsInfoRow("Tests", "21 cognitive + 2 arcade")
+                            settingsInfoRow("Tests", "21 cognitive + 3 arcade")
                             Divider().overlay(RTheme.faint)
                             settingsInfoRow("Data stored", "On device only")
                         }
@@ -204,6 +209,42 @@ struct SettingsView: View {
     }
 
     // MARK: - Helpers
+
+    private var arcadeHighScores: some View {
+        let arcadeModes: [(TestMode, String)] = [
+            (.dropArcade, "dropArcade_highScore"),
+            (.whackArcade, "whackArcade_highScore"),
+            (.chainArcade, "chainArcade_highScore")
+        ]
+        return VStack(spacing: 0) {
+            ForEach(Array(arcadeModes.enumerated()), id: \.0) { i, item in
+                let (mode, key) = item
+                let score = UserDefaults.standard.integer(forKey: key)
+                HStack {
+                    Text(mode.emoji)
+                        .font(.system(size: 16))
+                    Text(mode.title)
+                        .font(RTheme.rounded(14, weight: .medium))
+                        .foregroundStyle(RTheme.white)
+                    Spacer()
+                    if score > 0 {
+                        Text("\(score) pts")
+                            .font(RTheme.mono(13, weight: .bold))
+                            .foregroundStyle(RTheme.gold)
+                    } else {
+                        Text("—")
+                            .font(RTheme.mono(13))
+                            .foregroundStyle(RTheme.faint)
+                    }
+                }
+                .padding(.vertical, 10)
+                .padding(.horizontal, RTheme.padSm)
+                if i < arcadeModes.count - 1 {
+                    Divider().overlay(RTheme.faint)
+                }
+            }
+        }
+    }
 
     private func settingsSection<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 0) {
