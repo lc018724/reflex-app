@@ -447,7 +447,7 @@ final class DropArcadeGame: ObservableObject {
         guard fallingIndex == index, !isGameOver else { return }
         fallTask?.cancel()
 
-        impactLight.impactOccurred()
+        if defaults.bool(forKey: "hapticsEnabled") { impactLight.impactOccurred() }
         AudioServicesPlaySystemSound(1104) // click tap sound
 
         let tappedIdx = index
@@ -485,7 +485,7 @@ final class DropArcadeGame: ObservableObject {
     }
 
     private func handleMiss(index: Int) {
-        impactHeavy.impactOccurred()
+        if defaults.bool(forKey: "hapticsEnabled") { impactHeavy.impactOccurred() }
         AudioServicesPlaySystemSound(1107) // error sound
 
         fallingIndex = -1

@@ -228,6 +228,23 @@ struct TestView: View {
                         .font(RTheme.mono(11, weight: .medium))
                         .foregroundStyle(msColor(ms).opacity(0.7))
                         .tracking(3)
+
+                    // NEW PB badge — only if this trial beats stored best
+                    if let pb = store.bestMS(for: mode), ms < pb {
+                        HStack(spacing: 5) {
+                            Image(systemName: "crown.fill")
+                                .font(.system(size: 10))
+                            Text("NEW PERSONAL BEST")
+                                .font(RTheme.mono(9, weight: .bold))
+                                .tracking(2)
+                        }
+                        .foregroundStyle(RTheme.bg)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 6)
+                        .background(RTheme.gold)
+                        .clipShape(Capsule())
+                        .transition(.scale(scale: 0.5).combined(with: .opacity))
+                    }
                 }
             }
 
