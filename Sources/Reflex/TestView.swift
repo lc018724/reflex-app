@@ -450,6 +450,34 @@ struct SessionSummaryView: View {
                     .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
                 }
 
+                // Session history sparkline
+                if avg > 0 {
+                    let history = TestStore().history(for: mode)
+                    if history.count >= 2 {
+                        SurfaceCard {
+                            VStack(spacing: 10) {
+                                HStack {
+                                    Text("PROGRESS (\(history.count) SESSIONS)")
+                                        .font(RTheme.mono(9, weight: .medium))
+                                        .foregroundStyle(RTheme.muted)
+                                        .tracking(3)
+                                    Spacer()
+                                    let trend = history.last! - history.first!
+                                    HStack(spacing: 3) {
+                                        Image(systemName: trend < 0 ? "arrow.down" : "arrow.up")
+                                            .font(.system(size: 9, weight: .bold))
+                                        Text(String(format: "%.0fms", abs(trend)))
+                                            .font(RTheme.mono(9, weight: .bold))
+                                    }
+                                    .foregroundStyle(trend < 0 ? RTheme.green : RTheme.red)
+                                }
+                                SparklineView(values: history)
+                                    .frame(height: 44)
+                            }
+                        }
+                    }
+                }
+
                 // Trial breakdown with bar chart
                 SurfaceCard {
                     VStack(spacing: 14) {
@@ -613,6 +641,78 @@ struct TrialBarChart: View {
         case ..<200: return RTheme.green
         case 200..<270: return RTheme.gold
         default: return RTheme.red.opacity(0.8)
+        }
+    }
+}
+
+// MARK: - Sparkline view (session history)
+
+struct SparklineView: View {
+    let values: [Double]
+
+    @State private var drawn = false
+
+    private var minVal: Double { values.min() ?? 0 }
+    private var maxVal: Double { values.max() ?? 1 }
+
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width
+            let h = geo.size.height
+            let pts = chartPoints(width: w, height: h)
+
+            ZStack {
+                // Area fill
+                if pts.count > 1 {
+                    Path { path in
+                        path.move(to: CGPoint(x: pts[0].x, y: h))
+                        for p in pts { path.addLine(to: p) }
+                        path.addLine(to: CGPoint(x: pts.last!.x, y: h))
+                        path.closeSubpath()
+                    }
+                    .fill(LinearGradient(
+                        colors: [RTheme.gold.opacity(0.25), RTheme.gold.opacity(0.02)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ))
+                }
+
+                // Line
+                if pts.count > 1 {
+                    Path { path in
+                        path.move(to: pts[0])
+                        for p in pts.dropFirst() { path.addLine(to: p) }
+                    }
+                    .trim(from: 0, to: drawn ? 1 : 0)
+                    .stroke(RTheme.gold, style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                    .animation(.easeOut(duration: 0.8), value: drawn)
+                }
+
+                // Last dot
+                if let last = pts.last {
+                    Circle()
+                        .fill(RTheme.gold)
+                        .shadow(color: RTheme.gold.opacity(0.8), radius: 6)
+                        .frame(width: 8, height: 8)
+                        .position(last)
+                }
+            }
+        }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { drawn = true }
+        }
+    }
+
+    private func chartPoints(width: CGFloat, height: CGFloat) -> [CGPoint] {
+        guard values.count > 1 else { return [] }
+        let range = maxVal - minVal
+        let step = width / CGFloat(values.count - 1)
+        return values.enumerated().map { i, v in
+            let x = CGFloat(i) * step
+            // Invert: lower ms = higher on chart (better = higher)
+            let norm = range > 0 ? (v - minVal) / range : 0.5
+            let y = height - CGFloat(norm) * height * 0.85 - height * 0.075
+            return CGPoint(x: x, y: y)
         }
     }
 }
