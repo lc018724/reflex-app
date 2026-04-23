@@ -15,6 +15,8 @@ struct HomeView: View {
         ("EXPERT",    [.simon, .speedSort, .rhythm, .dualTrack]),
     ]
 
+    private let arcadeModes: [TestMode] = [.dropArcade]
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
@@ -26,6 +28,9 @@ struct HomeView: View {
                 ForEach(tiers, id: \.0) { tierName, modes in
                     tierSection(title: tierName, modes: modes)
                 }
+
+                // Arcade section
+                arcadeSection
 
                 benchmarkFooter
                     .padding(.top, 20)
@@ -47,7 +52,7 @@ struct HomeView: View {
                 .foregroundStyle(RTheme.gold)
                 .tracking(12)
 
-            Text("20 cognitive challenges")
+            Text("21 cognitive challenges")
                 .font(RTheme.mono(12))
                 .foregroundStyle(RTheme.muted)
                 .tracking(2)
@@ -142,6 +147,29 @@ struct HomeView: View {
         }
     }
 
+    // MARK: - Arcade section
+
+    private var arcadeSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("ARCADE")
+                    .font(RTheme.mono(10, weight: .bold))
+                    .foregroundStyle(RTheme.gold.opacity(0.8))
+                    .tracking(4)
+                Rectangle()
+                    .fill(RTheme.gold.opacity(0.25))
+                    .frame(height: 1)
+            }
+            .padding(.horizontal, RTheme.pad)
+
+            ForEach(arcadeModes) { mode in
+                ArcadeCard(mode: mode) { onSelect(mode) }
+                    .padding(.horizontal, RTheme.pad)
+            }
+        }
+        .padding(.bottom, 20)
+    }
+
     private func speedColor(_ ms: Double) -> Color {
         switch ms {
         case ..<200: return RTheme.green
@@ -206,6 +234,103 @@ struct ModeCard: View {
         case ..<200: return RTheme.green
         case 200..<270: return RTheme.gold
         default: return RTheme.red
+        }
+    }
+}
+
+// MARK: - Arcade Card
+
+struct ArcadeCard: View {
+    let mode: TestMode
+    let onTap: () -> Void
+
+    @State private var pressed = false
+    @State private var animBall: CGFloat = 0
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                // Animated mini ball preview
+                ZStack {
+                    RTheme.bg
+                        .frame(width: 64, height: 90)
+                        .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
+
+                    // Ghost balls row + one animated drop
+                    HStack(spacing: 4) {
+                        ForEach(0..<5, id: \.self) { i in
+                            Circle()
+                                .fill(i == 2 ? RTheme.gold : RTheme.surface)
+                                .overlay(Circle().stroke(i == 2 ? Color.clear : RTheme.faint, lineWidth: 1))
+                                .frame(width: 9, height: 9)
+                                .shadow(color: i == 2 ? RTheme.gold.opacity(0.7) : .clear, radius: 5)
+                                .offset(y: i == 2 ? animBall * 55 : 0)
+                        }
+                    }
+                    .offset(y: -22)
+                }
+                .frame(width: 64, height: 90)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Text(mode.emoji)
+                            .font(.system(size: 22))
+                        Text(mode.title)
+                            .font(RTheme.rounded(20, weight: .bold))
+                            .foregroundStyle(RTheme.gold)
+                            .tracking(2)
+                    }
+
+                    Text(mode.instruction)
+                        .font(RTheme.mono(11))
+                        .foregroundStyle(RTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .lineSpacing(3)
+
+                    HStack(spacing: 6) {
+                        Label("3 lives", systemImage: "heart.fill")
+                            .font(RTheme.mono(9, weight: .medium))
+                            .foregroundStyle(RTheme.red.opacity(0.85))
+                        Text("•")
+                            .foregroundStyle(RTheme.faint)
+                        Text("speed escalates")
+                            .font(RTheme.mono(9))
+                            .foregroundStyle(RTheme.faint)
+                    }
+                }
+
+                Image(systemName: "play.fill")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(RTheme.bg)
+                    .frame(width: 36, height: 36)
+                    .background(RTheme.gold)
+                    .clipShape(Circle())
+            }
+            .padding(RTheme.padSm)
+            .background(
+                LinearGradient(
+                    colors: [RTheme.surface, RTheme.gold.opacity(0.05)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .clipShape(RoundedRectangle(cornerRadius: RTheme.radius))
+            .overlay(
+                RoundedRectangle(cornerRadius: RTheme.radius)
+                    .stroke(RTheme.gold.opacity(0.25), lineWidth: 1)
+            )
+            .scaleEffect(pressed ? 0.97 : 1.0)
+        }
+        .buttonStyle(.plain)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in withAnimation(.easeIn(duration: 0.07)) { pressed = true } }
+                .onEnded   { _ in withAnimation(.easeOut(duration: 0.15)) { pressed = false } }
+        )
+        .onAppear {
+            withAnimation(.easeIn(duration: 1.4).repeatForever(autoreverses: false)) {
+                animBall = 1.0
+            }
         }
     }
 }

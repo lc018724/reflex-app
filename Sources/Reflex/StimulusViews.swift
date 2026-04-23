@@ -71,8 +71,8 @@ struct StimulusRouter: View {
             SpeedSortView(numbers: numbers) { i in
                 engine.handleTap(data: .index(i))
             }
-        case .dualTrack:
-            FlashStimulusView() // simplified for now
+        case .dualTrack(let positions, let phase):
+            DualTrackView(positions: positions, phase: phase, engine: engine)
         }
     }
 }
@@ -105,42 +105,99 @@ struct FallingBallView: View {
 
     @State private var fallProgress: CGFloat = 0
     @State private var tapped = false
+    @State private var hitScale: CGFloat = 1.0
+    @State private var hitOpacity: Double = 1.0
 
-    private let ballSize: CGFloat = 44
-    private let topY: CGFloat = 0.08
-    private let fallDuration: Double = 1.8
+    private let ballSize: CGFloat = 50
+    private let topY: CGFloat = 0.06
+    private let fallDuration: Double = 1.6
 
     var body: some View {
         GeometryReader { geo in
             let spacing = geo.size.width / CGFloat(total + 1)
+            let xFall = spacing * CGFloat(fallingIndex + 1)
+            let yFall = geo.size.height * topY + fallProgress * geo.size.height * 0.87
 
             ZStack {
-                // Static balls at top
+                // Danger zone gradient when close to bottom
+                if fallProgress > 0.65 {
+                    LinearGradient(
+                        colors: [.clear, RTheme.red.opacity(0.07 * fallProgress)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .ignoresSafeArea()
+                }
+
+                // Floor line
+                Rectangle()
+                    .fill(RTheme.faint.opacity(0.5))
+                    .frame(height: 1)
+                    .frame(maxWidth: .infinity)
+                    .position(x: geo.size.width / 2, y: geo.size.height * 0.93)
+
+                // Static ghost balls at top
                 ForEach(0..<total, id: \.self) { i in
                     if i != fallingIndex {
                         Circle()
                             .fill(RTheme.surface)
-                            .overlay(Circle().stroke(RTheme.gold.opacity(0.5), lineWidth: 2))
+                            .overlay(Circle().stroke(RTheme.gold.opacity(0.4), lineWidth: 2))
                             .frame(width: ballSize, height: ballSize)
                             .position(x: spacing * CGFloat(i + 1),
                                       y: geo.size.height * topY)
                     }
                 }
 
-                // The falling ball
+                // The falling ball with glow trail
                 if !tapped {
+                    ZStack {
+                        // Trail
+                        ForEach(0..<5, id: \.self) { t in
+                            Circle()
+                                .fill(RTheme.gold.opacity(0.08 - Double(t) * 0.012))
+                                .frame(width: ballSize - CGFloat(t) * 4, height: ballSize - CGFloat(t) * 4)
+                                .offset(y: -CGFloat(t + 1) * 12 * fallProgress)
+                        }
+                        // Main ball
+                        Circle()
+                            .fill(
+                                RadialGradient(
+                                    colors: [Color.white.opacity(0.85), RTheme.gold],
+                                    center: UnitPoint(x: 0.35, y: 0.3),
+                                    startRadius: 2,
+                                    endRadius: 26
+                                )
+                            )
+                            .shadow(color: RTheme.gold.opacity(0.8), radius: 18)
+                            .frame(width: ballSize, height: ballSize)
+                    }
+                    .position(x: xFall, y: yFall)
+                    // Large invisible tap area for easier hit detection
+                    .overlay(
+                        Circle()
+                            .fill(Color.clear)
+                            .frame(width: ballSize + 30, height: ballSize + 30)
+                            .contentShape(Circle())
+                            .position(x: xFall, y: yFall)
+                            .onTapGesture {
+                                guard !tapped else { return }
+                                tapped = true
+                                withAnimation(.easeOut(duration: 0.2)) {
+                                    hitScale = 2.4
+                                    hitOpacity = 0
+                                }
+                                engine.handleTap(data: .index(fallingIndex))
+                            }
+                    )
+                } else {
+                    // Hit burst
                     Circle()
                         .fill(RTheme.gold)
-                        .shadow(color: RTheme.gold.opacity(0.6), radius: 16)
+                        .shadow(color: RTheme.gold, radius: 30)
                         .frame(width: ballSize, height: ballSize)
-                        .position(
-                            x: spacing * CGFloat(fallingIndex + 1),
-                            y: geo.size.height * topY + fallProgress * geo.size.height * 0.85
-                        )
-                        .onTapGesture {
-                            tapped = true
-                            engine.handleTap(data: .index(fallingIndex))
-                        }
+                        .scaleEffect(hitScale)
+                        .opacity(hitOpacity)
+                        .position(x: xFall, y: yFall)
                 }
             }
         }
@@ -804,6 +861,114 @@ struct SpeedSortView: View {
                 }
             }
             .padding(.horizontal, 28)
+        }
+    }
+}
+
+// MARK: - Dual Track
+// Two targets flash in sequence. Memorize positions. Then tap both.
+
+struct DualTrackView: View {
+    let positions: [DualPos]
+    let phase: DualPhase
+    let engine: TestEngine
+
+    @State private var tappedIndices: Set<Int> = []
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                // Instructions
+                VStack(spacing: 6) {
+                    switch phase {
+                    case .showFirst(_):
+                        Text("WATCH — 1 OF 2")
+                            .font(RTheme.mono(12, weight: .medium))
+                            .foregroundStyle(RTheme.gold)
+                            .tracking(3)
+                    case .showSecond(_):
+                        Text("WATCH — 2 OF 2")
+                            .font(RTheme.mono(12, weight: .medium))
+                            .foregroundStyle(RTheme.gold)
+                            .tracking(3)
+                    case .awaitTaps(_):
+                        Text("TAP BOTH TARGETS")
+                            .font(RTheme.mono(12, weight: .medium))
+                            .foregroundStyle(RTheme.muted)
+                            .tracking(3)
+                    }
+                }
+                .position(x: geo.size.width / 2, y: 24)
+
+                // Targets
+                switch phase {
+                case .showFirst(let idx):
+                    flashTarget(pos: positions[idx], geo: geo, color: RTheme.gold, number: 1)
+                        .transition(.scale(scale: 0.2).combined(with: .opacity))
+
+                case .showSecond(let idx):
+                    flashTarget(pos: positions[idx], geo: geo, color: RTheme.green, number: 2)
+                        .transition(.scale(scale: 0.2).combined(with: .opacity))
+
+                case .awaitTaps(let targets):
+                    ForEach(targets, id: \.self) { idx in
+                        let pos = positions[idx]
+                        let isTapped = tappedIndices.contains(idx)
+                        ZStack {
+                            Circle()
+                                .fill(isTapped ? RTheme.green.opacity(0.3) : RTheme.gold)
+                                .shadow(color: isTapped ? .clear : RTheme.gold.opacity(0.7), radius: 18)
+                                .frame(width: 58, height: 58)
+                                .scaleEffect(isTapped ? 1.8 : 1.0)
+                                .opacity(isTapped ? 0 : 1.0)
+                            if !isTapped {
+                                Image(systemName: "hand.tap.fill")
+                                    .font(.system(size: 20))
+                                    .foregroundStyle(RTheme.bg)
+                            }
+                        }
+                        .position(x: geo.size.width * pos.x, y: geo.size.height * pos.y)
+                        .contentShape(Circle().size(CGSize(width: 80, height: 80)).offset(x: -10, y: -10))
+                        .onTapGesture {
+                            guard !tappedIndices.contains(idx) else { return }
+                            withAnimation(.easeOut(duration: 0.25)) {
+                                tappedIndices.insert(idx)
+                            }
+                            if tappedIndices.count == targets.count {
+                                engine.handleTap()
+                            }
+                        }
+                        .animation(.spring(response: 0.25, dampingFraction: 0.65), value: isTapped)
+                    }
+                }
+            }
+        }
+        .animation(.easeInOut(duration: 0.15), value: phase == .awaitTaps([]))
+    }
+
+    @ViewBuilder
+    private func flashTarget(pos: DualPos, geo: GeometryProxy, color: Color, number: Int) -> some View {
+        ZStack {
+            Circle()
+                .fill(color)
+                .shadow(color: color.opacity(0.8), radius: 24)
+                .frame(width: 58, height: 58)
+            Text("\(number)")
+                .font(RTheme.mono(22, weight: .bold))
+                .foregroundStyle(RTheme.bg)
+        }
+        .position(x: geo.size.width * pos.x, y: geo.size.height * pos.y)
+    }
+}
+
+// small helper for phase equality check
+extension DualPhase: Equatable {
+    static func == (lhs: DualPhase, rhs: DualPhase) -> Bool {
+        switch (lhs, rhs) {
+        case (.showFirst(let a), .showFirst(let b)): return a == b
+        case (.showSecond(let a), .showSecond(let b)): return a == b
+        case (.awaitTaps(let a), .awaitTaps(let b)): return a == b
+        default: return false
         }
     }
 }

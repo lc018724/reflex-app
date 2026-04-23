@@ -12,6 +12,7 @@
 		4C55ED990B901985A291C14A /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FB5C9185B3A8CE5E64D22B /* TestView.swift */; };
 		61736F1B45EBB24E7EDF8A5C /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA910DC9BE3EE0240DCC7CA /* Models.swift */; };
 		86F7E2EE9E8B3C7A8A388DFC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C73340D38CC6C717F3EFE6 /* ContentView.swift */; };
+		8B0ED9694C46E19FF4A95EA1 /* DropArcadeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE323ACE7373D004E300FFF /* DropArcadeView.swift */; };
 		AC64987EDEADC85E30C0038D /* ReflexApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19B50FE40FAAAA58F039ED6 /* ReflexApp.swift */; };
 		CAA1D71521767F411F1AA180 /* TestStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCBE76E5BFA15569BF83E1E0 /* TestStore.swift */; };
 		D56DBCED39D908F692C26FE6 /* ReactionBenchmarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC5955442B15B6FC5629231 /* ReactionBenchmarks.swift */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0EE323ACE7373D004E300FFF /* DropArcadeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropArcadeView.swift; sourceTree = "<group>"; };
 		3EAE784E8E35762E81C8317F /* Reflex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Reflex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3EC22A60AEA2098E42E2D29E /* TestEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEngine.swift; sourceTree = "<group>"; };
 		506BF46EA4A1EBBE2821152F /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -55,6 +57,7 @@
 			isa = PBXGroup;
 			children = (
 				F4C73340D38CC6C717F3EFE6 /* ContentView.swift */,
+				0EE323ACE7373D004E300FFF /* DropArcadeView.swift */,
 				506BF46EA4A1EBBE2821152F /* HomeView.swift */,
 				BC8E8B6AC631BCC380336539 /* Info.plist */,
 				5FA910DC9BE3EE0240DCC7CA /* Models.swift */,
@@ -126,6 +129,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				86F7E2EE9E8B3C7A8A388DFC /* ContentView.swift in Sources */,
+				8B0ED9694C46E19FF4A95EA1 /* DropArcadeView.swift in Sources */,
 				2ABB36A21ACE7617918F0268 /* HomeView.swift in Sources */,
 				61736F1B45EBB24E7EDF8A5C /* Models.swift in Sources */,
 				D56DBCED39D908F692C26FE6 /* ReactionBenchmarks.swift in Sources */,

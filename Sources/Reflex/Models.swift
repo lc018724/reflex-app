@@ -23,6 +23,7 @@ enum TestMode: String, CaseIterable, Identifiable {
     case speedSort     = "SORT"
     case rhythm        = "RHYTHM"
     case dualTrack     = "DUAL"
+    case dropArcade    = "DROP"
 
     var id: String { rawValue }
     var title: String { rawValue }
@@ -49,6 +50,7 @@ enum TestMode: String, CaseIterable, Identifiable {
         case .speedSort:     return "📊"
         case .rhythm:        return "🥁"
         case .dualTrack:     return "👀"
+        case .dropArcade:    return "🫳"
         }
     }
 
@@ -74,6 +76,7 @@ enum TestMode: String, CaseIterable, Identifiable {
         case .speedSort:     return "Sort fast"
         case .rhythm:        return "Beat timing"
         case .dualTrack:     return "Track two"
+        case .dropArcade:    return "Arcade reflex game"
         }
     }
 
@@ -119,6 +122,8 @@ enum TestMode: String, CaseIterable, Identifiable {
             return "A beat plays — tap when you feel the 4th beat will land"
         case .dualTrack:
             return "Two targets will flash. Tap both in any order"
+        case .dropArcade:
+            return "5 balls wait at the top. One drops — tap it before it lands. Speed increases. 3 lives."
         }
     }
 
@@ -137,8 +142,11 @@ enum TestMode: String, CaseIterable, Identifiable {
         case .stroop, .reverseStroop, .mirror, .math:    return 3
         case .sequence, .nBack, .peripheral, .doubleFlash: return 4
         case .digitMatch, .simon, .speedSort, .rhythm, .dualTrack: return 5
+        case .dropArcade:                                 return 0
         }
     }
+
+    var isArcade: Bool { self == .dropArcade }
 }
 
 // MARK: - Stimulus payload

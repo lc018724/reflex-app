@@ -9,21 +9,35 @@ struct ContentView: View {
             RTheme.bg.ignoresSafeArea()
 
             if let mode = activeMode {
-                TestView(engine: engine, mode: mode) {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        activeMode = nil
-                        engine.reset()
+                if mode.isArcade {
+                    DropArcadeView {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            activeMode = nil
+                        }
                     }
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .bottom).combined(with: .opacity),
+                        removal: .move(edge: .bottom).combined(with: .opacity)
+                    ))
+                } else {
+                    TestView(engine: engine, mode: mode) {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            activeMode = nil
+                            engine.reset()
+                        }
+                    }
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .bottom).combined(with: .opacity),
+                        removal: .move(edge: .bottom).combined(with: .opacity)
+                    ))
                 }
-                .transition(.asymmetric(
-                    insertion: .move(edge: .bottom).combined(with: .opacity),
-                    removal: .move(edge: .bottom).combined(with: .opacity)
-                ))
             } else {
                 HomeView { mode in
                     withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                         activeMode = mode
-                        engine.startSession(mode: mode)
+                        if !mode.isArcade {
+                            engine.startSession(mode: mode)
+                        }
                     }
                 }
                 .transition(.opacity)

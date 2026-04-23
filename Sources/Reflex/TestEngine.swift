@@ -91,7 +91,34 @@ final class TestEngine: ObservableObject {
             return
         }
 
+        // DualTrack: flash each target, then show both for tapping
+        if case .dualTrack(let positions, let phase) = data {
+            go(.stimulus(data))
+            if case .showFirst(let idx1) = phase {
+                startDualTrackSequence(positions: positions, idx1: idx1)
+            }
+            return
+        }
+
         go(.stimulus(data))
+    }
+
+    private func startDualTrackSequence(positions: [DualPos], idx1: Int) {
+        let targets = Array((0..<positions.count).shuffled().prefix(2))
+        let t0 = targets[0], t1 = targets[1]
+        delayTask = Task {
+            // Flash first target briefly
+            go(.stimulus(.dualTrack(positions: positions, phase: .showFirst(t0))))
+            try? await Task.sleep(nanoseconds: 600_000_000)
+            guard !Task.isCancelled else { return }
+            // Flash second
+            go(.stimulus(.dualTrack(positions: positions, phase: .showSecond(t1))))
+            try? await Task.sleep(nanoseconds: 600_000_000)
+            guard !Task.isCancelled else { return }
+            // Now show both for tapping - start timing here
+            stimulusTime = CACurrentMediaTime()
+            go(.stimulus(.dualTrack(positions: positions, phase: .awaitTaps(targets))))
+        }
     }
 
     private func generateStimulus(for mode: TestMode) -> StimulusData {
@@ -237,6 +264,9 @@ final class TestEngine: ObservableObject {
             }
             let targets = Array((0..<4).shuffled().prefix(2))
             return .dualTrack(positions: positions, phase: .showFirst(targets[0]))
+
+        case .dropArcade:
+            return .flash // Arcade mode bypasses TestEngine entirely; fallback just in case
         }
     }
 
