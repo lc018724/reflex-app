@@ -10,13 +10,18 @@ struct ContentView: View {
 
             if let mode = activeMode {
                 TestView(engine: engine, mode: mode) {
-                    engine.reset()
-                    activeMode = nil
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        activeMode = nil
+                        engine.reset()
+                    }
                 }
-                .transition(.opacity.combined(with: .scale(scale: 0.97)))
+                .transition(.asymmetric(
+                    insertion: .move(edge: .bottom).combined(with: .opacity),
+                    removal: .move(edge: .bottom).combined(with: .opacity)
+                ))
             } else {
                 HomeView { mode in
-                    withAnimation(.easeInOut(duration: 0.22)) {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                         activeMode = mode
                         engine.startSession(mode: mode)
                     }
@@ -24,6 +29,6 @@ struct ContentView: View {
                 .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.22), value: activeMode == nil)
+        .animation(.easeInOut(duration: 0.2), value: activeMode == nil)
     }
 }

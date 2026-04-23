@@ -4,130 +4,145 @@ struct HomeView: View {
     let onSelect: (TestMode) -> Void
 
     private let store = TestStore()
-    @State private var bestMS: Double? = nil
+    @State private var overallBest: Double? = nil
+
+    // Group modes by tier
+    private let tiers: [(String, [TestMode])] = [
+        ("SPEED",     [.flash, .fallingBall, .antiTap, .doubleFlash]),
+        ("ATTENTION", [.find, .colorTap, .oddOneOut, .peripheral]),
+        ("COGNITION", [.stroop, .reverseStroop, .mirror, .goNoGo]),
+        ("MEMORY",    [.math, .sequence, .nBack, .digitMatch]),
+        ("EXPERT",    [.simon, .speedSort, .rhythm, .dualTrack]),
+    ]
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
-                // Header
-                VStack(spacing: 8) {
-                    Text("REFLEX")
-                        .font(RTheme.serif(48, weight: .black))
-                        .foregroundStyle(RTheme.gold)
-                        .tracking(10)
 
-                    Text("measure your reaction time")
-                        .font(RTheme.mono(13))
-                        .foregroundStyle(RTheme.muted)
-                        .tracking(2)
-                }
-                .padding(.top, 64)
-                .padding(.bottom, 40)
+                // Hero
+                heroSection
 
-                // Personal best card
-                if let ms = bestMS {
-                    SurfaceCard {
-                        VStack(spacing: 6) {
-                            Text("YOUR BEST")
-                                .font(RTheme.mono(11, weight: .medium))
-                                .foregroundStyle(RTheme.muted)
-                                .tracking(3)
-
-                            HStack(alignment: .lastTextBaseline, spacing: 4) {
-                                Text(String(format: "%.0f", ms))
-                                    .font(RTheme.mono(64, weight: .bold))
-                                    .foregroundStyle(RTheme.gold)
-                                Text("ms")
-                                    .font(RTheme.mono(20))
-                                    .foregroundStyle(RTheme.muted)
-                            }
-
-                            Text(ReactionBenchmarks.label(ms: ms).uppercased())
-                                .font(RTheme.mono(11, weight: .medium))
-                                .foregroundStyle(speedColor(ms: ms))
-                                .tracking(3)
-
-                            Divider()
-                                .overlay(RTheme.faint)
-                                .padding(.vertical, 8)
-
-                            HStack(spacing: 24) {
-                                statPill(
-                                    label: "PERCENTILE",
-                                    value: "TOP \(100 - ReactionBenchmarks.percentile(ms: ms))%"
-                                )
-                                statPill(
-                                    label: "60MPH",
-                                    value: String(format: "%.1f ft", ReactionBenchmarks.drivingFeet(ms: ms))
-                                )
-                            }
-                        }
-                    }
-                    .padding(.horizontal, RTheme.pad)
-                    .padding(.bottom, 32)
-                } else {
-                    // First time: teaser card
-                    SurfaceCard {
-                        VStack(spacing: 10) {
-                            Text("?")
-                                .font(RTheme.mono(64, weight: .bold))
-                                .foregroundStyle(RTheme.goldDim)
-                            Text("Complete a test to see your baseline")
-                                .font(RTheme.mono(13))
-                                .foregroundStyle(RTheme.muted)
-                                .multilineTextAlignment(.center)
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                    .padding(.horizontal, RTheme.pad)
-                    .padding(.bottom, 32)
+                // Tier groups
+                ForEach(tiers, id: \.0) { tierName, modes in
+                    tierSection(title: tierName, modes: modes)
                 }
 
-                // Test mode cards
-                VStack(spacing: 12) {
-                    ForEach(TestMode.allCases) { mode in
-                        TestModeCard(
-                            mode: mode,
-                            best: store.bestMS(for: mode),
-                            onTap: { onSelect(mode) }
-                        )
-                    }
-                }
-                .padding(.horizontal, RTheme.pad)
-
-                // Bottom context
-                VStack(spacing: 6) {
-                    Text("Average human: 200–250ms")
-                        .font(RTheme.mono(11))
-                        .foregroundStyle(RTheme.faint)
-                    Text("F1 drivers: ~150ms  |  Impaired: 300ms+")
-                        .font(RTheme.mono(11))
-                        .foregroundStyle(RTheme.faint)
-                }
-                .padding(.top, 36)
-                .padding(.bottom, 60)
+                benchmarkFooter
+                    .padding(.top, 20)
+                    .padding(.bottom, 60)
             }
         }
         .onAppear {
-            // Show best across all modes
             let bests = TestMode.allCases.compactMap { store.bestMS(for: $0) }
-            bestMS = bests.min()
+            overallBest = bests.min()
         }
     }
 
-    private func statPill(label: String, value: String) -> some View {
-        VStack(spacing: 4) {
-            Text(label)
-                .font(RTheme.mono(9, weight: .medium))
+    // MARK: - Hero
+
+    private var heroSection: some View {
+        VStack(spacing: 10) {
+            Text("REFLEX")
+                .font(RTheme.serif(52, weight: .black))
+                .foregroundStyle(RTheme.gold)
+                .tracking(12)
+
+            Text("20 cognitive challenges")
+                .font(RTheme.mono(12))
                 .foregroundStyle(RTheme.muted)
                 .tracking(2)
-            Text(value)
-                .font(RTheme.mono(15, weight: .bold))
-                .foregroundStyle(RTheme.white)
+
+            if let ms = overallBest {
+                bestBadge(ms: ms)
+                    .padding(.top, 12)
+            } else {
+                Text("Complete a test to establish your baseline")
+                    .font(RTheme.mono(12))
+                    .foregroundStyle(RTheme.faint)
+                    .padding(.top, 12)
+            }
+        }
+        .padding(.top, 60)
+        .padding(.bottom, 32)
+        .padding(.horizontal, RTheme.pad)
+    }
+
+    private func bestBadge(ms: Double) -> some View {
+        HStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("PERSONAL BEST")
+                    .font(RTheme.mono(9, weight: .medium))
+                    .foregroundStyle(RTheme.muted)
+                    .tracking(2)
+                HStack(alignment: .lastTextBaseline, spacing: 4) {
+                    Text(String(format: "%.0f", ms))
+                        .font(RTheme.mono(36, weight: .bold))
+                        .foregroundStyle(speedColor(ms))
+                    Text("ms")
+                        .font(RTheme.mono(14))
+                        .foregroundStyle(RTheme.muted)
+                }
+            }
+            Spacer()
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(ReactionBenchmarks.label(ms: ms).uppercased())
+                    .font(RTheme.mono(10, weight: .bold))
+                    .foregroundStyle(speedColor(ms))
+                    .tracking(2)
+                Text("TOP \(100 - ReactionBenchmarks.percentile(ms: ms))%")
+                    .font(RTheme.mono(10))
+                    .foregroundStyle(RTheme.muted)
+            }
+        }
+        .padding(RTheme.padSm)
+        .background(RTheme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
+    }
+
+    // MARK: - Tier section
+
+    private func tierSection(title: String, modes: [TestMode]) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text(title)
+                    .font(RTheme.mono(10, weight: .bold))
+                    .foregroundStyle(RTheme.muted)
+                    .tracking(4)
+                Rectangle()
+                    .fill(RTheme.faint)
+                    .frame(height: 1)
+            }
+            .padding(.horizontal, RTheme.pad)
+
+            LazyVGrid(
+                columns: [GridItem(.flexible()), GridItem(.flexible())],
+                spacing: 10
+            ) {
+                ForEach(modes) { mode in
+                    ModeCard(mode: mode, best: store.bestMS(for: mode)) {
+                        onSelect(mode)
+                    }
+                }
+            }
+            .padding(.horizontal, RTheme.pad)
+        }
+        .padding(.bottom, 20)
+    }
+
+    // MARK: - Footer
+
+    private var benchmarkFooter: some View {
+        VStack(spacing: 4) {
+            Text("Average: 200-250ms  •  F1 driver: 150ms")
+                .font(RTheme.mono(10))
+                .foregroundStyle(RTheme.faint)
+            Text("Impaired driver: 300ms+  •  Elite athlete: <175ms")
+                .font(RTheme.mono(10))
+                .foregroundStyle(RTheme.faint)
         }
     }
 
-    private func speedColor(ms: Double) -> Color {
+    private func speedColor(_ ms: Double) -> Color {
         switch ms {
         case ..<200: return RTheme.green
         case 200..<270: return RTheme.gold
@@ -136,9 +151,9 @@ struct HomeView: View {
     }
 }
 
-// MARK: - TestModeCard
+// MARK: - Mode Card
 
-private struct TestModeCard: View {
+struct ModeCard: View {
     let mode: TestMode
     let best: Double?
     let onTap: () -> Void
@@ -147,60 +162,50 @@ private struct TestModeCard: View {
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 16) {
-                // Icon circle
-                ZStack {
-                    Circle()
-                        .fill(RTheme.goldDim)
-                        .frame(width: 48, height: 48)
-                    Text(modeIcon)
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text(mode.emoji)
                         .font(.system(size: 22))
-                }
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(mode.title)
-                        .font(RTheme.rounded(17, weight: .bold))
-                        .foregroundStyle(RTheme.white)
-                        .tracking(2)
-                    Text(mode.subtitle)
-                        .font(RTheme.mono(12))
-                        .foregroundStyle(RTheme.muted)
-                }
-
-                Spacer()
-
-                if let ms = best {
-                    VStack(alignment: .trailing, spacing: 2) {
+                    Spacer()
+                    if let ms = best {
                         Text(String(format: "%.0f", ms))
-                            .font(RTheme.mono(20, weight: .bold))
-                            .foregroundStyle(RTheme.gold)
-                        Text("ms")
-                            .font(RTheme.mono(10))
-                            .foregroundStyle(RTheme.muted)
+                            .font(RTheme.mono(13, weight: .bold))
+                            .foregroundStyle(msColor(ms))
+                    } else {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(RTheme.faint)
                     }
-                } else {
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(RTheme.muted)
                 }
+
+                Text(mode.title)
+                    .font(RTheme.rounded(15, weight: .bold))
+                    .foregroundStyle(RTheme.white)
+                    .tracking(1)
+
+                Text(mode.subtitle)
+                    .font(RTheme.mono(10))
+                    .foregroundStyle(RTheme.muted)
+                    .lineLimit(1)
             }
-            .padding(RTheme.pad)
+            .padding(RTheme.padSm)
             .background(RTheme.surface)
-            .clipShape(RoundedRectangle(cornerRadius: RTheme.radius))
-            .scaleEffect(pressed ? 0.97 : 1.0)
+            .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
+            .scaleEffect(pressed ? 0.96 : 1.0)
         }
         .buttonStyle(.plain)
-        .simultaneousGesture(DragGesture(minimumDistance: 0)
-            .onChanged { _ in withAnimation(.easeInOut(duration: 0.08)) { pressed = true } }
-            .onEnded   { _ in withAnimation(.easeInOut(duration: 0.15)) { pressed = false } }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in withAnimation(.easeIn(duration: 0.07)) { pressed = true } }
+                .onEnded   { _ in withAnimation(.easeOut(duration: 0.15)) { pressed = false } }
         )
     }
 
-    private var modeIcon: String {
-        switch mode {
-        case .simpleTap: return "⚡️"
-        case .choice:    return "⬅️"
-        case .suppress:  return "🚫"
+    private func msColor(_ ms: Double) -> Color {
+        switch ms {
+        case ..<200: return RTheme.green
+        case 200..<270: return RTheme.gold
+        default: return RTheme.red
         }
     }
 }

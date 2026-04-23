@@ -7,11 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A8026571B2224A779CAE8A6 /* StimulusViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8459E653497BFDFD25FBB6 /* StimulusViews.swift */; };
 		2ABB36A21ACE7617918F0268 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506BF46EA4A1EBBE2821152F /* HomeView.swift */; };
 		4C55ED990B901985A291C14A /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FB5C9185B3A8CE5E64D22B /* TestView.swift */; };
+		61736F1B45EBB24E7EDF8A5C /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA910DC9BE3EE0240DCC7CA /* Models.swift */; };
 		86F7E2EE9E8B3C7A8A388DFC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C73340D38CC6C717F3EFE6 /* ContentView.swift */; };
 		AC64987EDEADC85E30C0038D /* ReflexApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19B50FE40FAAAA58F039ED6 /* ReflexApp.swift */; };
 		CAA1D71521767F411F1AA180 /* TestStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCBE76E5BFA15569BF83E1E0 /* TestStore.swift */; };
+		D56DBCED39D908F692C26FE6 /* ReactionBenchmarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC5955442B15B6FC5629231 /* ReactionBenchmarks.swift */; };
 		E7D355A0BFB1E0B1BE7D06E5 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65010F2C4C0E1E497F6FF4B /* Theme.swift */; };
 		E8E1F6F2E9C1BB3FA18D2AE2 /* TestEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EC22A60AEA2098E42E2D29E /* TestEngine.swift */; };
 /* End PBXBuildFile section */
@@ -20,8 +23,11 @@
 		3EAE784E8E35762E81C8317F /* Reflex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Reflex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3EC22A60AEA2098E42E2D29E /* TestEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEngine.swift; sourceTree = "<group>"; };
 		506BF46EA4A1EBBE2821152F /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		5D8459E653497BFDFD25FBB6 /* StimulusViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StimulusViews.swift; sourceTree = "<group>"; };
+		5FA910DC9BE3EE0240DCC7CA /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		B19B50FE40FAAAA58F039ED6 /* ReflexApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflexApp.swift; sourceTree = "<group>"; };
 		BC8E8B6AC631BCC380336539 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		CEC5955442B15B6FC5629231 /* ReactionBenchmarks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionBenchmarks.swift; sourceTree = "<group>"; };
 		D7FB5C9185B3A8CE5E64D22B /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
 		E65010F2C4C0E1E497F6FF4B /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		F4C73340D38CC6C717F3EFE6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -51,7 +57,10 @@
 				F4C73340D38CC6C717F3EFE6 /* ContentView.swift */,
 				506BF46EA4A1EBBE2821152F /* HomeView.swift */,
 				BC8E8B6AC631BCC380336539 /* Info.plist */,
+				5FA910DC9BE3EE0240DCC7CA /* Models.swift */,
+				CEC5955442B15B6FC5629231 /* ReactionBenchmarks.swift */,
 				B19B50FE40FAAAA58F039ED6 /* ReflexApp.swift */,
+				5D8459E653497BFDFD25FBB6 /* StimulusViews.swift */,
 				3EC22A60AEA2098E42E2D29E /* TestEngine.swift */,
 				FCBE76E5BFA15569BF83E1E0 /* TestStore.swift */,
 				D7FB5C9185B3A8CE5E64D22B /* TestView.swift */,
@@ -118,7 +127,10 @@
 			files = (
 				86F7E2EE9E8B3C7A8A388DFC /* ContentView.swift in Sources */,
 				2ABB36A21ACE7617918F0268 /* HomeView.swift in Sources */,
+				61736F1B45EBB24E7EDF8A5C /* Models.swift in Sources */,
+				D56DBCED39D908F692C26FE6 /* ReactionBenchmarks.swift in Sources */,
 				AC64987EDEADC85E30C0038D /* ReflexApp.swift in Sources */,
+				1A8026571B2224A779CAE8A6 /* StimulusViews.swift in Sources */,
 				E8E1F6F2E9C1BB3FA18D2AE2 /* TestEngine.swift in Sources */,
 				CAA1D71521767F411F1AA180 /* TestStore.swift in Sources */,
 				4C55ED990B901985A291C14A /* TestView.swift in Sources */,
