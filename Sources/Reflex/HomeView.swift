@@ -10,6 +10,8 @@ struct HomeView: View {
     @State private var showRankings = false
     @State private var historyMode: TestMode? = nil
     @State private var streakMilestone: Int? = nil
+    @State private var dailyCountdown: String = ""
+    @State private var countdownTimer: Timer? = nil
 
     // Group modes by tier
     private let tiers: [(String, [TestMode])] = [
@@ -86,7 +88,10 @@ struct HomeView: View {
                 .animation(.spring(response: 0.4), value: streakMilestone)
             }
         }
-        .onAppear { loadStats() }
+        .onAppear {
+            loadStats()
+            startCountdownTimer()
+        }
         .sheet(isPresented: $showSettings, onDismiss: loadStats) {
             SettingsView { showSettings = false }
         }
@@ -96,6 +101,22 @@ struct HomeView: View {
         .sheet(item: $historyMode) { mode in
             ModeHistoryView(mode: mode) { historyMode = nil }
         }
+    }
+
+    private func startCountdownTimer() {
+        updateCountdown()
+        countdownTimer?.invalidate()
+        countdownTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+            updateCountdown()
+        }
+    }
+
+    private func updateCountdown() {
+        let cal = Calendar.current
+        guard let midnight = cal.nextDate(after: Date(), matching: DateComponents(hour: 0, minute: 0, second: 0), matchingPolicy: .nextTime) else { return }
+        let secs = Int(midnight.timeIntervalSinceNow)
+        let h = secs / 3600, m = (secs % 3600) / 60, s = secs % 60
+        dailyCountdown = String(format: "%d:%02d:%02d", h, m, s)
     }
 
     private func loadStats() {
@@ -420,6 +441,12 @@ struct HomeView: View {
                     Text(mode.subtitle)
                         .font(RTheme.mono(10))
                         .foregroundStyle(RTheme.muted)
+                    if isCompleted && !dailyCountdown.isEmpty {
+                        Text("Next: \(dailyCountdown)")
+                            .font(RTheme.mono(9))
+                            .foregroundStyle(RTheme.faint)
+                            .monospacedDigit()
+                    }
                 }
 
                 Spacer()
