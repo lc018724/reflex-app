@@ -25,6 +25,11 @@ struct HomeView: View {
                 // Hero
                 heroSection
 
+                // Daily challenge
+                dailyChallengeCard
+                    .padding(.horizontal, RTheme.pad)
+                    .padding(.bottom, 24)
+
                 // Tier groups
                 ForEach(tiers, id: \.0) { tierName, modes in
                     tierSection(title: tierName, modes: modes)
@@ -135,6 +140,97 @@ struct HomeView: View {
         .padding(RTheme.padSm)
         .background(RTheme.surface)
         .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
+    }
+
+    // MARK: - Daily Challenge
+
+    private var dailyMode: TestMode {
+        // Seeded by day-of-year so it's deterministic per day
+        let allModes = TestMode.allCases.filter { !$0.isArcade }
+        let calendar = Calendar.current
+        let dayOfYear = calendar.ordinality(of: .day, in: .year, for: Date()) ?? 1
+        return allModes[dayOfYear % allModes.count]
+    }
+
+    private var dailyChallengeCard: some View {
+        let mode = dailyMode
+        let best = store.bestMS(for: mode)
+        let isCompleted = best != nil
+
+        return Button {
+            onSelect(mode)
+        } label: {
+            HStack(spacing: 16) {
+                ZStack {
+                    Circle()
+                        .fill(RTheme.gold.opacity(isCompleted ? 0.15 : 0.1))
+                        .frame(width: 52, height: 52)
+                    if isCompleted {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 26))
+                            .foregroundStyle(RTheme.gold)
+                    } else {
+                        Text(mode.emoji)
+                            .font(.system(size: 26))
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 6) {
+                        Text("DAILY CHALLENGE")
+                            .font(RTheme.mono(9, weight: .bold))
+                            .foregroundStyle(RTheme.gold.opacity(0.85))
+                            .tracking(2)
+                        if isCompleted {
+                            Text("DONE")
+                                .font(RTheme.mono(8, weight: .bold))
+                                .foregroundStyle(RTheme.bg)
+                                .padding(.horizontal, 5)
+                                .padding(.vertical, 2)
+                                .background(RTheme.green)
+                                .clipShape(Capsule())
+                        }
+                    }
+                    Text(mode.title)
+                        .font(RTheme.rounded(17, weight: .bold))
+                        .foregroundStyle(RTheme.white)
+                    Text(mode.subtitle)
+                        .font(RTheme.mono(10))
+                        .foregroundStyle(RTheme.muted)
+                }
+
+                Spacer()
+
+                if let ms = best {
+                    VStack(spacing: 2) {
+                        Text(String(format: "%.0f", ms))
+                            .font(RTheme.mono(20, weight: .bold))
+                            .foregroundStyle(speedColor(ms))
+                        Text("ms")
+                            .font(RTheme.mono(9))
+                            .foregroundStyle(RTheme.faint)
+                    }
+                } else {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(RTheme.gold.opacity(0.7))
+                }
+            }
+            .padding(RTheme.padSm)
+            .background(
+                LinearGradient(
+                    colors: [RTheme.surface, RTheme.gold.opacity(0.07)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .clipShape(RoundedRectangle(cornerRadius: RTheme.radius))
+            .overlay(
+                RoundedRectangle(cornerRadius: RTheme.radius)
+                    .stroke(RTheme.gold.opacity(0.3), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Tier section
