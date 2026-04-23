@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import AudioToolbox
 
 // MARK: - Whack Arcade
 // Targets pop up at random positions. Tap each one before it fades.
@@ -10,6 +11,8 @@ struct WhackArcadeView: View {
 
     @StateObject private var game = WhackGame()
     @State private var showGameOver = false
+    @State private var shakeOffset: CGFloat = 0
+    @State private var prevLives: Int = 3
 
     var body: some View {
         ZStack {
@@ -25,7 +28,14 @@ struct WhackArcadeView: View {
                     whackField
                         .layoutPriority(1)
                 }
+                .offset(x: shakeOffset)
             }
+        }
+        .onChange(of: game.lives) { _, newLives in
+            if newLives < prevLives {
+                shakeScreen()
+            }
+            prevLives = newLives
         }
         .onChange(of: game.isGameOver) { _, over in
             if over {
@@ -36,6 +46,17 @@ struct WhackArcadeView: View {
         }
         .onAppear { game.start() }
         .onDisappear { game.stop() }
+    }
+
+    private func shakeScreen() {
+        let shakes: [CGFloat] = [-10, 10, -8, 8, -4, 4, 0]
+        var delay = 0.0
+        for val in shakes {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                withAnimation(.easeInOut(duration: 0.05)) { shakeOffset = val }
+            }
+            delay += 0.055
+        }
     }
 
     // MARK: - Top bar
@@ -434,6 +455,7 @@ final class WhackGame: ObservableObject {
         }
 
         impactLight.impactOccurred()
+        AudioServicesPlaySystemSound(1104) // tap sound
         combo += 1
         let points = combo >= 5 ? 2 : 1
         score += points
@@ -454,6 +476,7 @@ final class WhackGame: ObservableObject {
 
     private func handleMiss() {
         impactHeavy.impactOccurred()
+        AudioServicesPlaySystemSound(1107) // miss sound
         combo = 0  // reset combo on miss
         lives -= 1
         if lives <= 0 {

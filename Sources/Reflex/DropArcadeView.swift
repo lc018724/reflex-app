@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import AudioToolbox
 
 // MARK: - Drop Arcade Game
 // 5 balls sit at top. One drops randomly. Tap it before it lands.
@@ -10,6 +11,8 @@ struct DropArcadeView: View {
 
     @StateObject private var game = DropArcadeGame()
     @State private var showGameOver = false
+    @State private var shakeOffset: CGFloat = 0
+    @State private var prevLives: Int = 3
 
     var body: some View {
         ZStack {
@@ -26,7 +29,14 @@ struct DropArcadeView: View {
                     ballField
                     Spacer(minLength: 60)
                 }
+                .offset(x: shakeOffset)
             }
+        }
+        .onChange(of: game.lives) { _, newLives in
+            if newLives < prevLives {
+                shakeScreen()
+            }
+            prevLives = newLives
         }
         .onChange(of: game.isGameOver) { _, over in
             if over {
@@ -39,6 +49,17 @@ struct DropArcadeView: View {
     }
 
     // MARK: - Top bar
+
+    private func shakeScreen() {
+        let shakes: [CGFloat] = [-10, 10, -8, 8, -4, 4, 0]
+        var delay = 0.0
+        for val in shakes {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                withAnimation(.easeInOut(duration: 0.05)) { shakeOffset = val }
+            }
+            delay += 0.055
+        }
+    }
 
     private var topBar: some View {
         HStack {
@@ -427,6 +448,7 @@ final class DropArcadeGame: ObservableObject {
         fallTask?.cancel()
 
         impactLight.impactOccurred()
+        AudioServicesPlaySystemSound(1104) // click tap sound
 
         let tappedIdx = index
         fallingIndex = -1
@@ -464,6 +486,7 @@ final class DropArcadeGame: ObservableObject {
 
     private func handleMiss(index: Int) {
         impactHeavy.impactOccurred()
+        AudioServicesPlaySystemSound(1107) // error sound
 
         fallingIndex = -1
         combo = 0
