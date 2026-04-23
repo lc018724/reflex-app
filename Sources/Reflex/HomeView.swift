@@ -6,6 +6,7 @@ struct HomeView: View {
     private let store = TestStore()
     @State private var overallBest: Double? = nil
     @State private var completedCount: Int = 0
+    @State private var showSettings = false
 
     // Group modes by tier
     private let tiers: [(String, [TestMode])] = [
@@ -50,6 +51,9 @@ struct HomeView: View {
             }
         }
         .onAppear { loadStats() }
+        .sheet(isPresented: $showSettings, onDismiss: loadStats) {
+            SettingsView { showSettings = false }
+        }
     }
 
     private func loadStats() {
@@ -62,6 +66,23 @@ struct HomeView: View {
 
     private var heroSection: some View {
         VStack(spacing: 0) {
+            // Top row: spacer + gear
+            HStack {
+                Spacer()
+                Button {
+                    showSettings = true
+                } label: {
+                    Image(systemName: "gearshape.fill")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(RTheme.muted)
+                        .frame(width: 36, height: 36)
+                        .background(RTheme.surface)
+                        .clipShape(Circle())
+                }
+            }
+            .padding(.horizontal, RTheme.pad)
+            .padding(.top, 56)
+
             // Title lockup
             VStack(spacing: 6) {
                 Text("REFLEX")
@@ -74,7 +95,7 @@ struct HomeView: View {
                     .foregroundStyle(RTheme.muted)
                     .tracking(5)
             }
-            .padding(.top, 56)
+            .padding(.top, 8)
 
             // Stats row
             HStack(spacing: 0) {

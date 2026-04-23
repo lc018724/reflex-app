@@ -88,4 +88,20 @@ final class TestStore {
         f.dateFormat = "yyyy-MM-dd"
         return f.string(from: date)
     }
+
+    // MARK: - Reset
+
+    func resetAll() {
+        // Clear all mode bests + history
+        let allModes = TestMode.allCases
+        for mode in allModes {
+            defaults.removeObject(forKey: "best_\(mode.rawValue)")
+            defaults.removeObject(forKey: "history_\(mode.rawValue)")
+        }
+        defaults.removeObject(forKey: "totalSessions")
+        defaults.removeObject(forKey: "streak")
+        defaults.removeObject(forKey: "lastSessionDay")
+        defaults.removeObject(forKey: "dropArcade_highScore")
+        defaults.removeObject(forKey: "whackArcade_highScore")
+    }
 }

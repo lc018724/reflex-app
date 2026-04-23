@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0DDEF8E85F15B66778229829 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C5B36563909BA528B229BB /* SettingsView.swift */; };
 		1A8026571B2224A779CAE8A6 /* StimulusViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8459E653497BFDFD25FBB6 /* StimulusViews.swift */; };
 		2ABB36A21ACE7617918F0268 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506BF46EA4A1EBBE2821152F /* HomeView.swift */; };
 		4C55ED990B901985A291C14A /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FB5C9185B3A8CE5E64D22B /* TestView.swift */; };
@@ -30,6 +31,7 @@
 		506BF46EA4A1EBBE2821152F /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		5D8459E653497BFDFD25FBB6 /* StimulusViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StimulusViews.swift; sourceTree = "<group>"; };
 		5FA910DC9BE3EE0240DCC7CA /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		A1C5B36563909BA528B229BB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B19B50FE40FAAAA58F039ED6 /* ReflexApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflexApp.swift; sourceTree = "<group>"; };
 		BC8E8B6AC631BCC380336539 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CEC5955442B15B6FC5629231 /* ReactionBenchmarks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionBenchmarks.swift; sourceTree = "<group>"; };
@@ -68,6 +70,7 @@
 				F5D9A4050392FC3654AA94DD /* OnboardingView.swift */,
 				CEC5955442B15B6FC5629231 /* ReactionBenchmarks.swift */,
 				B19B50FE40FAAAA58F039ED6 /* ReflexApp.swift */,
+				A1C5B36563909BA528B229BB /* SettingsView.swift */,
 				5D8459E653497BFDFD25FBB6 /* StimulusViews.swift */,
 				3EC22A60AEA2098E42E2D29E /* TestEngine.swift */,
 				FCBE76E5BFA15569BF83E1E0 /* TestStore.swift */,
@@ -141,6 +144,7 @@
 				8ED785712FA7B52B359AEC00 /* OnboardingView.swift in Sources */,
 				D56DBCED39D908F692C26FE6 /* ReactionBenchmarks.swift in Sources */,
 				AC64987EDEADC85E30C0038D /* ReflexApp.swift in Sources */,
+				0DDEF8E85F15B66778229829 /* SettingsView.swift in Sources */,
 				1A8026571B2224A779CAE8A6 /* StimulusViews.swift in Sources */,
 				E8E1F6F2E9C1BB3FA18D2AE2 /* TestEngine.swift in Sources */,
 				CAA1D71521767F411F1AA180 /* TestStore.swift in Sources */,
