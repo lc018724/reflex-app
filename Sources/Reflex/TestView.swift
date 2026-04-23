@@ -563,6 +563,52 @@ struct SessionSummaryView: View {
                     }
                 }
 
+                // Speed class breakdown
+                if validResults.count > 0 {
+                    SurfaceCard {
+                        VStack(spacing: 10) {
+                            Text("SPEED BREAKDOWN")
+                                .font(RTheme.mono(9, weight: .medium))
+                                .foregroundStyle(RTheme.muted)
+                                .tracking(3)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                            let buckets: [(String, ClosedRange<Double>, Color)] = [
+                                ("ELITE", 0...199, RTheme.green),
+                                ("FAST", 200...269, RTheme.gold),
+                                ("AVERAGE", 270...349, RTheme.muted),
+                                ("SLOW", 350...9999, RTheme.red),
+                            ]
+                            ForEach(buckets, id: \.0) { label, range, color in
+                                let count = validResults.filter { range.contains($0) }.count
+                                if count > 0 {
+                                    HStack(spacing: 10) {
+                                        Text(label)
+                                            .font(RTheme.mono(9, weight: .bold))
+                                            .foregroundStyle(color)
+                                            .tracking(2)
+                                            .frame(width: 60, alignment: .leading)
+                                        GeometryReader { geo in
+                                            ZStack(alignment: .leading) {
+                                                RoundedRectangle(cornerRadius: 3)
+                                                    .stroke(color.opacity(0.3), lineWidth: 1)
+                                                RoundedRectangle(cornerRadius: 3)
+                                                    .fill(color.opacity(0.3))
+                                                    .frame(width: geo.size.width * CGFloat(count) / CGFloat(validResults.count))
+                                            }
+                                        }
+                                        .frame(height: 14)
+                                        Text("\(count)")
+                                            .font(RTheme.mono(11, weight: .bold))
+                                            .foregroundStyle(color)
+                                            .frame(width: 16)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 // Context
                 if avg > 0 {
                     Text("At 60mph you travel \(String(format: "%.1f", feet)) feet before your foot hits the brake.")
