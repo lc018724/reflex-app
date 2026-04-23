@@ -9,6 +9,7 @@ struct HomeView: View {
     @State private var showSettings = false
     @State private var showRankings = false
     @State private var historyMode: TestMode? = nil
+    @State private var streakMilestone: Int? = nil
 
     // Group modes by tier
     private let tiers: [(String, [TestMode])] = [
@@ -22,34 +23,67 @@ struct HomeView: View {
     private let arcadeModes: [TestMode] = [.dropArcade, .whackArcade, .chainArcade, .gridArcade]
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(spacing: 0) {
+        ZStack {
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 0) {
 
-                // Hero
-                heroSection
+                    // Hero
+                    heroSection
 
-                // Daily challenge
-                dailyChallengeCard
-                    .padding(.horizontal, RTheme.pad)
-                    .padding(.bottom, 24)
-
-                // Insights (if enough data)
-                if completedCount >= 4 {
-                    insightsSection
+                    // Daily challenge
+                    dailyChallengeCard
+                        .padding(.horizontal, RTheme.pad)
                         .padding(.bottom, 24)
+
+                    // Insights (if enough data)
+                    if completedCount >= 4 {
+                        insightsSection
+                            .padding(.bottom, 24)
+                    }
+
+                    // Tier groups
+                    ForEach(tiers, id: \.0) { tierName, modes in
+                        tierSection(title: tierName, modes: modes)
+                    }
+
+                    // Arcade section
+                    arcadeSection
+
+                    benchmarkFooter
+                        .padding(.top, 20)
+                        .padding(.bottom, 60)
                 }
+            }
 
-                // Tier groups
-                ForEach(tiers, id: \.0) { tierName, modes in
-                    tierSection(title: tierName, modes: modes)
+            // Streak milestone toast
+            if let ms = streakMilestone {
+                VStack {
+                    Spacer()
+                    HStack(spacing: 10) {
+                        Text("🔥")
+                            .font(.system(size: 24))
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\(ms)-DAY STREAK!")
+                                .font(RTheme.mono(12, weight: .black))
+                                .foregroundStyle(RTheme.gold)
+                                .tracking(2)
+                            Text("Keep it going!")
+                                .font(RTheme.mono(10))
+                                .foregroundStyle(RTheme.muted)
+                        }
+                        Spacer()
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 14)
+                    .background(RTheme.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: RTheme.radius))
+                    .overlay(RoundedRectangle(cornerRadius: RTheme.radius).stroke(RTheme.gold.opacity(0.4), lineWidth: 1))
+                    .shadow(color: RTheme.gold.opacity(0.2), radius: 12)
+                    .padding(.horizontal, RTheme.pad)
+                    .padding(.bottom, 32)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
-
-                // Arcade section
-                arcadeSection
-
-                benchmarkFooter
-                    .padding(.top, 20)
-                    .padding(.bottom, 60)
+                .animation(.spring(response: 0.4), value: streakMilestone)
             }
         }
         .onAppear { loadStats() }
@@ -68,6 +102,20 @@ struct HomeView: View {
         let bests = TestMode.allCases.compactMap { store.bestMS(for: $0) }
         overallBest = bests.min()
         completedCount = bests.count
+
+        // Check for streak milestone
+        let streak = store.streak
+        let milestones = [3, 7, 14, 30, 60, 100]
+        if milestones.contains(streak) {
+            let shownKey = "shownStreak_\(streak)"
+            if !UserDefaults.standard.bool(forKey: shownKey) {
+                UserDefaults.standard.set(true, forKey: shownKey)
+                withAnimation { streakMilestone = streak }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    withAnimation { streakMilestone = nil }
+                }
+            }
+        }
     }
 
     // MARK: - Hero
