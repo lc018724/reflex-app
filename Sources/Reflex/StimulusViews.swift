@@ -447,31 +447,45 @@ struct GoNoGoView: View {
     let onTap: () -> Void
 
     @State private var scale: CGFloat = 0.5
+    @State private var pulse: Bool = false
 
     var body: some View {
         VStack(spacing: 24) {
             ZStack {
+                // Pulsing ring for GO
+                if isGo {
+                    Circle()
+                        .stroke(RTheme.gold.opacity(0.3), lineWidth: 3)
+                        .frame(width: pulse ? 240 : 200, height: pulse ? 240 : 200)
+                        .opacity(pulse ? 0 : 0.6)
+                        .animation(.easeOut(duration: 0.7).repeatForever(autoreverses: false), value: pulse)
+                }
+
                 Circle()
-                    .fill(isGo ? RTheme.gold : RTheme.red.opacity(0.15))
+                    .fill(isGo ? RTheme.gold : RTheme.red.opacity(0.9))
                     .frame(width: 180, height: 180)
-                    .shadow(color: (isGo ? RTheme.gold : RTheme.red).opacity(0.5), radius: 30)
+                    .shadow(color: (isGo ? RTheme.gold : RTheme.red).opacity(0.6), radius: 30)
 
                 if isGo {
-                    Circle().fill(RTheme.gold).frame(width: 100, height: 100)
+                    Circle().fill(Color.white.opacity(0.15)).frame(width: 80, height: 80)
+                    Image(systemName: "hand.tap.fill")
+                        .font(.system(size: 64, weight: .bold))
+                        .foregroundStyle(RTheme.bg)
                 } else {
                     Image(systemName: "xmark")
                         .font(.system(size: 72, weight: .black))
-                        .foregroundStyle(RTheme.red)
+                        .foregroundStyle(.white)
                 }
             }
             .scaleEffect(scale)
             .onTapGesture { if isGo { onTap() } else { onTap() } }
             .onAppear {
                 withAnimation(.spring(response: 0.25, dampingFraction: 0.55)) { scale = 1.0 }
+                if isGo { pulse = true }
             }
 
             Text(isGo ? "TAP NOW" : "DON'T TAP")
-                .font(RTheme.mono(14, weight: .bold))
+                .font(RTheme.rounded(16, weight: .bold))
                 .foregroundStyle(isGo ? RTheme.gold : RTheme.red)
                 .tracking(4)
         }

@@ -107,10 +107,26 @@ struct TestView: View {
     // MARK: - Phase views
 
     private func countdownView(_ n: Int) -> some View {
-        Text(n == 0 ? "..." : "\(n)")
-            .font(RTheme.mono(88, weight: .bold))
-            .foregroundStyle(n == 0 ? RTheme.muted : RTheme.white)
-            .contentTransition(.numericText())
+        ZStack {
+            // Countdown ring
+            Circle()
+                .stroke(RTheme.faint, lineWidth: 3)
+                .frame(width: 120, height: 120)
+
+            Circle()
+                .trim(from: 0, to: n == 0 ? 0 : CGFloat(n) / 3.0)
+                .stroke(n == 0 ? RTheme.muted : RTheme.gold, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+                .frame(width: 120, height: 120)
+                .animation(.easeOut(duration: 0.25), value: n)
+
+            Text(n == 0 ? "GO" : "\(n)")
+                .font(n == 0
+                      ? RTheme.rounded(28, weight: .black)
+                      : RTheme.mono(72, weight: .bold))
+                .foregroundStyle(n == 0 ? RTheme.gold : RTheme.white)
+                .contentTransition(.numericText())
+        }
     }
 
     private var waitingView: some View {
@@ -127,11 +143,15 @@ struct TestView: View {
 
     private var tooSoonView: some View {
         VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 44, weight: .bold))
+                .foregroundStyle(RTheme.red)
             Text("TOO SOON")
                 .font(RTheme.mono(44, weight: .bold))
                 .foregroundStyle(RTheme.red)
+                .tracking(4)
             Text("Wait for the signal")
-                .font(RTheme.mono(14))
+                .font(RTheme.mono(13))
                 .foregroundStyle(RTheme.muted)
         }
     }
