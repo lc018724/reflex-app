@@ -20,7 +20,7 @@ struct HomeView: View {
         ("EXPERT",    [.simon, .speedSort, .rhythm, .dualTrack]),
     ]
 
-    private let arcadeModes: [TestMode] = [.dropArcade, .whackArcade, .chainArcade, .gridArcade]
+    private let arcadeModes: [TestMode] = [.dropArcade, .whackArcade, .chainArcade, .gridArcade, .avoidArcade]
 
     var body: some View {
         ZStack {
@@ -683,6 +683,8 @@ struct ArcadeCard: View {
     @State private var animBall: CGFloat = 0
     @State private var animTargets: [CGFloat] = [0, 0, 0]
     @State private var gridActiveCell: Int = -1
+    @State private var avoidBallOffset: CGPoint = .zero
+    @State private var avoidRingScale: CGFloat = 0
 
     var body: some View {
         Button(action: onTap) {
@@ -758,6 +760,8 @@ struct ArcadeCard: View {
                 startChainPreviewAnimation()
             } else if mode == .gridArcade {
                 startGridPreviewAnimation()
+            } else if mode == .avoidArcade {
+                startAvoidPreviewAnimation()
             }
         }
     }
@@ -778,6 +782,8 @@ struct ArcadeCard: View {
                 chainPreview
             } else if mode == .gridArcade {
                 gridPreview
+            } else if mode == .avoidArcade {
+                avoidPreview
             }
         }
     }
@@ -922,5 +928,52 @@ struct ArcadeCard: View {
             }
         }
         flash()
+    }
+
+    private var avoidPreview: some View {
+        GeometryReader { geo in
+            ZStack {
+                // Danger ball (red)
+                Circle()
+                    .fill(RTheme.red.opacity(0.85))
+                    .frame(width: 14, height: 14)
+                    .shadow(color: RTheme.red.opacity(0.6), radius: 4)
+                    .position(
+                        x: geo.size.width / 2 + avoidBallOffset.x,
+                        y: geo.size.height / 2 + avoidBallOffset.y
+                    )
+                // Ring target (gold)
+                ZStack {
+                    Circle()
+                        .stroke(RTheme.gold.opacity(0.4), lineWidth: 2)
+                        .frame(width: 22, height: 22)
+                    Circle()
+                        .fill(RTheme.gold.opacity(0.1))
+                        .frame(width: 18, height: 18)
+                    Image(systemName: "plus")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundStyle(RTheme.gold)
+                }
+                .scaleEffect(avoidRingScale)
+                .opacity(avoidRingScale)
+                .position(x: geo.size.width * 0.7, y: geo.size.height * 0.3)
+            }
+        }
+    }
+
+    private func startAvoidPreviewAnimation() {
+        // Animate the danger ball bouncing
+        withAnimation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true)) {
+            avoidBallOffset = CGPoint(x: 18, y: -15)
+        }
+        // Ring pops in and out
+        func ringCycle() {
+            withAnimation(.spring(response: 0.2)) { avoidRingScale = 1.0 }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                withAnimation(.easeIn(duration: 0.2)) { avoidRingScale = 0 }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { ringCycle() }
+            }
+        }
+        ringCycle()
     }
 }

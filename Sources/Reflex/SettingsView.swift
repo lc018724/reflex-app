@@ -92,7 +92,7 @@ struct SettingsView: View {
                         settingsSection("ABOUT") {
                             settingsInfoRow("Version", "1.0")
                             Divider().overlay(RTheme.faint)
-                            settingsInfoRow("Tests", "21 cognitive + 4 arcade")
+                            settingsInfoRow("Tests", "21 cognitive + 5 arcade")
                             Divider().overlay(RTheme.faint)
                             settingsInfoRow("Data stored", "On device only")
                         }
@@ -215,7 +215,8 @@ struct SettingsView: View {
             (.dropArcade, "dropArcade_highScore"),
             (.whackArcade, "whackArcade_highScore"),
             (.chainArcade, "chainArcade_highScore"),
-            (.gridArcade, "gridArcade_highScore")
+            (.gridArcade, "gridArcade_highScore"),
+            (.avoidArcade, "avoidArcade_highScore")
         ]
         return VStack(spacing: 0) {
             ForEach(Array(arcadeModes.enumerated()), id: \.0) { i, item in

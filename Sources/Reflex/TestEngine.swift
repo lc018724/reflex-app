@@ -265,7 +265,7 @@ final class TestEngine: ObservableObject {
             let targets = Array((0..<4).shuffled().prefix(2))
             return .dualTrack(positions: positions, phase: .showFirst(targets[0]))
 
-        case .dropArcade, .whackArcade, .chainArcade, .gridArcade:
+        case .dropArcade, .whackArcade, .chainArcade, .gridArcade, .avoidArcade:
             return .flash // Arcade modes bypass TestEngine entirely; fallback just in case
         }
     }
