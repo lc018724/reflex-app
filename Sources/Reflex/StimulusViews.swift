@@ -52,8 +52,8 @@ struct StimulusRouter: View {
             MathView(equation: equation, choices: choices) { i in
                 engine.handleTap(data: .index(i))
             }
-        case .sequence(let steps, let isPlayback, _):
-            SequencePlaybackView(steps: steps, isPlayback: isPlayback)
+        case .sequence(let steps, let isPlayback, _, let activeStep):
+            SequencePlaybackView(steps: steps, isPlayback: isPlayback, activeStep: activeStep)
         case .nBack(let symbol, _):
             NBackView(symbol: symbol) {
                 engine.handleTap()
@@ -568,6 +568,7 @@ struct MathView: View {
 struct SequencePlaybackView: View {
     let steps: [Int]
     let isPlayback: Bool
+    let activeStep: Int?
 
     private let labels = ["1","2","3","4"]
     private let colors: [Color] = [RTheme.gold, RTheme.green, RTheme.red,
@@ -582,14 +583,18 @@ struct SequencePlaybackView: View {
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                 ForEach(0..<4, id: \.self) { i in
+                    let isActive = activeStep == i
                     RoundedRectangle(cornerRadius: RTheme.radiusSm)
-                        .fill(colors[i])
+                        .fill(isActive ? colors[i] : colors[i].opacity(0.2))
                         .frame(height: 110)
                         .overlay(
                             Text(labels[i])
                                 .font(RTheme.mono(32, weight: .bold))
-                                .foregroundStyle(RTheme.bg)
+                                .foregroundStyle(isActive ? RTheme.bg : colors[i].opacity(0.6))
                         )
+                        .shadow(color: isActive ? colors[i].opacity(0.7) : .clear, radius: isActive ? 20 : 0)
+                        .scaleEffect(isActive ? 1.04 : 1.0)
+                        .animation(.easeOut(duration: 0.12), value: isActive)
                 }
             }
             .padding(.horizontal, 28)

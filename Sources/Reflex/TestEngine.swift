@@ -84,7 +84,7 @@ final class TestEngine: ObservableObject {
         stimulusTime = CACurrentMediaTime()
 
         // Sequence uses a special flow
-        if case .sequence(let steps, _, _) = data {
+        if case .sequence(let steps, _, _, _) = data {
             currentSequence = steps
             go(.stimulus(data))
             startSequencePlayback(steps: steps)
@@ -199,7 +199,7 @@ final class TestEngine: ObservableObject {
 
         case .sequence:
             let steps = (0..<4).map { _ in Int.random(in: 0..<4) }
-            return .sequence(steps: steps, isPlayback: true, inputSoFar: [])
+            return .sequence(steps: steps, isPlayback: true, inputSoFar: [], activeStep: nil)
 
         case .nBack:
             let symbols = ["A","B","C","D","E","F","G","H"]
@@ -275,12 +275,16 @@ final class TestEngine: ObservableObject {
     private func startSequencePlayback(steps: [Int]) {
         stimulusTime = CACurrentMediaTime()
         delayTask = Task {
-            try? await Task.sleep(nanoseconds: 800_000_000)
+            try? await Task.sleep(nanoseconds: 600_000_000)
             for (i, step) in steps.enumerated() {
                 guard !Task.isCancelled else { return }
-                go(.stimulus(.sequence(steps: steps, isPlayback: true, inputSoFar: [])))
-                // Highlight each step
-                try? await Task.sleep(nanoseconds: 500_000_000)
+                // Light up the active step
+                go(.stimulus(.sequence(steps: steps, isPlayback: true, inputSoFar: [], activeStep: step)))
+                try? await Task.sleep(nanoseconds: 550_000_000)
+                guard !Task.isCancelled else { return }
+                // Brief dark gap between steps
+                go(.stimulus(.sequence(steps: steps, isPlayback: true, inputSoFar: [], activeStep: nil)))
+                try? await Task.sleep(nanoseconds: 150_000_000)
                 guard !Task.isCancelled else { return }
             }
             // Switch to input phase

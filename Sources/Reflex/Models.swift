@@ -170,7 +170,7 @@ enum StimulusData {
     case math(equation: String, choices: [Int], correctIndex: Int)
 
     // Tier 4
-    case sequence(steps: [Int], isPlayback: Bool, inputSoFar: [Int])
+    case sequence(steps: [Int], isPlayback: Bool, inputSoFar: [Int], activeStep: Int?)
     case nBack(symbol: String, shouldTap: Bool)
     case peripheral(normX: CGFloat, normY: CGFloat)
     case doubleFlash(flashCount: Int)
