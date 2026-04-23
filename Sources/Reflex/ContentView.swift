@@ -36,6 +36,12 @@ struct ContentView: View {
                             insertion: .move(edge: .bottom).combined(with: .opacity),
                             removal: .move(edge: .bottom).combined(with: .opacity)
                         ))
+                } else if mode == .gridArcade {
+                    GridArcadeView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .bottom).combined(with: .opacity),
+                            removal: .move(edge: .bottom).combined(with: .opacity)
+                        ))
                 } else {
                     TestView(engine: engine, mode: mode) {
                         withAnimation(.easeInOut(duration: 0.2)) {

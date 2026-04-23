@@ -19,7 +19,7 @@ struct HomeView: View {
         ("EXPERT",    [.simon, .speedSort, .rhythm, .dualTrack]),
     ]
 
-    private let arcadeModes: [TestMode] = [.dropArcade, .whackArcade, .chainArcade]
+    private let arcadeModes: [TestMode] = [.dropArcade, .whackArcade, .chainArcade, .gridArcade]
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -611,6 +611,7 @@ struct ArcadeCard: View {
     @State private var pressed = false
     @State private var animBall: CGFloat = 0
     @State private var animTargets: [CGFloat] = [0, 0, 0]
+    @State private var gridActiveCell: Int = -1
 
     var body: some View {
         Button(action: onTap) {
@@ -684,6 +685,8 @@ struct ArcadeCard: View {
                 startWhackPreviewAnimation()
             } else if mode == .chainArcade {
                 startChainPreviewAnimation()
+            } else if mode == .gridArcade {
+                startGridPreviewAnimation()
             }
         }
     }
@@ -702,6 +705,8 @@ struct ArcadeCard: View {
                 whackPreview
             } else if mode == .chainArcade {
                 chainPreview
+            } else if mode == .gridArcade {
+                gridPreview
             }
         }
     }
@@ -788,6 +793,35 @@ struct ArcadeCard: View {
         }
     }
 
+    private var gridPreview: some View {
+        GeometryReader { geo in
+            let cellSize: CGFloat = 13
+            let gap: CGFloat = 4
+            let gridSize = cellSize * 4 + gap * 3
+            let hOff = (geo.size.width - gridSize) / 2
+            let vOff = (geo.size.height - gridSize) / 2
+
+            ForEach(0..<16, id: \.self) { i in
+                let row = i / 4
+                let col = i % 4
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(i == gridActiveCell ? RTheme.gold : RTheme.surface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 3)
+                            .stroke(i == gridActiveCell ? RTheme.gold : RTheme.faint.opacity(0.4), lineWidth: 1)
+                    )
+                    .shadow(color: i == gridActiveCell ? RTheme.gold.opacity(0.7) : .clear, radius: 5)
+                    .frame(width: cellSize, height: cellSize)
+                    .scaleEffect(i == gridActiveCell ? 1.15 : 1.0)
+                    .animation(.spring(response: 0.2), value: gridActiveCell)
+                    .position(
+                        x: hOff + cellSize / 2 + CGFloat(col) * (cellSize + gap),
+                        y: vOff + cellSize / 2 + CGFloat(row) * (cellSize + gap)
+                    )
+            }
+        }
+    }
+
     private func startChainPreviewAnimation() {
         let delays = [0.0, 0.3, 0.6]
         for i in 0..<3 {
@@ -805,5 +839,17 @@ struct ArcadeCard: View {
                 startChainPreviewAnimation()
             }
         }
+    }
+
+    private func startGridPreviewAnimation() {
+        func flash() {
+            let next = Int.random(in: 0..<16)
+            withAnimation(.easeIn(duration: 0.1)) { gridActiveCell = next }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                withAnimation(.easeOut(duration: 0.1)) { gridActiveCell = -1 }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { flash() }
+            }
+        }
+        flash()
     }
 }

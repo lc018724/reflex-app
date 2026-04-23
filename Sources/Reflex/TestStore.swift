@@ -104,5 +104,6 @@ final class TestStore {
         defaults.removeObject(forKey: "dropArcade_highScore")
         defaults.removeObject(forKey: "whackArcade_highScore")
         defaults.removeObject(forKey: "chainArcade_highScore")
+        defaults.removeObject(forKey: "gridArcade_highScore")
     }
 }

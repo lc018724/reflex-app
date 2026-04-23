@@ -26,6 +26,7 @@ enum TestMode: String, CaseIterable, Identifiable {
     case dropArcade    = "DROP"
     case whackArcade   = "WHACK"
     case chainArcade   = "CHAIN"
+    case gridArcade    = "GRID"
 
     var id: String { rawValue }
     var title: String { rawValue }
@@ -55,6 +56,7 @@ enum TestMode: String, CaseIterable, Identifiable {
         case .dropArcade:    return "🫳"
         case .whackArcade:   return "🔨"
         case .chainArcade:   return "⛓️"
+        case .gridArcade:    return "🟦"
         }
     }
 
@@ -83,6 +85,7 @@ enum TestMode: String, CaseIterable, Identifiable {
         case .dropArcade:    return "Arcade reflex game"
         case .whackArcade:   return "Tap targets fast"
         case .chainArcade:   return "Tap in sequence"
+        case .gridArcade:    return "Tap the lit cell"
         }
     }
 
@@ -134,6 +137,8 @@ enum TestMode: String, CaseIterable, Identifiable {
             return "Targets pop up around the screen. Tap each one before it disappears. Don't miss or you lose a life."
         case .chainArcade:
             return "Numbered targets appear. Tap them in order — 1, 2, 3... as fast as you can. Wrong tap = life lost."
+        case .gridArcade:
+            return "A 4x4 grid. Cells light up at random — tap each lit cell before it fades. Multiple cells at higher levels."
         }
     }
 
@@ -155,10 +160,11 @@ enum TestMode: String, CaseIterable, Identifiable {
         case .dropArcade:                                 return 0
         case .whackArcade:                                return 0
         case .chainArcade:                                return 0
+        case .gridArcade:                                 return 0
         }
     }
 
-    var isArcade: Bool { self == .dropArcade || self == .whackArcade || self == .chainArcade }
+    var isArcade: Bool { self == .dropArcade || self == .whackArcade || self == .chainArcade || self == .gridArcade }
 }
 
 // MARK: - Stimulus payload
