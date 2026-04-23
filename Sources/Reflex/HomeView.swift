@@ -165,9 +165,9 @@ struct HomeView: View {
 
             // Stats row
             HStack(spacing: 0) {
-                heroStat(label: "TESTS", value: "21")
+                heroStat(label: "SESSIONS", value: "\(store.totalSessions)")
                 Divider().overlay(RTheme.faint).frame(height: 28)
-                heroStat(label: "DONE", value: "\(completedCount)")
+                heroStat(label: "DONE", value: "\(completedCount)/21")
                 Divider().overlay(RTheme.faint).frame(height: 28)
                 heroStat(label: "STREAK", value: "\(store.streak)🔥")
             }
