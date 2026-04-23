@@ -7,6 +7,7 @@ struct HomeView: View {
     @State private var overallBest: Double? = nil
     @State private var completedCount: Int = 0
     @State private var showSettings = false
+    @State private var historyMode: TestMode? = nil
 
     // Group modes by tier
     private let tiers: [(String, [TestMode])] = [
@@ -53,6 +54,9 @@ struct HomeView: View {
         .onAppear { loadStats() }
         .sheet(isPresented: $showSettings, onDismiss: loadStats) {
             SettingsView { showSettings = false }
+        }
+        .sheet(item: $historyMode) { mode in
+            ModeHistoryView(mode: mode) { historyMode = nil }
         }
     }
 
@@ -375,6 +379,20 @@ struct HomeView: View {
                 ForEach(modes) { mode in
                     ModeCard(mode: mode, best: store.bestMS(for: mode)) {
                         onSelect(mode)
+                    }
+                    .contextMenu {
+                        if store.bestMS(for: mode) != nil {
+                            Button {
+                                historyMode = mode
+                            } label: {
+                                Label("View History", systemImage: "chart.line.uptrend.xyaxis")
+                            }
+                        }
+                        Button {
+                            onSelect(mode)
+                        } label: {
+                            Label("Play", systemImage: "play.fill")
+                        }
                     }
                 }
             }
