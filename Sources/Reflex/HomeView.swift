@@ -140,8 +140,14 @@ struct HomeView: View {
     // MARK: - Tier section
 
     private func tierSection(title: String, modes: [TestMode]) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
+        let completedInTier = modes.filter { store.bestMS(for: $0) != nil }.count
+        let tierColor = tierAccentColor(title)
+
+        return VStack(alignment: .leading, spacing: 10) {
             HStack {
+                Circle()
+                    .fill(tierColor)
+                    .frame(width: 6, height: 6)
                 Text(title)
                     .font(RTheme.mono(10, weight: .bold))
                     .foregroundStyle(RTheme.muted)
@@ -149,6 +155,10 @@ struct HomeView: View {
                 Rectangle()
                     .fill(RTheme.faint)
                     .frame(height: 1)
+                Text("\(completedInTier)/\(modes.count)")
+                    .font(RTheme.mono(9))
+                    .foregroundStyle(completedInTier == modes.count ? RTheme.green : RTheme.faint)
+                    .tracking(1)
             }
             .padding(.horizontal, RTheme.pad)
 
@@ -165,6 +175,17 @@ struct HomeView: View {
             .padding(.horizontal, RTheme.pad)
         }
         .padding(.bottom, 20)
+    }
+
+    private func tierAccentColor(_ tier: String) -> Color {
+        switch tier {
+        case "SPEED":     return RTheme.gold
+        case "ATTENTION": return RTheme.green
+        case "COGNITION": return Color(red: 0.55, green: 0.35, blue: 0.95)
+        case "MEMORY":    return Color(red: 0.30, green: 0.70, blue: 0.95)
+        case "EXPERT":    return RTheme.red
+        default:          return RTheme.muted
+        }
     }
 
     // MARK: - Footer
