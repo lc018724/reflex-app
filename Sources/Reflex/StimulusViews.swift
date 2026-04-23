@@ -37,7 +37,7 @@ struct StimulusRouter: View {
                 engine.handleTap()
             }
         case .stroop(let word, let textColor, _):
-            StroopView(word: word, textColor: textColor.color, allColors: NamedColor.all) { name in
+            StroopView(word: word, correctColor: textColor) { name in
                 engine.handleTap(data: .colorName(name))
             }
         case .reverseStroop(let boxes, let prompt, _):
@@ -332,9 +332,21 @@ struct ColorTapView: View {
 
 struct StroopView: View {
     let word: String
-    let textColor: Color
-    let allColors: [NamedColor]
+    let correctColor: NamedColor
     let onTap: (String) -> Void
+
+    // 3 random distractors + the correct color, shuffled once at init
+    private let choices: [NamedColor]
+
+    init(word: String, correctColor: NamedColor, onTap: @escaping (String) -> Void) {
+        self.word = word
+        self.correctColor = correctColor
+        self.onTap = onTap
+        var picks = NamedColor.random(3, excluding: [correctColor])
+        picks.append(correctColor)
+        picks.shuffle()
+        self.choices = picks
+    }
 
     var body: some View {
         VStack(spacing: 36) {
@@ -346,12 +358,12 @@ struct StroopView: View {
                     .multilineTextAlignment(.center)
                 Text(word)
                     .font(RTheme.mono(56, weight: .bold))
-                    .foregroundStyle(textColor)
+                    .foregroundStyle(correctColor.color)
             }
 
-            // Color buttons (showing 4 random including the answer)
+            // Color buttons — always 4 choices, correct ink color guaranteed present
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                ForEach(allColors.prefix(4), id: \.name) { nc in
+                ForEach(choices, id: \.name) { nc in
                     Button { onTap(nc.name) } label: {
                         Text(nc.name)
                             .font(RTheme.mono(16, weight: .bold))
