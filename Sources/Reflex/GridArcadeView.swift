@@ -119,7 +119,7 @@ class GridGame: ObservableObject {
         }
 
         if defaults.bool(forKey: "hapticsEnabled") { impactLight.impactOccurred() }
-        AudioServicesPlaySystemSound(1104)
+        if UserDefaults.standard.object(forKey: "soundEnabled") == nil || UserDefaults.standard.bool(forKey: "soundEnabled") { AudioServicesPlaySystemSound(1104) }
         combo += 1
         score += combo >= 5 ? 2 : 1
         level = (score / 6) + 1
@@ -132,7 +132,7 @@ class GridGame: ObservableObject {
 
     private func handleMiss() {
         if defaults.bool(forKey: "hapticsEnabled") { impactHeavy.impactOccurred() }
-        AudioServicesPlaySystemSound(1107)
+        if UserDefaults.standard.object(forKey: "soundEnabled") == nil || UserDefaults.standard.bool(forKey: "soundEnabled") { AudioServicesPlaySystemSound(1107) }
         combo = 0
         lives -= 1
         if lives <= 0 { endGame() }

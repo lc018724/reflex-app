@@ -172,7 +172,7 @@ final class AvoidGame: ObservableObject {
         if UserDefaults.standard.bool(forKey: "hapticsEnabled") {
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         }
-        AudioServicesPlaySystemSound(1104)
+        if UserDefaults.standard.object(forKey: "soundEnabled") == nil || UserDefaults.standard.bool(forKey: "soundEnabled") { AudioServicesPlaySystemSound(1104) }
     }
 
     func tapDangerBall() {
@@ -181,7 +181,7 @@ final class AvoidGame: ObservableObject {
         if UserDefaults.standard.bool(forKey: "hapticsEnabled") {
             UINotificationFeedbackGenerator().notificationOccurred(.error)
         }
-        AudioServicesPlaySystemSound(1053)
+        if UserDefaults.standard.object(forKey: "soundEnabled") == nil || UserDefaults.standard.bool(forKey: "soundEnabled") { AudioServicesPlaySystemSound(1053) }
         if lives <= 0 { gameOver() }
     }
 

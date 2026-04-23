@@ -10,6 +10,7 @@ struct SettingsView: View {
     @State private var showResetConfirm = false
     @State private var showOnboarding = false
     @State private var hapticsEnabled = UserDefaults.standard.bool(forKey: "hapticsEnabled") == false ? true : UserDefaults.standard.bool(forKey: "hapticsEnabled")
+    @State private var soundEnabled = UserDefaults.standard.object(forKey: "soundEnabled") == nil ? true : UserDefaults.standard.bool(forKey: "soundEnabled")
     @State private var didReset = false
 
     var body: some View {
@@ -53,6 +54,18 @@ struct SettingsView: View {
                             .tint(RTheme.gold)
                             .onChange(of: hapticsEnabled) { _, val in
                                 UserDefaults.standard.set(val, forKey: "hapticsEnabled")
+                            }
+                            .padding(.vertical, 6)
+                            .padding(.horizontal, RTheme.padSm)
+
+                            Divider().overlay(RTheme.faint)
+
+                            Toggle(isOn: $soundEnabled) {
+                                settingsRowLabel("Sound Effects", icon: "speaker.wave.2.fill", color: Color(red: 0.30, green: 0.70, blue: 0.95))
+                            }
+                            .tint(Color(red: 0.30, green: 0.70, blue: 0.95))
+                            .onChange(of: soundEnabled) { _, val in
+                                UserDefaults.standard.set(val, forKey: "soundEnabled")
                             }
                             .padding(.vertical, 6)
                             .padding(.horizontal, RTheme.padSm)

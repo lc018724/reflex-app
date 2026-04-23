@@ -455,7 +455,7 @@ final class WhackGame: ObservableObject {
         }
 
         if defaults.bool(forKey: "hapticsEnabled") { impactLight.impactOccurred() }
-        AudioServicesPlaySystemSound(1104) // tap sound
+        if UserDefaults.standard.object(forKey: "soundEnabled") == nil || UserDefaults.standard.bool(forKey: "soundEnabled") { AudioServicesPlaySystemSound(1104) } // tap sound
         combo += 1
         let points = combo >= 5 ? 2 : 1
         score += points
@@ -476,7 +476,7 @@ final class WhackGame: ObservableObject {
 
     private func handleMiss() {
         if defaults.bool(forKey: "hapticsEnabled") { impactHeavy.impactOccurred() }
-        AudioServicesPlaySystemSound(1107) // miss sound
+        if UserDefaults.standard.object(forKey: "soundEnabled") == nil || UserDefaults.standard.bool(forKey: "soundEnabled") { AudioServicesPlaySystemSound(1107) } // miss sound
         combo = 0  // reset combo on miss
         lives -= 1
         if lives <= 0 {

@@ -67,7 +67,7 @@ class ChainGame: ObservableObject {
     func tap(target: ChainTarget) {
         guard phase == .playing else { return }
         if target.number == nextRequired {
-            AudioServicesPlaySystemSound(1104)
+            if UserDefaults.standard.object(forKey: "soundEnabled") == nil || UserDefaults.standard.bool(forKey: "soundEnabled") { AudioServicesPlaySystemSound(1104) }
             if let idx = targets.firstIndex(where: { $0.id == target.id }) {
                 targets[idx].tapped = true
             }
@@ -85,7 +85,7 @@ class ChainGame: ObservableObject {
             }
         } else {
             // Wrong tap
-            AudioServicesPlaySystemSound(1107)
+            if UserDefaults.standard.object(forKey: "soundEnabled") == nil || UserDefaults.standard.bool(forKey: "soundEnabled") { AudioServicesPlaySystemSound(1107) }
             lives -= 1
             let impact = UIImpactFeedbackGenerator(style: .heavy)
             impact.impactOccurred()
@@ -94,7 +94,7 @@ class ChainGame: ObservableObject {
     }
 
     private func onExpire() {
-        AudioServicesPlaySystemSound(1107)
+        if UserDefaults.standard.object(forKey: "soundEnabled") == nil || UserDefaults.standard.bool(forKey: "soundEnabled") { AudioServicesPlaySystemSound(1107) }
         let impact = UIImpactFeedbackGenerator(style: .heavy)
         impact.impactOccurred()
         lives -= 1
