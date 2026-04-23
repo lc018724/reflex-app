@@ -18,7 +18,7 @@ struct HomeView: View {
         ("EXPERT",    [.simon, .speedSort, .rhythm, .dualTrack]),
     ]
 
-    private let arcadeModes: [TestMode] = [.dropArcade, .whackArcade]
+    private let arcadeModes: [TestMode] = [.dropArcade, .whackArcade, .chainArcade]
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -644,6 +644,8 @@ struct ArcadeCard: View {
                 }
             } else if mode == .whackArcade {
                 startWhackPreviewAnimation()
+            } else if mode == .chainArcade {
+                startChainPreviewAnimation()
             }
         }
     }
@@ -660,6 +662,8 @@ struct ArcadeCard: View {
                 dropPreview
             } else if mode == .whackArcade {
                 whackPreview
+            } else if mode == .chainArcade {
+                chainPreview
             }
         }
     }
@@ -706,6 +710,8 @@ struct ArcadeCard: View {
         }
     }
 
+    private let chainPositions: [(CGFloat, CGFloat)] = [(0.35, 0.25), (0.65, 0.5), (0.35, 0.75)]
+
     private func startWhackPreviewAnimation() {
         let delays = [0.0, 0.45, 0.9]
         for i in 0..<3 {
@@ -719,6 +725,46 @@ struct ArcadeCard: View {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private var chainPreview: some View {
+        GeometryReader { geo in
+            ForEach(0..<3, id: \.self) { i in
+                ZStack {
+                    Circle()
+                        .stroke(i == 0 ? RTheme.gold : RTheme.faint, lineWidth: 1.5)
+                        .frame(width: 20, height: 20)
+                    Text("\(i + 1)")
+                        .font(RTheme.mono(9, weight: .black))
+                        .foregroundStyle(i == 0 ? RTheme.gold : RTheme.white.opacity(0.5))
+                }
+                .scaleEffect(animTargets[i])
+                .opacity(animTargets[i])
+                .position(
+                    x: chainPositions[i].0 * geo.size.width,
+                    y: chainPositions[i].1 * geo.size.height
+                )
+            }
+        }
+    }
+
+    private func startChainPreviewAnimation() {
+        let delays = [0.0, 0.3, 0.6]
+        for i in 0..<3 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delays[i]) {
+                withAnimation(.spring(response: 0.3)) { animTargets[i] = 1.0 }
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            for i in 0..<3 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.15) {
+                    withAnimation(.easeIn(duration: 0.2)) { animTargets[i] = 0 }
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                startChainPreviewAnimation()
             }
         }
     }

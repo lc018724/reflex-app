@@ -387,6 +387,25 @@ struct InstructionView: View {
                 .lineSpacing(5)
                 .padding(.horizontal, 8)
 
+            // Tier / difficulty badge
+            HStack(spacing: 8) {
+                HStack(spacing: 3) {
+                    ForEach(0..<5, id: \.self) { i in
+                        Image(systemName: i < mode.tier ? "star.fill" : "star")
+                            .font(.system(size: 9))
+                            .foregroundStyle(i < mode.tier ? tierColor(mode.tier) : RTheme.faint)
+                    }
+                }
+                Text(tierName(mode.tier).uppercased())
+                    .font(RTheme.mono(9, weight: .bold))
+                    .foregroundStyle(tierColor(mode.tier))
+                    .tracking(2)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(tierColor(mode.tier).opacity(0.1))
+            .clipShape(Capsule())
+
             // Personal best badge
             if let pb = store.bestMS(for: mode) {
                 HStack(spacing: 8) {
@@ -409,6 +428,28 @@ struct InstructionView: View {
                 .padding(.top, 4)
         }
         .padding(.horizontal, 32)
+    }
+
+    private func tierColor(_ tier: Int) -> Color {
+        switch tier {
+        case 1: return RTheme.gold
+        case 2: return RTheme.green
+        case 3: return Color(red: 0.55, green: 0.35, blue: 0.95)
+        case 4: return Color(red: 0.30, green: 0.70, blue: 0.95)
+        case 5: return RTheme.red
+        default: return RTheme.faint
+        }
+    }
+
+    private func tierName(_ tier: Int) -> String {
+        switch tier {
+        case 1: return "Beginner"
+        case 2: return "Easy"
+        case 3: return "Medium"
+        case 4: return "Hard"
+        case 5: return "Expert"
+        default: return "?"
+        }
     }
 }
 
