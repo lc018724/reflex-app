@@ -602,6 +602,14 @@ struct ModeCard: View {
     let onTap: () -> Void
 
     @State private var pressed = false
+    private let store = TestStore()
+
+    private var trendArrow: (up: Bool, show: Bool) {
+        let hist = store.history(for: mode)
+        guard hist.count >= 2 else { return (false, false) }
+        let improved = hist.last! < hist[hist.count - 2]
+        return (improved, true)
+    }
 
     var body: some View {
         Button(action: onTap) {
@@ -619,9 +627,17 @@ struct ModeCard: View {
                             .font(.system(size: 22))
                         Spacer()
                         if let ms = best {
-                            Text(String(format: "%.0f", ms))
-                                .font(RTheme.mono(13, weight: .bold))
-                                .foregroundStyle(msColor(ms))
+                            HStack(spacing: 3) {
+                                let trend = trendArrow
+                                if trend.show {
+                                    Image(systemName: trend.up ? "arrow.down" : "arrow.up")
+                                        .font(.system(size: 8, weight: .bold))
+                                        .foregroundStyle(trend.up ? RTheme.green : RTheme.red)
+                                }
+                                Text(String(format: "%.0f", ms))
+                                    .font(RTheme.mono(13, weight: .bold))
+                                    .foregroundStyle(msColor(ms))
+                            }
                         } else {
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 11, weight: .semibold))
