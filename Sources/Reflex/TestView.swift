@@ -14,6 +14,7 @@ struct TestView: View {
     @State private var bgFlash: Color = RTheme.bg
     @State private var suppressTimer: Task<Void, Never>? = nil
     @State private var previousBest: Double? = nil
+    @State private var trialsDone: Int = 0
 
     var body: some View {
         ZStack {
@@ -83,25 +84,63 @@ struct TestView: View {
     // MARK: - Top bar
 
     private var topBar: some View {
-        HStack {
-            Button(action: onDismiss) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 15, weight: .semibold))
+        VStack(spacing: 10) {
+            HStack {
+                Button(action: onDismiss) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(RTheme.muted)
+                        .frame(width: 36, height: 36)
+                        .background(RTheme.surface)
+                        .clipShape(Circle())
+                }
+                Spacer()
+                Text(mode.title)
+                    .font(RTheme.mono(13, weight: .medium))
                     .foregroundStyle(RTheme.muted)
-                    .frame(width: 36, height: 36)
-                    .background(RTheme.surface)
-                    .clipShape(Circle())
+                    .tracking(3)
+                Spacer()
+                Color.clear.frame(width: 36, height: 36)
             }
-            Spacer()
-            Text(mode.title)
-                .font(RTheme.mono(13, weight: .medium))
-                .foregroundStyle(RTheme.muted)
-                .tracking(3)
-            Spacer()
-            Color.clear.frame(width: 36, height: 36)
+
+            // Trial progress dots
+            if let (trial, total) = currentTrialProgress {
+                HStack(spacing: 6) {
+                    ForEach(0..<total, id: \.self) { i in
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(i < trial ? RTheme.gold : RTheme.faint)
+                            .frame(width: i < trial ? 16 : 10, height: 4)
+                            .animation(.spring(response: 0.25), value: trial)
+                    }
+                }
+            } else if trialsDone > 0 {
+                let total = mode.trialCount
+                HStack(spacing: 6) {
+                    ForEach(0..<total, id: \.self) { i in
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(i < trialsDone ? RTheme.gold : RTheme.faint)
+                            .frame(width: i < trialsDone ? 16 : 10, height: 4)
+                            .animation(.spring(response: 0.25), value: trialsDone)
+                    }
+                }
+            }
         }
         .padding(.horizontal, RTheme.pad)
         .padding(.top, 56)
+    }
+
+    private var currentTrialProgress: (Int, Int)? {
+        switch engine.phase {
+        case .result(_, let trial, let total, _): return (trial, total)
+        default: return nil
+        }
+    }
+
+    private var isActiveTrial: Bool {
+        switch engine.phase {
+        case .waiting, .stimulus, .tooSoon, .countdown, .sequenceInput: return true
+        default: return false
+        }
     }
 
     // MARK: - Phase views
@@ -224,6 +263,9 @@ struct TestView: View {
 
     private func handlePhaseChange(_ phase: TestPhase) {
         switch phase {
+        case .instruction:
+            trialsDone = 0
+
         case .stimulus(let data):
             impactLight.impactOccurred()
             if case .flash = data {
@@ -244,15 +286,17 @@ struct TestView: View {
                 break
             }
 
-        case .result(_, _, _, let isError):
+        case .result(let _, let trial, _, let isError):
             suppressTimer?.cancel()
             bgFlash = RTheme.bg
+            trialsDone = trial
             if isError { notif.notificationOccurred(.error) }
             else { impactHeavy.impactOccurred() }
 
         case .sessionDone(let avg, _, _):
             suppressTimer?.cancel()
             bgFlash = RTheme.bg
+            trialsDone = 0
             if avg > 0 {
                 previousBest = store.bestMS(for: mode)  // capture before overwrite
                 store.updateBest(ms: avg, for: mode)
