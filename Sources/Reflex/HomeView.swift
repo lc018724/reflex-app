@@ -30,6 +30,12 @@ struct HomeView: View {
                     .padding(.horizontal, RTheme.pad)
                     .padding(.bottom, 24)
 
+                // Insights (if enough data)
+                if completedCount >= 4 {
+                    insightsSection
+                        .padding(.bottom, 24)
+                }
+
                 // Tier groups
                 ForEach(tiers, id: \.0) { tierName, modes in
                     tierSection(title: tierName, modes: modes)
@@ -140,6 +146,89 @@ struct HomeView: View {
         .padding(RTheme.padSm)
         .background(RTheme.surface)
         .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
+    }
+
+    // MARK: - Insights
+
+    private var insightsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Image(systemName: "brain")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(Color(red: 0.55, green: 0.35, blue: 0.95))
+                Text("INSIGHTS")
+                    .font(RTheme.mono(10, weight: .bold))
+                    .foregroundStyle(RTheme.muted)
+                    .tracking(4)
+                Rectangle()
+                    .fill(RTheme.faint)
+                    .frame(height: 1)
+            }
+            .padding(.horizontal, RTheme.pad)
+
+            let nonArcade = TestMode.allCases.filter { !$0.isArcade }
+            let scored = nonArcade.compactMap { mode -> (TestMode, Double)? in
+                guard let ms = store.bestMS(for: mode) else { return nil }
+                return (mode, ms)
+            }
+            let sorted = scored.sorted { $0.1 < $1.1 }
+
+            HStack(spacing: 12) {
+                if let strongest = sorted.first {
+                    insightCard(
+                        icon: "bolt.fill",
+                        label: "STRENGTH",
+                        modeName: strongest.0.title,
+                        ms: strongest.1,
+                        color: RTheme.green
+                    )
+                }
+                if let weakest = sorted.last, sorted.count > 1 {
+                    insightCard(
+                        icon: "arrow.up.circle",
+                        label: "IMPROVE",
+                        modeName: weakest.0.title,
+                        ms: weakest.1,
+                        color: RTheme.red
+                    )
+                }
+            }
+            .padding(.horizontal, RTheme.pad)
+        }
+        .padding(.bottom, 4)
+    }
+
+    private func insightCard(icon: String, label: String, modeName: String, ms: Double, color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 5) {
+                Image(systemName: icon)
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(color)
+                Text(label)
+                    .font(RTheme.mono(9, weight: .bold))
+                    .foregroundStyle(color)
+                    .tracking(2)
+            }
+            Text(modeName)
+                .font(RTheme.rounded(15, weight: .bold))
+                .foregroundStyle(RTheme.white)
+            HStack(alignment: .lastTextBaseline, spacing: 3) {
+                Text(String(format: "%.0f", ms))
+                    .font(RTheme.mono(22, weight: .bold))
+                    .foregroundStyle(color)
+                Text("ms")
+                    .font(RTheme.mono(10))
+                    .foregroundStyle(RTheme.muted)
+            }
+        }
+        .padding(RTheme.padSm)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RTheme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
+        .overlay(
+            RoundedRectangle(cornerRadius: RTheme.radiusSm)
+                .stroke(color.opacity(0.2), lineWidth: 1)
+        )
     }
 
     // MARK: - Daily Challenge
