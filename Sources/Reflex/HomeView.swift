@@ -284,32 +284,55 @@ struct HomeView: View {
             }
             let sorted = scored.sorted { $0.1 < $1.1 }
 
-            HStack(spacing: 12) {
-                if let strongest = sorted.first {
-                    insightCard(
-                        icon: "bolt.fill",
-                        label: "STRENGTH",
-                        modeName: strongest.0.title,
-                        ms: strongest.1,
-                        color: RTheme.green
-                    )
+            // Most improved: mode where last session avg is best vs all-time best
+            let trending = nonArcade.compactMap { mode -> (TestMode, Double)? in
+                let hist = store.history(for: mode)
+                guard hist.count >= 2, let best = store.bestMS(for: mode) else { return nil }
+                let lastSession = hist.last!
+                let improvement = lastSession - best   // negative = improved (lower is better)
+                guard improvement < 0 else { return nil }
+                return (mode, abs(improvement))
+            }.max(by: { $0.1 < $1.1 })
+
+            if sorted.count >= 3 {
+                HStack(spacing: 12) {
+                    if let strongest = sorted.first {
+                        insightCard(icon: "bolt.fill", label: "STRENGTH",
+                                    modeName: strongest.0.title, ms: strongest.1, color: RTheme.green)
+                    }
+                    if let weakest = sorted.last {
+                        insightCard(icon: "arrow.up.circle", label: "IMPROVE",
+                                    modeName: weakest.0.title, ms: weakest.1, color: RTheme.red)
+                    }
                 }
-                if let weakest = sorted.last, sorted.count > 1 {
-                    insightCard(
-                        icon: "arrow.up.circle",
-                        label: "IMPROVE",
-                        modeName: weakest.0.title,
-                        ms: weakest.1,
-                        color: RTheme.red
-                    )
+                .padding(.horizontal, RTheme.pad)
+                if let trend = trending {
+                    HStack {
+                        insightCard(icon: "chart.line.uptrend.xyaxis", label: "TRENDING UP",
+                                    modeName: trend.0.title, ms: trend.1, color: Color(red: 0.55, green: 0.35, blue: 0.95),
+                                    suffix: "ms drop last session")
+                        Spacer()
+                    }
+                    .padding(.horizontal, RTheme.pad)
                 }
+            } else {
+                HStack(spacing: 12) {
+                    if let strongest = sorted.first {
+                        insightCard(icon: "bolt.fill", label: "STRENGTH",
+                                    modeName: strongest.0.title, ms: strongest.1, color: RTheme.green)
+                    }
+                    if let weakest = sorted.last, sorted.count > 1 {
+                        insightCard(icon: "arrow.up.circle", label: "IMPROVE",
+                                    modeName: weakest.0.title, ms: weakest.1, color: RTheme.red)
+                    }
+                }
+                .padding(.horizontal, RTheme.pad)
             }
-            .padding(.horizontal, RTheme.pad)
         }
         .padding(.bottom, 4)
     }
 
-    private func insightCard(icon: String, label: String, modeName: String, ms: Double, color: Color) -> some View {
+    private func insightCard(icon: String, label: String, modeName: String, ms: Double, color: Color, suffix: String? = nil) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 5) {
                 Image(systemName: icon)
@@ -327,7 +350,7 @@ struct HomeView: View {
                 Text(String(format: "%.0f", ms))
                     .font(RTheme.mono(22, weight: .bold))
                     .foregroundStyle(color)
-                Text("ms")
+                Text(suffix ?? "ms")
                     .font(RTheme.mono(10))
                     .foregroundStyle(RTheme.muted)
             }
