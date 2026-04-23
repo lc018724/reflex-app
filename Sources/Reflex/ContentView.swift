@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var engine = TestEngine()
     @State private var activeMode: TestMode? = nil
+    @State private var showOnboarding = !UserDefaults.standard.bool(forKey: "didOnboard")
 
     var body: some View {
         ZStack {
@@ -52,7 +53,23 @@ struct ContentView: View {
                 }
                 .transition(.opacity)
             }
+
+            // First-launch onboarding overlay
+            if showOnboarding {
+                OnboardingView {
+                    UserDefaults.standard.set(true, forKey: "didOnboard")
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+                        showOnboarding = false
+                    }
+                }
+                .transition(.asymmetric(
+                    insertion: .opacity,
+                    removal: .move(edge: .bottom).combined(with: .opacity)
+                ))
+                .zIndex(99)
+            }
         }
         .animation(.easeInOut(duration: 0.2), value: activeMode == nil)
+        .animation(.spring(response: 0.4, dampingFraction: 0.85), value: showOnboarding)
     }
 }
