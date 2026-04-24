@@ -406,7 +406,7 @@ struct HomeView: View {
     private var dailyChallengeCard: some View {
         let mode = dailyMode
         let best = store.bestMS(for: mode)
-        let isCompleted = best != nil
+        let isCompleted = store.isDailyChallengeCompletedToday(mode: mode)
 
         return Button {
             onSelect(mode)

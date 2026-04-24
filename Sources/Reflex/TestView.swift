@@ -334,6 +334,10 @@ struct TestView: View {
                 store.appendSession(avg: avg, for: mode)
                 store.totalSessions += 1
                 store.recordSessionDay()
+                // Mark daily challenge done if this is today's mode
+                if mode == dailyMode() {
+                    store.markDailyChallengeCompleted(mode: mode)
+                }
             }
 
         case .tooSoon:
@@ -352,6 +356,12 @@ struct TestView: View {
             guard !Task.isCancelled else { return }
             engine.handleNoTap()
         }
+    }
+
+    private func dailyMode() -> TestMode {
+        let allModes = TestMode.allCases.filter { !$0.isArcade }
+        let dayOfYear = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 1
+        return allModes[dayOfYear % allModes.count]
     }
 
     private func msColor(_ ms: Double) -> Color {

@@ -127,7 +127,22 @@ final class TestStore {
         defaults.removeObject(forKey: "gauntlet_bestAvg")
     }
 
-    // MARK: - Gauntlet best average
+    // MARK: - Daily challenge completion
+
+    private func dailyChallengeKey(for date: Date = Date()) -> String {
+        "daily_done_\(isoDay(date))"
+    }
+
+    /// Returns true if the given mode was completed as today's daily challenge.
+    func isDailyChallengeCompletedToday(mode: TestMode) -> Bool {
+        defaults.string(forKey: dailyChallengeKey()) == mode.rawValue
+    }
+
+    /// Records that today's daily challenge was completed with the given mode.
+    func markDailyChallengeCompleted(mode: TestMode) {
+        defaults.set(mode.rawValue, forKey: dailyChallengeKey())
+    }
+
 
     var gauntletBestAvg: Double? {
         get {
