@@ -195,7 +195,7 @@ struct HomeView: View {
             HStack(spacing: 0) {
                 heroStat(label: "SESSIONS", value: "\(store.totalSessions)")
                 Divider().overlay(RTheme.faint).frame(height: 28)
-                heroStat(label: "DONE", value: "\(completedCount)/21")
+                heroStat(label: "DONE", value: "\(completedCount)/20")
                 Divider().overlay(RTheme.faint).frame(height: 28)
                 heroStat(label: "STREAK", value: "\(store.streak)🔥")
             }
@@ -225,12 +225,12 @@ struct HomeView: View {
                                 .frame(height: 4)
                             RoundedRectangle(cornerRadius: 3)
                                 .fill(RTheme.gold)
-                                .frame(width: geo.size.width * CGFloat(completedCount) / 21.0, height: 4)
+                                .frame(width: geo.size.width * CGFloat(completedCount) / 20.0, height: 4)
                                 .animation(.spring(response: 0.5), value: completedCount)
                         }
                     }
                     .frame(height: 4)
-                    Text("\(completedCount) of 21 tests completed")
+                    Text("\(completedCount) of 20 tests completed")
                         .font(RTheme.mono(9))
                         .foregroundStyle(RTheme.faint)
                         .tracking(1)
