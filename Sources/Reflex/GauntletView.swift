@@ -10,6 +10,7 @@ import UIKit
 struct GauntletEntryCard: View {
     let onStart: () -> Void
     @State private var pulse = false
+    private let store = TestStore()
 
     var body: some View {
         Button(action: onStart) {
@@ -45,9 +46,15 @@ struct GauntletEntryCard: View {
                     Text("10 TESTS · 1 SHOT EACH")
                         .font(RTheme.rounded(17, weight: .bold))
                         .foregroundStyle(RTheme.white)
-                    Text("All tiers · composite score")
-                        .font(RTheme.mono(10))
-                        .foregroundStyle(RTheme.muted)
+                    if let best = store.gauntletBestAvg {
+                        Text("BEST \(String(format: "%.0f", best))ms · \(ReactionBenchmarks.label(ms: best).uppercased())")
+                            .font(RTheme.mono(9))
+                            .foregroundStyle(speedColor(best))
+                    } else {
+                        Text("All tiers · composite score")
+                            .font(RTheme.mono(10))
+                            .foregroundStyle(RTheme.muted)
+                    }
                 }
 
                 Spacer()
@@ -72,6 +79,14 @@ struct GauntletEntryCard: View {
         }
         .buttonStyle(.plain)
         .onAppear { pulse = true }
+    }
+
+    private func speedColor(_ ms: Double) -> Color {
+        switch ms {
+        case ..<200: return RTheme.green
+        case 200..<270: return RTheme.gold
+        default: return RTheme.red
+        }
     }
 }
 
@@ -589,6 +604,10 @@ struct GauntletView: View {
     private func advanceToNextMode() {
         currentIndex += 1
         if currentIndex >= gauntletModes.count {
+            // Save best avg before transitioning to done state
+            if let avg = compositeScore {
+                TestStore().updateGauntletBest(avg: avg)
+            }
             withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                 gauntletState = .done
             }

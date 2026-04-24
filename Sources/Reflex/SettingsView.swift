@@ -255,10 +255,29 @@ struct SettingsView: View {
                 }
                 .padding(.vertical, 10)
                 .padding(.horizontal, RTheme.padSm)
-                if i < arcadeModes.count - 1 {
-                    Divider().overlay(RTheme.faint)
+                Divider().overlay(RTheme.faint)
+            }
+            // Gauntlet best avg
+            let gauntletBest = TestStore().gauntletBestAvg
+            HStack {
+                Text("⚡️")
+                    .font(.system(size: 16))
+                Text("Gauntlet")
+                    .font(RTheme.rounded(14, weight: .medium))
+                    .foregroundStyle(RTheme.white)
+                Spacer()
+                if let best = gauntletBest {
+                    Text(String(format: "%.0fms avg", best))
+                        .font(RTheme.mono(13, weight: .bold))
+                        .foregroundStyle(RTheme.red)
+                } else {
+                    Text("—")
+                        .font(RTheme.mono(13))
+                        .foregroundStyle(RTheme.faint)
                 }
             }
+            .padding(.vertical, 10)
+            .padding(.horizontal, RTheme.padSm)
         }
     }
 

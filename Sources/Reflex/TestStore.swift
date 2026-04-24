@@ -124,5 +124,22 @@ final class TestStore {
         defaults.removeObject(forKey: "gridArcade_highScore")
         defaults.removeObject(forKey: "avoidArcade_highScore")
         defaults.removeObject(forKey: "memoryArcade_highScore")
+        defaults.removeObject(forKey: "gauntlet_bestAvg")
+    }
+
+    // MARK: - Gauntlet best average
+
+    var gauntletBestAvg: Double? {
+        get {
+            let v = defaults.double(forKey: "gauntlet_bestAvg")
+            return v > 0 ? v : nil
+        }
+    }
+
+    func updateGauntletBest(avg: Double) {
+        let existing = defaults.double(forKey: "gauntlet_bestAvg")
+        if existing == 0 || avg < existing {
+            defaults.set(avg, forKey: "gauntlet_bestAvg")
+        }
     }
 }

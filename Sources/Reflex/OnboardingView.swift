@@ -30,8 +30,14 @@ struct OnboardingView: View {
         OnboardPage(
             emoji: "🕹️",
             title: "Arcade Mode",
-            body: "DROP, WHACK, CHAIN, GRID, and AVOID — 5 score-chasing arcade games with speed ramps, lives, and combo multipliers.",
+            body: "DROP, WHACK, CHAIN, GRID, AVOID, and MEMORY — 6 score-chasing arcade games with speed ramps, lives, and combo multipliers.",
             accent: RTheme.red
+        ),
+        OnboardPage(
+            emoji: "⚡️",
+            title: "Gauntlet",
+            body: "10-mode rapid-fire sprint across all difficulty tiers. One trial per mode, no warm-up — pure reflexes under pressure.",
+            accent: RTheme.gold
         ),
     ]
 
