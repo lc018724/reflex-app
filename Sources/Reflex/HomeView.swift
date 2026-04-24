@@ -120,7 +120,7 @@ struct HomeView: View {
     }
 
     private func loadStats() {
-        let bests = TestMode.allCases.compactMap { store.bestMS(for: $0) }
+        let bests = TestMode.allCases.filter { !$0.isArcade }.compactMap { store.bestMS(for: $0) }
         overallBest = bests.min()
         completedCount = bests.count
 
@@ -729,6 +729,19 @@ struct ArcadeCard: View {
     @State private var avoidBallOffset: CGPoint = .zero
     @State private var avoidRingScale: CGFloat = 0
 
+    private let store = TestStore()
+
+    private var arcadeTagline: String {
+        switch mode {
+        case .dropArcade:   return "speed escalates"
+        case .whackArcade:  return "targets appear faster"
+        case .chainArcade:  return "chain grows longer"
+        case .gridArcade:   return "more cells at once"
+        case .avoidArcade:  return "balls multiply"
+        default:            return "speed escalates"
+        }
+    }
+
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 16) {
@@ -744,6 +757,17 @@ struct ArcadeCard: View {
                             .font(RTheme.rounded(20, weight: .bold))
                             .foregroundStyle(RTheme.gold)
                             .tracking(2)
+                        if let hs = store.highScore(for: mode) {
+                            Spacer()
+                            HStack(spacing: 3) {
+                                Image(systemName: "crown.fill")
+                                    .font(.system(size: 9))
+                                    .foregroundStyle(RTheme.gold.opacity(0.8))
+                                Text("\(hs)")
+                                    .font(RTheme.mono(11, weight: .bold))
+                                    .foregroundStyle(RTheme.gold.opacity(0.9))
+                            }
+                        }
                     }
 
                     Text(mode.instruction)
@@ -758,18 +782,20 @@ struct ArcadeCard: View {
                             .foregroundStyle(RTheme.red.opacity(0.85))
                         Text("•")
                             .foregroundStyle(RTheme.faint)
-                        Text("speed escalates")
+                        Text(arcadeTagline)
                             .font(RTheme.mono(9))
                             .foregroundStyle(RTheme.faint)
                     }
                 }
 
-                Image(systemName: "play.fill")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(RTheme.bg)
-                    .frame(width: 36, height: 36)
-                    .background(RTheme.gold)
-                    .clipShape(Circle())
+                if store.highScore(for: mode) == nil {
+                    Image(systemName: "play.fill")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(RTheme.bg)
+                        .frame(width: 36, height: 36)
+                        .background(RTheme.gold)
+                        .clipShape(Circle())
+                }
             }
             .padding(RTheme.padSm)
             .background(

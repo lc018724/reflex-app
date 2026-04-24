@@ -27,6 +27,13 @@ final class TestEngine: ObservableObject {
         phaseID += 1
     }
 
+    // MARK: - Stimulus time reset
+    // Call this when the actual "tap now" moment occurs (e.g. AntiTap going dark),
+    // so reaction time is measured from the correct instant rather than phase start.
+    func resetStimulusTime() {
+        stimulusTime = CACurrentMediaTime()
+    }
+
     // MARK: - Session control
 
     func startSession(mode: TestMode) {
@@ -136,7 +143,7 @@ final class TestEngine: ObservableObject {
         case .find:
             let pool = "ABCDEFGHJKLMNPQRSTUVWXYZ".map(String.init)
                 + (2...9).map(String.init)
-            var chosen = Array(pool.shuffled().prefix(4))
+            let chosen = Array(pool.shuffled().prefix(4))
             let targetIdx = Int.random(in: 0..<4)
             return .find(items: chosen, targetIndex: targetIdx)
 
@@ -161,7 +168,7 @@ final class TestEngine: ObservableObject {
         case .reverseStroop:
             let prompt = NamedColor.all.randomElement()!
             // 4 boxes: one with text == prompt.name, others with different texts
-            var others = NamedColor.all.filter { $0.name != prompt.name }.shuffled().prefix(3).map { $0 }
+            let others = NamedColor.all.filter { $0.name != prompt.name }.shuffled().prefix(3).map { $0 }
             let correctIndex = Int.random(in: 0..<4)
             var boxes: [StroopBox] = []
             var otherIdx = 0
@@ -231,9 +238,9 @@ final class TestEngine: ObservableObject {
             return .doubleFlash(flashCount: 0)
 
         case .digitMatch:
-            var digits = (0..<6).map { _ in Int.random(in: 1...9) }
-            let target = digits.randomElement()!
-            let targetIdx = digits.firstIndex(of: target)!
+            // Shuffle 1-9, take 6 — guarantees no duplicate digits in the grid
+            let digits = Array(Array(1...9).shuffled().prefix(6))
+            let targetIdx = Int.random(in: 0..<6)
             return .digitMatch(items: digits, targetIndex: targetIdx)
 
         case .simon:
@@ -248,7 +255,7 @@ final class TestEngine: ObservableObject {
             return .simon(color: color, stimSide: stimSide, correctSide: correct)
 
         case .speedSort:
-            var numbers = (0..<4).map { _ in Int.random(in: 10...99) }
+            let numbers = (0..<4).map { _ in Int.random(in: 10...99) }
             let maxVal = numbers.max()!
             let maxIdx = numbers.firstIndex(of: maxVal)!
             return .speedSort(numbers: numbers, highestIndex: maxIdx)
@@ -276,7 +283,7 @@ final class TestEngine: ObservableObject {
         stimulusTime = CACurrentMediaTime()
         delayTask = Task {
             try? await Task.sleep(nanoseconds: 600_000_000)
-            for (i, step) in steps.enumerated() {
+            for (_, step) in steps.enumerated() {
                 guard !Task.isCancelled else { return }
                 // Light up the active step
                 go(.stimulus(.sequence(steps: steps, isPlayback: true, inputSoFar: [], activeStep: step)))
@@ -322,7 +329,7 @@ final class TestEngine: ObservableObject {
                 if case .side(let s) = data, s == correct { recordResult(ms: elapsed) }
                 else { recordError() }
 
-            case .colorTap(let colors, let targetIndex):
+            case .colorTap(_, let targetIndex):
                 if case .index(let i) = data, i == targetIndex { recordResult(ms: elapsed) }
                 else { recordError() }
 

@@ -243,6 +243,7 @@ struct AntiTapView: View {
             let delay = Double.random(in: 0.6...2.2)
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                 isLit = false
+                engine.resetStimulusTime()  // reaction timer starts when screen actually goes dark
             }
         }
     }
@@ -490,7 +491,7 @@ struct GoNoGoView: View {
                 }
             }
             .scaleEffect(scale)
-            .onTapGesture { if isGo { onTap() } else { onTap() } }
+            .onTapGesture { onTap() }
             .onAppear {
                 withAnimation(.spring(response: 0.25, dampingFraction: 0.55)) { scale = 1.0 }
                 if isGo { pulse = true }
@@ -757,7 +758,7 @@ struct DoubleFlashView: View {
         .onAppear {
             scheduleNextFlash()
         }
-        .onChange(of: flashCount) { _ in
+        .onChange(of: flashCount) {
             flash()
             if flashCount < 2 { scheduleNextFlash() }
         }
@@ -968,7 +969,7 @@ struct DualTrackView: View {
                         .onTapGesture {
                             guard !tappedIndices.contains(idx) else { return }
                             withAnimation(.easeOut(duration: 0.25)) {
-                                tappedIndices.insert(idx)
+                                _ = tappedIndices.insert(idx)
                             }
                             if tappedIndices.count == targets.count {
                                 engine.handleTap()

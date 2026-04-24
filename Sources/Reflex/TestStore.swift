@@ -89,6 +89,22 @@ final class TestStore {
         return f.string(from: date)
     }
 
+    // MARK: - Arcade high scores
+
+    func highScore(for mode: TestMode) -> Int? {
+        let key: String
+        switch mode {
+        case .dropArcade:   key = "dropArcade_highScore"
+        case .whackArcade:  key = "whackArcade_highScore"
+        case .chainArcade:  key = "chainArcade_highScore"
+        case .gridArcade:   key = "gridArcade_highScore"
+        case .avoidArcade:  key = "avoidArcade_highScore"
+        default: return nil
+        }
+        let v = defaults.integer(forKey: key)
+        return v > 0 ? v : nil
+    }
+
     // MARK: - Reset
 
     func resetAll() {

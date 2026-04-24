@@ -73,7 +73,7 @@ struct TestView: View {
                 Spacer()
             }
         }
-        .onChange(of: engine.phaseID) { _ in
+        .onChange(of: engine.phaseID) {
             handlePhaseChange(engine.phase)
         }
         .contentShape(Rectangle())
