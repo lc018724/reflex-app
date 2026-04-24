@@ -1,7 +1,7 @@
 import SwiftUI
 
 // MARK: - Rankings View
-// Shows all 21 cognitive modes ranked by personal best time (lower = better).
+// Shows all 20 cognitive modes ranked by personal best time (lower = better).
 // Accessible via "RANKINGS" button in HomeView.
 
 struct RankingsView: View {
