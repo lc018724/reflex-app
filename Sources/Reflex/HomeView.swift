@@ -216,7 +216,7 @@ struct HomeView: View {
             }
 
             // Progress bar
-            if completedCount > 0 {
+            if completedCount > 0 && completedCount < 20 {
                 VStack(spacing: 6) {
                     GeometryReader { geo in
                         ZStack(alignment: .leading) {
@@ -237,6 +237,25 @@ struct HomeView: View {
                 }
                 .padding(.top, 14)
                 .padding(.horizontal, RTheme.pad)
+            } else if completedCount == 20 {
+                HStack(spacing: 8) {
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(RTheme.gold)
+                    Text("ALL MODES MASTERED")
+                        .font(RTheme.mono(10, weight: .bold))
+                        .foregroundStyle(RTheme.gold)
+                        .tracking(3)
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(RTheme.gold)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(RTheme.gold.opacity(0.12))
+                .clipShape(Capsule())
+                .overlay(Capsule().stroke(RTheme.gold.opacity(0.3), lineWidth: 1))
+                .padding(.top, 14)
             }
 
             // Weekly training calendar
