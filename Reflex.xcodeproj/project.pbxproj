@@ -13,6 +13,7 @@
 		2FD5E5DBE733338CC0D071A7 /* AvoidArcadeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6369809370D3ED17F0AD503 /* AvoidArcadeView.swift */; };
 		4914DFC4747F4BDD2109F6EC /* RankingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BC4C2D8EB629AC6230FA8EC /* RankingsView.swift */; };
 		4C55ED990B901985A291C14A /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FB5C9185B3A8CE5E64D22B /* TestView.swift */; };
+		54306A8822B9EBE35E37BB69 /* GauntletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D319F67A8CE5FAD6CBDD24 /* GauntletView.swift */; };
 		61736F1B45EBB24E7EDF8A5C /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA910DC9BE3EE0240DCC7CA /* Models.swift */; };
 		6CF959F709558E7F867E649E /* WhackArcadeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A611F5D8FF81F09137983C9 /* WhackArcadeView.swift */; };
 		867327A28914184F852CF7A3 /* ChainArcadeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA0CBA76F34BF4632AC4F19 /* ChainArcadeView.swift */; };
@@ -34,6 +35,7 @@
 		0EE323ACE7373D004E300FFF /* DropArcadeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropArcadeView.swift; sourceTree = "<group>"; };
 		14AFAE06CE74A46284E1A657 /* ConfettiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiView.swift; sourceTree = "<group>"; };
 		1A611F5D8FF81F09137983C9 /* WhackArcadeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhackArcadeView.swift; sourceTree = "<group>"; };
+		39D319F67A8CE5FAD6CBDD24 /* GauntletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GauntletView.swift; sourceTree = "<group>"; };
 		3EAE784E8E35762E81C8317F /* Reflex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Reflex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3EC22A60AEA2098E42E2D29E /* TestEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEngine.swift; sourceTree = "<group>"; };
 		4CA0CBA76F34BF4632AC4F19 /* ChainArcadeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainArcadeView.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				14AFAE06CE74A46284E1A657 /* ConfettiView.swift */,
 				F4C73340D38CC6C717F3EFE6 /* ContentView.swift */,
 				0EE323ACE7373D004E300FFF /* DropArcadeView.swift */,
+				39D319F67A8CE5FAD6CBDD24 /* GauntletView.swift */,
 				E763BD3F681D428B47AC56F7 /* GridArcadeView.swift */,
 				506BF46EA4A1EBBE2821152F /* HomeView.swift */,
 				BC8E8B6AC631BCC380336539 /* Info.plist */,
@@ -163,6 +166,7 @@
 				95D8BD977263CC5F5E864FF6 /* ConfettiView.swift in Sources */,
 				86F7E2EE9E8B3C7A8A388DFC /* ContentView.swift in Sources */,
 				8B0ED9694C46E19FF4A95EA1 /* DropArcadeView.swift in Sources */,
+				54306A8822B9EBE35E37BB69 /* GauntletView.swift in Sources */,
 				98074BADE6EDEF98A1D2DEC8 /* GridArcadeView.swift in Sources */,
 				2ABB36A21ACE7617918F0268 /* HomeView.swift in Sources */,
 				CC6BB27B467BADC7ECE0791A /* MemoryArcadeView.swift in Sources */,

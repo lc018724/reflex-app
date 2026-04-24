@@ -8,6 +8,7 @@ struct HomeView: View {
     @State private var completedCount: Int = 0
     @State private var showSettings = false
     @State private var showRankings = false
+    @State private var showGauntlet = false
     @State private var historyMode: TestMode? = nil
     @State private var streakMilestone: Int? = nil
     @State private var dailyCountdown: String = ""
@@ -47,6 +48,9 @@ struct HomeView: View {
                     ForEach(tiers, id: \.0) { tierName, modes in
                         tierSection(title: tierName, modes: modes)
                     }
+
+                    // Gauntlet section
+                    gauntletSection
 
                     // Arcade section
                     arcadeSection
@@ -100,6 +104,9 @@ struct HomeView: View {
         }
         .sheet(item: $historyMode) { mode in
             ModeHistoryView(mode: mode) { historyMode = nil }
+        }
+        .fullScreenCover(isPresented: $showGauntlet) {
+            GauntletView { showGauntlet = false }
         }
     }
 
@@ -590,6 +597,25 @@ struct HomeView: View {
     }
 
     // MARK: - Arcade section
+
+    private var gauntletSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("CHALLENGE")
+                    .font(RTheme.mono(10, weight: .bold))
+                    .foregroundStyle(RTheme.gold.opacity(0.8))
+                    .tracking(4)
+                Rectangle()
+                    .fill(RTheme.gold.opacity(0.25))
+                    .frame(height: 1)
+            }
+            .padding(.horizontal, RTheme.pad)
+
+            GauntletEntryCard { showGauntlet = true }
+                .padding(.horizontal, RTheme.pad)
+        }
+        .padding(.bottom, 20)
+    }
 
     private var arcadeSection: some View {
         VStack(alignment: .leading, spacing: 10) {
