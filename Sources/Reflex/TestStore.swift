@@ -64,6 +64,7 @@ final class TestStore {
     /// Call after each session completes to update streak.
     func recordSessionDay() {
         let today = isoDay(Date())
+        recordTrainingDay()
         guard let last = lastSessionDay else {
             // First ever session
             streak = 1
@@ -125,6 +126,28 @@ final class TestStore {
         defaults.removeObject(forKey: "avoidArcade_highScore")
         defaults.removeObject(forKey: "memoryArcade_highScore")
         defaults.removeObject(forKey: "gauntlet_bestAvg")
+        defaults.removeObject(forKey: sessionDaysKey)
+    }
+
+    // MARK: - Weekly training log (last 7 days)
+
+    private var sessionDaysKey: String { "sessionDays_v1" }
+
+    /// Sorted array of ISO date strings for days when training occurred.
+    var sessionDays: [String] {
+        get { defaults.array(forKey: sessionDaysKey) as? [String] ?? [] }
+        set { defaults.set(newValue, forKey: sessionDaysKey) }
+    }
+
+    private func recordTrainingDay() {
+        let today = isoDay(Date())
+        var days = sessionDays
+        if !days.contains(today) {
+            days.append(today)
+            // Keep only last 60 days
+            if days.count > 60 { days = Array(days.suffix(60)) }
+            sessionDays = days
+        }
     }
 
     // MARK: - Daily challenge completion

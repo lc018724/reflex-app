@@ -238,8 +238,40 @@ struct HomeView: View {
                 .padding(.top, 14)
                 .padding(.horizontal, RTheme.pad)
             }
+
+            // Weekly training calendar
+            weeklyCalendar
+                .padding(.top, 16)
+                .padding(.horizontal, RTheme.pad)
         }
         .padding(.bottom, 32)
+    }
+
+    private var weeklyCalendar: some View {
+        let sessionDays = store.sessionDays
+        let formatter: DateFormatter = {
+            let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"; return f
+        }()
+        let today = Date()
+        let days = (0..<7).reversed().map { offset -> (label: String, key: String) in
+            let date = Calendar.current.date(byAdding: .day, value: -offset, to: today)!
+            let key = formatter.string(from: date)
+            let weekday = Calendar.current.shortWeekdaySymbols[Calendar.current.component(.weekday, from: date) - 1]
+            return (String(weekday.prefix(1)), key)
+        }
+        return HStack(spacing: 0) {
+            ForEach(Array(days.enumerated()), id: \.0) { _, day in
+                VStack(spacing: 4) {
+                    Circle()
+                        .fill(sessionDays.contains(day.key) ? RTheme.gold : RTheme.faint.opacity(0.25))
+                        .frame(width: 9, height: 9)
+                    Text(day.label)
+                        .font(RTheme.mono(8))
+                        .foregroundStyle(RTheme.faint)
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
     }
 
     private func heroStat(label: String, value: String) -> some View {
