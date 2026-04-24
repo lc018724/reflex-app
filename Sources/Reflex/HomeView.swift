@@ -680,16 +680,22 @@ struct ModeCard: View {
                             .font(.system(size: 22))
                         Spacer()
                         if let ms = best {
-                            HStack(spacing: 3) {
-                                let trend = trendArrow
-                                if trend.show {
-                                    Image(systemName: trend.up ? "arrow.down" : "arrow.up")
-                                        .font(.system(size: 8, weight: .bold))
-                                        .foregroundStyle(trend.up ? RTheme.green : RTheme.red)
+                            VStack(alignment: .trailing, spacing: 2) {
+                                HStack(spacing: 3) {
+                                    let trend = trendArrow
+                                    if trend.show {
+                                        Image(systemName: trend.up ? "arrow.down" : "arrow.up")
+                                            .font(.system(size: 8, weight: .bold))
+                                            .foregroundStyle(trend.up ? RTheme.green : RTheme.red)
+                                    }
+                                    Text(String(format: "%.0f", ms))
+                                        .font(RTheme.mono(13, weight: .bold))
+                                        .foregroundStyle(msColor(ms))
                                 }
-                                Text(String(format: "%.0f", ms))
-                                    .font(RTheme.mono(13, weight: .bold))
-                                    .foregroundStyle(msColor(ms))
+                                Text(ReactionBenchmarks.label(ms: ms).uppercased())
+                                    .font(RTheme.mono(7, weight: .bold))
+                                    .foregroundStyle(msColor(ms).opacity(0.75))
+                                    .tracking(1.5)
                             }
                         } else {
                             Image(systemName: "chevron.right")
