@@ -126,6 +126,7 @@ final class TestStore {
         defaults.removeObject(forKey: "avoidArcade_highScore")
         defaults.removeObject(forKey: "memoryArcade_highScore")
         defaults.removeObject(forKey: "gauntlet_bestAvg")
+        defaults.removeObject(forKey: "gauntlet_history")
         defaults.removeObject(forKey: sessionDaysKey)
     }
 
@@ -179,5 +180,13 @@ final class TestStore {
         if existing == 0 || avg < existing {
             defaults.set(avg, forKey: "gauntlet_bestAvg")
         }
+        var hist = gauntletHistory
+        hist.append(avg)
+        if hist.count > 10 { hist = Array(hist.suffix(10)) }
+        defaults.set(hist, forKey: "gauntlet_history")
+    }
+
+    var gauntletHistory: [Double] {
+        defaults.array(forKey: "gauntlet_history") as? [Double] ?? []
     }
 }

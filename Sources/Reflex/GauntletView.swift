@@ -47,9 +47,17 @@ struct GauntletEntryCard: View {
                         .font(RTheme.rounded(17, weight: .bold))
                         .foregroundStyle(RTheme.white)
                     if let best = store.gauntletBestAvg {
-                        Text("BEST \(String(format: "%.0f", best))ms · \(ReactionBenchmarks.label(ms: best).uppercased())")
-                            .font(RTheme.mono(9))
-                            .foregroundStyle(speedColor(best))
+                        HStack(spacing: 8) {
+                            Text("BEST \(String(format: "%.0f", best))ms · \(ReactionBenchmarks.label(ms: best).uppercased())")
+                                .font(RTheme.mono(9))
+                                .foregroundStyle(speedColor(best))
+                            let hist = store.gauntletHistory
+                            if hist.count >= 3 {
+                                SparklineView(values: hist)
+                                    .frame(width: 50, height: 16)
+                                    .opacity(0.8)
+                            }
+                        }
                     } else {
                         Text("All tiers · composite score")
                             .font(RTheme.mono(10))
