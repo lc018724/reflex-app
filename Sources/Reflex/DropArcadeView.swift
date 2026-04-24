@@ -154,6 +154,7 @@ struct DropArcadeView: View {
 
     private var ballField: some View {
         GeometryReader { geo in
+            let spacing = geo.size.width / CGFloat(5 + 1)
             ZStack {
                 // Floor indicator
                 Rectangle()
@@ -176,7 +177,6 @@ struct DropArcadeView: View {
                 }
 
                 // Balls
-                let spacing = geo.size.width / CGFloat(5 + 1)
                 ForEach(0..<5, id: \.self) { i in
                     ballView(index: i, spacing: spacing, geoSize: geo.size)
                 }
@@ -186,6 +186,12 @@ struct DropArcadeView: View {
                     BurstView(burst: burst)
                         .position(x: burst.x, y: burst.y)
                 }
+            }
+            .onChange(of: game.lastHitBallIndex) { _, idx in
+                guard idx >= 0 else { return }
+                let bx = spacing * CGFloat(idx + 1)
+                let by = geo.size.height * 0.5
+                game.bursts.append(Burst(x: bx, y: by))
             }
         }
         .frame(height: 500)
@@ -391,6 +397,7 @@ final class DropArcadeGame: ObservableObject {
     @Published var missedIndex: Int = -1
     @Published var missScale: CGFloat = 1.0
     @Published var missOpacity: Double = 1.0
+    @Published var lastHitBallIndex: Int = -1  // index of the ball that was just hit
 
     var fallDuration: Double { max(0.45, 2.0 - Double(level - 1) * 0.18) }
 
@@ -471,12 +478,10 @@ final class DropArcadeGame: ObservableObject {
             hitOpacity = 0
         }
 
-        // Burst particles (approximate position — resets anyway)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            self.bursts.append(Burst(x: 0, y: 0))
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.bursts.removeAll()
-            }
+        // Burst particles — position is calculated by the view using lastHitBallIndex
+        lastHitBallIndex = tappedIdx
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.bursts.removeAll()
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
@@ -526,5 +531,6 @@ final class DropArcadeGame: ObservableObject {
         missScale = 1.0
         missOpacity = 1.0
         bursts = []
+        lastHitBallIndex = -1
     }
 }

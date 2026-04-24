@@ -367,7 +367,7 @@ private struct RadarChartView: View {
         let angle = (2 * Double.pi / Double(n)) * Double(index) - Double.pi / 2
         let cx = rect.midX, cy = rect.midY
         let r = min(rect.width, rect.height) / 2 * 0.82
-        return CGPoint(x: cx + r * value * cos(angle), y: cy + r * value * sin(angle))
+        return CGPoint(x: cx + r * value * Foundation.cos(angle), y: cy + r * value * Foundation.sin(angle))
     }
 
     private func gridPoint(index: Int, scale: Double, in rect: CGRect) -> CGPoint {

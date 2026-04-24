@@ -149,10 +149,11 @@ class GridGame: ObservableObject {
 // MARK: - Main View
 
 struct GridArcadeView: View {
+    let onDismiss: () -> Void
+
     @StateObject private var game = GridGame()
     @State private var shakeOffset: CGFloat = 0
     @State private var prevLives = 3
-    @Environment(\.dismiss) private var dismiss
 
     private let cols = 4
     private let rows = 4
@@ -164,7 +165,7 @@ struct GridArcadeView: View {
             VStack(spacing: 0) {
                 // Top bar
                 HStack {
-                    Button(action: { dismiss() }) {
+                    Button(action: { onDismiss() }) {
                         Image(systemName: "xmark")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(RTheme.muted)
@@ -322,7 +323,7 @@ struct GridArcadeView: View {
 
             HStack(spacing: 16) {
                 GoldButton(label: "PLAY AGAIN", action: { game.start() }, fullWidth: false)
-                Button(action: { dismiss() }) {
+                Button(action: { onDismiss() }) {
                     Text("HOME")
                         .font(RTheme.mono(13, weight: .bold))
                         .foregroundStyle(RTheme.muted)

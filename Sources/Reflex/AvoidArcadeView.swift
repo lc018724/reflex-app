@@ -158,6 +158,7 @@ final class AvoidGame: ObservableObject {
                 if let idx = self.rings.firstIndex(where: { $0.id == ringID }) {
                     self.rings.remove(at: idx)
                     self.combo = 0
+                    self.missRing()
                 }
             }
         }
@@ -185,6 +186,14 @@ final class AvoidGame: ObservableObject {
         if lives <= 0 { gameOver() }
     }
 
+    func missRing() {
+        lives -= 1
+        if UserDefaults.standard.bool(forKey: "hapticsEnabled") {
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+        }
+        if lives <= 0 { gameOver() }
+    }
+
     private func gameOver() {
         stop()
         isGameOver = true
@@ -207,6 +216,7 @@ struct AvoidArcadeView: View {
     @State private var showGameOver = false
     @State private var shakeOffset: CGFloat = 0
     @State private var prevLives: Int = 3
+    @State private var fieldSize: CGSize = .zero
 
     var body: some View {
         ZStack {
@@ -332,7 +342,10 @@ struct AvoidArcadeView: View {
                     .padding(.top, 8)
                 }
             }
-            .onAppear { game.start(in: size) }
+            .onAppear {
+                fieldSize = size
+                game.start(in: size)
+            }
             .onDisappear { game.stop() }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -374,6 +387,7 @@ struct AvoidArcadeView: View {
                     withAnimation { showGameOver = false }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         prevLives = 3
+                        game.start(in: fieldSize)
                     }
                 }, fullWidth: true)
                 Button("BACK TO MENU") { game.stop(); onDismiss() }

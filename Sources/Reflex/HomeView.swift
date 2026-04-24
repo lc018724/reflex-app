@@ -773,7 +773,7 @@ struct ModeCard: View {
         }
         .buttonStyle(.plain)
         .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
+            DragGesture(minimumDistance: 10)
                 .onChanged { _ in withAnimation(.easeIn(duration: 0.07)) { pressed = true } }
                 .onEnded   { _ in withAnimation(.easeOut(duration: 0.15)) { pressed = false } }
         )
@@ -898,7 +898,7 @@ struct ArcadeCard: View {
         }
         .buttonStyle(.plain)
         .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
+            DragGesture(minimumDistance: 10)
                 .onChanged { _ in withAnimation(.easeIn(duration: 0.07)) { pressed = true } }
                 .onEnded   { _ in withAnimation(.easeOut(duration: 0.15)) { pressed = false } }
         )

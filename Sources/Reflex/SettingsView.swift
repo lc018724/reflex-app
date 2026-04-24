@@ -136,7 +136,7 @@ struct SettingsView: View {
         let streak = store.streak
 
         return LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-            statsBubble("COMPLETED", "\(bests.count)/21", RTheme.gold)
+            statsBubble("COMPLETED", "\(bests.count)/20", RTheme.gold)
             statsBubble("SESSIONS", "\(totalSessions)", RTheme.green)
             statsBubble("STREAK", "\(streak)🔥", RTheme.red)
             if let best = bests.min() {

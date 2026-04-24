@@ -529,9 +529,13 @@ struct GauntletView: View {
         TapGesture().onEnded {
             guard gauntletState == .testing else { return }
             let mode = currentIndex < gauntletModes.count ? gauntletModes[currentIndex] : .flash
+            // Only handle background taps for modes that use full-screen tap.
+            // Interactive modes (math, colorTap, stroop, etc.) handle taps
+            // through their own UI buttons via StimulusRouter.
+            let bgTapModes: Set<TestMode> = [.flash, .antiTap, .peripheral, .goNoGo, .nBack]
             switch engine.phase {
             case .waiting:
-                if [.flash, .antiTap, .goNoGo, .nBack, .peripheral].contains(mode) {
+                if bgTapModes.contains(mode) {
                     engine.handleTap()
                 }
             case .stimulus:
@@ -540,6 +544,7 @@ struct GauntletView: View {
                 } else if mode == .doubleFlash {
                     engine.handleDoubleFlashTap()
                 }
+                // All other modes: taps are handled by the interactive stimulus view
             default:
                 break
             }
