@@ -113,6 +113,7 @@ struct GauntletView: View {
     @State private var bgFlash: Color = RTheme.bg
     @State private var suppressTimer: Task<Void, Never>? = nil
     @State private var introTask: Task<Void, Never>? = nil
+    @State private var isNewBest: Bool = false
 
     private let impactLight = UIImpactFeedbackGenerator(style: .light)
     private let notif = UINotificationFeedbackGenerator()
@@ -353,6 +354,21 @@ struct GauntletView: View {
                                 .font(RTheme.mono(11, weight: .bold))
                                 .foregroundStyle(speedColor(composite))
                                 .tracking(3)
+                            if isNewBest {
+                                HStack(spacing: 5) {
+                                    Image(systemName: "crown.fill")
+                                        .font(.system(size: 10))
+                                    Text("NEW PERSONAL BEST")
+                                        .font(RTheme.mono(9, weight: .bold))
+                                        .tracking(2)
+                                }
+                                .foregroundStyle(RTheme.bg)
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 6)
+                                .background(RTheme.gold)
+                                .clipShape(Capsule())
+                                .transition(.scale(scale: 0.5).combined(with: .opacity))
+                            }
                         }
                         .padding(.top, 4)
                     }
@@ -409,6 +425,7 @@ struct GauntletView: View {
                         gauntletModes = buildGauntletModes()
                         results = gauntletModes.map { (mode: $0, ms: nil, isError: false) }
                         currentIndex = 0
+                        isNewBest = false
                         engine.reset()
                         startModeIntro()
                     }, fullWidth: true)
@@ -498,6 +515,8 @@ struct GauntletView: View {
             case .stimulus:
                 if [.flash, .antiTap, .peripheral].contains(mode) {
                     engine.handleTap()
+                } else if mode == .doubleFlash {
+                    engine.handleDoubleFlashTap()
                 }
             default:
                 break
@@ -604,9 +623,11 @@ struct GauntletView: View {
     private func advanceToNextMode() {
         currentIndex += 1
         if currentIndex >= gauntletModes.count {
-            // Save best avg before transitioning to done state
+            // Check and save best avg before transitioning to done state
             if let avg = compositeScore {
-                TestStore().updateGauntletBest(avg: avg)
+                let store = TestStore()
+                isNewBest = store.gauntletBestAvg == nil || avg < store.gauntletBestAvg!
+                store.updateGauntletBest(avg: avg)
             }
             withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                 gauntletState = .done

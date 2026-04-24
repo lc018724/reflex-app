@@ -273,6 +273,8 @@ struct TestView: View {
             case .stimulus:
                 if [.flash, .antiTap, .peripheral].contains(mode) {
                     engine.handleTap()
+                } else if mode == .doubleFlash {
+                    engine.handleDoubleFlashTap()
                 }
             default:
                 break
