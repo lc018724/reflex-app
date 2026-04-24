@@ -541,13 +541,14 @@ struct HomeView: View {
         .buttonStyle(.plain)
     }
 
-    // MARK: - Tier section
+    // MARK: - Tier section (horizontal carousel)
 
     private func tierSection(title: String, modes: [TestMode]) -> some View {
         let completedInTier = modes.filter { store.bestMS(for: $0) != nil }.count
         let tierColor = tierAccentColor(title)
 
         return VStack(alignment: .leading, spacing: 10) {
+            // Tier header
             HStack {
                 Circle()
                     .fill(tierColor)
@@ -566,31 +567,32 @@ struct HomeView: View {
             }
             .padding(.horizontal, RTheme.pad)
 
-            LazyVGrid(
-                columns: [GridItem(.flexible()), GridItem(.flexible())],
-                spacing: 10
-            ) {
-                ForEach(modes) { mode in
-                    ModeCard(mode: mode, best: store.bestMS(for: mode)) {
-                        onSelect(mode)
-                    }
-                    .contextMenu {
-                        if store.bestMS(for: mode) != nil {
-                            Button {
-                                historyMode = mode
-                            } label: {
-                                Label("View History", systemImage: "chart.line.uptrend.xyaxis")
-                            }
-                        }
-                        Button {
+            // Horizontal carousel of mode cards
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(modes) { mode in
+                        ModeCard(mode: mode, best: store.bestMS(for: mode)) {
                             onSelect(mode)
-                        } label: {
-                            Label("Play", systemImage: "play.fill")
+                        }
+                        .frame(width: 150)
+                        .contextMenu {
+                            if store.bestMS(for: mode) != nil {
+                                Button {
+                                    historyMode = mode
+                                } label: {
+                                    Label("View History", systemImage: "chart.line.uptrend.xyaxis")
+                                }
+                            }
+                            Button {
+                                onSelect(mode)
+                            } label: {
+                                Label("Play", systemImage: "play.fill")
+                            }
                         }
                     }
                 }
+                .padding(.horizontal, RTheme.pad)
             }
-            .padding(.horizontal, RTheme.pad)
         }
         .padding(.bottom, 20)
     }
@@ -698,7 +700,7 @@ struct HomeView: View {
     }
 }
 
-// MARK: - Mode Card
+// MARK: - Mode Card (compact vertical tile for horizontal carousel)
 
 struct ModeCard: View {
     let mode: TestMode
@@ -717,66 +719,73 @@ struct ModeCard: View {
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 0) {
-                // Left tier-color accent bar
+            VStack(spacing: 0) {
+                // Top accent bar
                 RoundedRectangle(cornerRadius: 2)
                     .fill(tierEdgeColor)
-                    .frame(width: 3)
-                    .padding(.leading, 8)
-                    .padding(.vertical, 10)
+                    .frame(height: 3)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
 
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text(mode.emoji)
-                            .font(.system(size: 22))
-                        Spacer()
-                        if let ms = best {
-                            VStack(alignment: .trailing, spacing: 2) {
-                                HStack(spacing: 3) {
-                                    let trend = trendArrow
-                                    if trend.show {
-                                        Image(systemName: trend.up ? "arrow.down" : "arrow.up")
-                                            .font(.system(size: 8, weight: .bold))
-                                            .foregroundStyle(trend.up ? RTheme.green : RTheme.red)
-                                    }
-                                    Text(String(format: "%.0f", ms))
-                                        .font(RTheme.mono(13, weight: .bold))
-                                        .foregroundStyle(msColor(ms))
-                                }
-                                Text(ReactionBenchmarks.label(ms: ms).uppercased())
-                                    .font(RTheme.mono(7, weight: .bold))
-                                    .foregroundStyle(msColor(ms).opacity(0.75))
-                                    .tracking(1.5)
-                            }
-                        } else {
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundStyle(RTheme.faint)
-                        }
+                VStack(spacing: 10) {
+                    // Emoji
+                    Text(mode.emoji)
+                        .font(.system(size: 28))
+                        .padding(.top, 6)
+
+                    // Title + subtitle
+                    VStack(spacing: 3) {
+                        Text(mode.title)
+                            .font(RTheme.rounded(14, weight: .bold))
+                            .foregroundStyle(RTheme.white)
+                            .tracking(1)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                        Text(mode.subtitle)
+                            .font(RTheme.mono(9))
+                            .foregroundStyle(RTheme.muted)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
                     }
 
-                    Text(mode.title)
-                        .font(RTheme.rounded(15, weight: .bold))
-                        .foregroundStyle(RTheme.white)
-                        .tracking(1)
-
-                    Text(mode.subtitle)
-                        .font(RTheme.mono(10))
-                        .foregroundStyle(RTheme.muted)
-                        .lineLimit(1)
+                    // Score or play indicator
+                    if let ms = best {
+                        VStack(spacing: 2) {
+                            HStack(spacing: 3) {
+                                let trend = trendArrow
+                                if trend.show {
+                                    Image(systemName: trend.up ? "arrow.down" : "arrow.up")
+                                        .font(.system(size: 7, weight: .bold))
+                                        .foregroundStyle(trend.up ? RTheme.green : RTheme.red)
+                                }
+                                Text(String(format: "%.0f", ms))
+                                    .font(RTheme.mono(16, weight: .bold))
+                                    .foregroundStyle(msColor(ms))
+                            }
+                            Text(ReactionBenchmarks.label(ms: ms).uppercased())
+                                .font(RTheme.mono(7, weight: .bold))
+                                .foregroundStyle(msColor(ms).opacity(0.75))
+                                .tracking(1.5)
+                        }
+                    } else {
+                        Text("PLAY")
+                            .font(RTheme.mono(9, weight: .bold))
+                            .foregroundStyle(RTheme.gold)
+                            .tracking(2)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 4)
+                            .background(RTheme.gold.opacity(0.12))
+                            .clipShape(Capsule())
+                    }
                 }
-                .padding(RTheme.padSm)
+                .padding(.horizontal, 10)
+                .padding(.bottom, 12)
             }
             .background(RTheme.surface)
             .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
-            .scaleEffect(pressed ? 0.96 : 1.0)
+            .scaleEffect(pressed ? 0.95 : 1.0)
         }
         .buttonStyle(.plain)
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 10)
-                .onChanged { _ in withAnimation(.easeIn(duration: 0.07)) { pressed = true } }
-                .onEnded   { _ in withAnimation(.easeOut(duration: 0.15)) { pressed = false } }
-        )
     }
 
     private var tierEdgeColor: Color {
