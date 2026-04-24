@@ -510,6 +510,14 @@ struct SessionSummaryView: View {
     private var validResults: [Double] { results.filter { $0 < 999 } }
     private var feet: Double { ReactionBenchmarks.drivingFeet(ms: avg) }
 
+    private var shareText: String {
+        let label = ReactionBenchmarks.label(ms: avg).uppercased()
+        let percentile = 100 - ReactionBenchmarks.percentile(ms: avg)
+        var text = "I just scored \(Int(avg))ms (\(label)) on \(mode.title) in REFLEX — top \(percentile)% worldwide."
+        if isNewBest { text += " New personal best! 🏆" }
+        return text
+    }
+
     var body: some View {
         ZStack {
             ScrollView(showsIndicators: false) {
@@ -718,11 +726,25 @@ struct SessionSummaryView: View {
                 // Buttons
                 VStack(spacing: 12) {
                     GoldButton(label: "PLAY AGAIN", action: onReplay, fullWidth: true)
-                    Button(action: onHome) {
-                        Text("HOME")
-                            .font(RTheme.rounded(14, weight: .semibold))
-                            .foregroundStyle(RTheme.muted)
-                            .tracking(3)
+                    HStack(spacing: 16) {
+                        Button(action: onHome) {
+                            Text("HOME")
+                                .font(RTheme.rounded(14, weight: .semibold))
+                                .foregroundStyle(RTheme.muted)
+                                .tracking(3)
+                        }
+                        if avg > 0 {
+                            ShareLink(item: shareText) {
+                                HStack(spacing: 5) {
+                                    Image(systemName: "square.and.arrow.up")
+                                        .font(.system(size: 12, weight: .semibold))
+                                    Text("SHARE")
+                                        .font(RTheme.mono(11, weight: .bold))
+                                        .tracking(1)
+                                }
+                                .foregroundStyle(RTheme.muted)
+                            }
+                        }
                     }
                 }
                 .padding(.bottom, 40)
