@@ -105,7 +105,7 @@ struct SettingsView: View {
                         settingsSection("ABOUT") {
                             settingsInfoRow("Version", "1.0")
                             Divider().overlay(RTheme.faint)
-                            settingsInfoRow("Tests", "21 cognitive + 6 arcade")
+                            settingsInfoRow("Tests", "20 cognitive + 6 arcade")
                             Divider().overlay(RTheme.faint)
                             settingsInfoRow("Data stored", "On device only")
                         }

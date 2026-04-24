@@ -518,6 +518,22 @@ struct SessionSummaryView: View {
         return text
     }
 
+    /// Returns the next suggested mode: prefer unplayed, else the mode with worst best score.
+    private var nextChallenge: TestMode? {
+        let store = TestStore()
+        let nonArcade = TestMode.allCases.filter { !$0.isArcade && $0 != mode }
+        // First: pick an unplayed mode in the same tier or adjacent
+        if let unplayed = nonArcade.first(where: { store.bestMS(for: $0) == nil }) {
+            return unplayed
+        }
+        // Otherwise: pick mode with worst best score
+        return nonArcade.max { a, b in
+            let aMs = store.bestMS(for: a) ?? 0
+            let bMs = store.bestMS(for: b) ?? 0
+            return aMs < bMs
+        }
+    }
+
     var body: some View {
         ZStack {
             ScrollView(showsIndicators: false) {
@@ -721,6 +737,40 @@ struct SessionSummaryView: View {
                         .font(RTheme.mono(11))
                         .foregroundStyle(RTheme.muted)
                         .multilineTextAlignment(.center)
+                }
+
+                // Next challenge suggestion
+                if let next = nextChallenge {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("NEXT CHALLENGE")
+                            .font(RTheme.mono(9, weight: .bold))
+                            .foregroundStyle(RTheme.faint)
+                            .tracking(3)
+                        HStack(spacing: 12) {
+                            Text(next.emoji)
+                                .font(.system(size: 22))
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(next.title)
+                                    .font(RTheme.rounded(14, weight: .semibold))
+                                    .foregroundStyle(RTheme.white)
+                                Text(next.subtitle)
+                                    .font(RTheme.mono(9))
+                                    .foregroundStyle(RTheme.muted)
+                                    .lineLimit(1)
+                            }
+                            Spacer()
+                            Text(TestStore().bestMS(for: next) != nil ? "IMPROVE" : "NEW")
+                                .font(RTheme.mono(8, weight: .bold))
+                                .foregroundStyle(RTheme.bg)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 3)
+                                .background(TestStore().bestMS(for: next) != nil ? RTheme.gold : RTheme.green)
+                                .clipShape(Capsule())
+                        }
+                        .padding(RTheme.padSm)
+                        .background(RTheme.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
+                    }
                 }
 
                 // Buttons
