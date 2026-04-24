@@ -22,7 +22,7 @@ struct HomeView: View {
         ("EXPERT",    [.simon, .speedSort, .rhythm, .dualTrack]),
     ]
 
-    private let arcadeModes: [TestMode] = [.dropArcade, .whackArcade, .chainArcade, .gridArcade, .avoidArcade]
+    private let arcadeModes: [TestMode] = [.dropArcade, .whackArcade, .chainArcade, .gridArcade, .avoidArcade, .memoryArcade]
 
     var body: some View {
         ZStack {
@@ -738,6 +738,7 @@ struct ArcadeCard: View {
         case .chainArcade:  return "chain grows longer"
         case .gridArcade:   return "more cells at once"
         case .avoidArcade:  return "balls multiply"
+        case .memoryArcade: return "cells multiply + less time"
         default:            return "speed escalates"
         }
     }

@@ -23,6 +23,7 @@
 		98074BADE6EDEF98A1D2DEC8 /* GridArcadeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E763BD3F681D428B47AC56F7 /* GridArcadeView.swift */; };
 		AC64987EDEADC85E30C0038D /* ReflexApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19B50FE40FAAAA58F039ED6 /* ReflexApp.swift */; };
 		CAA1D71521767F411F1AA180 /* TestStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCBE76E5BFA15569BF83E1E0 /* TestStore.swift */; };
+		CC6BB27B467BADC7ECE0791A /* MemoryArcadeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7385D994A558227EAE357236 /* MemoryArcadeView.swift */; };
 		D56DBCED39D908F692C26FE6 /* ReactionBenchmarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC5955442B15B6FC5629231 /* ReactionBenchmarks.swift */; };
 		E262B96F2D9FC9089955F198 /* ModeHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 599F7E4E4D1B590A4EAA2A13 /* ModeHistoryView.swift */; };
 		E7D355A0BFB1E0B1BE7D06E5 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65010F2C4C0E1E497F6FF4B /* Theme.swift */; };
@@ -40,6 +41,7 @@
 		599F7E4E4D1B590A4EAA2A13 /* ModeHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeHistoryView.swift; sourceTree = "<group>"; };
 		5D8459E653497BFDFD25FBB6 /* StimulusViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StimulusViews.swift; sourceTree = "<group>"; };
 		5FA910DC9BE3EE0240DCC7CA /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		7385D994A558227EAE357236 /* MemoryArcadeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryArcadeView.swift; sourceTree = "<group>"; };
 		9BC4C2D8EB629AC6230FA8EC /* RankingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankingsView.swift; sourceTree = "<group>"; };
 		A1C5B36563909BA528B229BB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B19B50FE40FAAAA58F039ED6 /* ReflexApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflexApp.swift; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 				E763BD3F681D428B47AC56F7 /* GridArcadeView.swift */,
 				506BF46EA4A1EBBE2821152F /* HomeView.swift */,
 				BC8E8B6AC631BCC380336539 /* Info.plist */,
+				7385D994A558227EAE357236 /* MemoryArcadeView.swift */,
 				599F7E4E4D1B590A4EAA2A13 /* ModeHistoryView.swift */,
 				5FA910DC9BE3EE0240DCC7CA /* Models.swift */,
 				F5D9A4050392FC3654AA94DD /* OnboardingView.swift */,
@@ -162,6 +165,7 @@
 				8B0ED9694C46E19FF4A95EA1 /* DropArcadeView.swift in Sources */,
 				98074BADE6EDEF98A1D2DEC8 /* GridArcadeView.swift in Sources */,
 				2ABB36A21ACE7617918F0268 /* HomeView.swift in Sources */,
+				CC6BB27B467BADC7ECE0791A /* MemoryArcadeView.swift in Sources */,
 				E262B96F2D9FC9089955F198 /* ModeHistoryView.swift in Sources */,
 				61736F1B45EBB24E7EDF8A5C /* Models.swift in Sources */,
 				8ED785712FA7B52B359AEC00 /* OnboardingView.swift in Sources */,

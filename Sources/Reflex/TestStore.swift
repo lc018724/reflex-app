@@ -99,6 +99,7 @@ final class TestStore {
         case .chainArcade:  key = "chainArcade_highScore"
         case .gridArcade:   key = "gridArcade_highScore"
         case .avoidArcade:  key = "avoidArcade_highScore"
+        case .memoryArcade: key = "memoryArcade_highScore"
         default: return nil
         }
         let v = defaults.integer(forKey: key)
@@ -122,5 +123,6 @@ final class TestStore {
         defaults.removeObject(forKey: "chainArcade_highScore")
         defaults.removeObject(forKey: "gridArcade_highScore")
         defaults.removeObject(forKey: "avoidArcade_highScore")
+        defaults.removeObject(forKey: "memoryArcade_highScore")
     }
 }

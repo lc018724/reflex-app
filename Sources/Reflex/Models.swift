@@ -28,6 +28,7 @@ enum TestMode: String, CaseIterable, Identifiable {
     case chainArcade   = "CHAIN"
     case gridArcade    = "GRID"
     case avoidArcade   = "AVOID"
+    case memoryArcade  = "MEMORY"
 
     var id: String { rawValue }
     var title: String { rawValue }
@@ -59,6 +60,7 @@ enum TestMode: String, CaseIterable, Identifiable {
         case .chainArcade:   return "⛓️"
         case .gridArcade:    return "🟦"
         case .avoidArcade:   return "🚫"
+        case .memoryArcade:  return "🧩"
         }
     }
 
@@ -89,6 +91,7 @@ enum TestMode: String, CaseIterable, Identifiable {
         case .chainArcade:   return "Tap in sequence"
         case .gridArcade:    return "Tap the lit cell"
         case .avoidArcade:   return "Tap rings, dodge balls"
+        case .memoryArcade:  return "Flash, memorize, recall"
         }
     }
 
@@ -144,6 +147,8 @@ enum TestMode: String, CaseIterable, Identifiable {
             return "A 4x4 grid. Cells light up at random — tap each lit cell before it fades. Multiple cells at higher levels."
         case .avoidArcade:
             return "Gold rings appear on screen — tap them fast. Danger balls bounce around. Tap a ball = life lost. Don't miss a ring."
+        case .memoryArcade:
+            return "A grid flashes — memorize which cells lit up. Then tap them all from memory. More cells + less time as you advance. 3 lives."
         }
     }
 
@@ -167,10 +172,11 @@ enum TestMode: String, CaseIterable, Identifiable {
         case .chainArcade:                                return 0
         case .gridArcade:                                 return 0
         case .avoidArcade:                                return 0
+        case .memoryArcade:                               return 0
         }
     }
 
-    var isArcade: Bool { self == .dropArcade || self == .whackArcade || self == .chainArcade || self == .gridArcade || self == .avoidArcade }
+    var isArcade: Bool { self == .dropArcade || self == .whackArcade || self == .chainArcade || self == .gridArcade || self == .avoidArcade || self == .memoryArcade }
 }
 
 // MARK: - Stimulus payload
