@@ -450,32 +450,46 @@ struct GauntletView: View {
     // MARK: - Shared top bar
 
     private var gauntletTopBar: some View {
-        HStack {
-            Button(action: {
-                introTask?.cancel()
-                suppressTimer?.cancel()
-                engine.reset()
-                onDismiss()
-            }) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(RTheme.muted)
-                    .frame(width: 36, height: 36)
-                    .background(RTheme.surface)
-                    .clipShape(Circle())
+        VStack(spacing: 10) {
+            HStack {
+                Button(action: {
+                    introTask?.cancel()
+                    suppressTimer?.cancel()
+                    engine.reset()
+                    onDismiss()
+                }) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(RTheme.muted)
+                        .frame(width: 36, height: 36)
+                        .background(RTheme.surface)
+                        .clipShape(Circle())
+                }
+                Spacer()
+                HStack(spacing: 6) {
+                    Image(systemName: "bolt.fill")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(RTheme.red)
+                    Text("GAUNTLET")
+                        .font(RTheme.mono(13, weight: .medium))
+                        .foregroundStyle(RTheme.muted)
+                        .tracking(4)
+                }
+                Spacer()
+                Color.clear.frame(width: 36, height: 36)
             }
-            Spacer()
-            HStack(spacing: 6) {
-                Image(systemName: "bolt.fill")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(RTheme.red)
-                Text("GAUNTLET")
-                    .font(RTheme.mono(13, weight: .medium))
-                    .foregroundStyle(RTheme.muted)
-                    .tracking(4)
+
+            // Progress capsules
+            if !gauntletModes.isEmpty {
+                HStack(spacing: 5) {
+                    ForEach(0..<gauntletModes.count, id: \.self) { i in
+                        Capsule()
+                            .fill(dotColor(at: i))
+                            .frame(width: i == currentIndex ? 18 : 7, height: 5)
+                            .animation(.spring(response: 0.3), value: currentIndex)
+                    }
+                }
             }
-            Spacer()
-            Color.clear.frame(width: 36, height: 36)
         }
         .padding(.horizontal, RTheme.pad)
         .padding(.top, 56)
@@ -617,6 +631,18 @@ struct GauntletView: View {
             }
             guard currentIndex < gauntletModes.count else { return }
             engine.startSession(mode: gauntletModes[currentIndex])
+
+            // Safety timeout: if no result within 10 seconds, force error and advance
+            try? await Task.sleep(nanoseconds: 10_000_000_000)
+            guard !Task.isCancelled else { return }
+            if gauntletState == .testing {
+                if currentIndex < results.count {
+                    results[currentIndex] = (mode: gauntletModes[currentIndex], ms: nil, isError: true)
+                }
+                engine.reset()
+                suppressTimer?.cancel()
+                advanceToNextMode()
+            }
         }
     }
 
