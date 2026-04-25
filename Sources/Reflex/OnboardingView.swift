@@ -12,7 +12,7 @@ struct OnboardingView: View {
         OnboardPage(
             emoji: "⚡️",
             title: "Train Your Reflexes",
-            body: "21 precision tests measuring your reaction speed, pattern recognition, and cognitive control.",
+            body: "20 precision tests measuring your reaction speed, pattern recognition, and cognitive control.",
             accent: RTheme.gold
         ),
         OnboardPage(
