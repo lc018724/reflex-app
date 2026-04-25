@@ -70,11 +70,11 @@ Mode observations:
 | DECODE | Works correctly, active run reached. | `screenshots/07-decode.png` |
 | ODD ONE | Works correctly, active run reached. | `screenshots/08-odd-one.png` |
 | MIRROR | Works correctly, active run reached. | `screenshots/09-mirror.png` |
-| CONTROL | Works correctly, active run reached. Correct no-tap scoring bug is covered in Phase 1. | `screenshots/10-control.png` |
+| CONTROL | Works correctly, active run reached. Initial no-tap scoring bug was fixed in Phase 3. | `screenshots/10-control.png` |
 | MATH | Works correctly, active run reached. | `screenshots/11-math.png` |
 | DARK | Works correctly, active run reached. | `screenshots/12-dark.png` |
 | SEQUENCE | Works correctly, active run reached. | `screenshots/13-sequence.png` |
-| N-BACK | Works correctly, active run reached. Correct no-tap scoring bug is covered in Phase 1. | `screenshots/14-n-back.png` |
+| N-BACK | Works correctly, active run reached. Initial no-tap scoring bug was fixed in Phase 3. | `screenshots/14-n-back.png` |
 | EDGE | Works correctly, active run reached. | `screenshots/15-edge.png` |
 | DOUBLE | Works correctly, active run reached. | `screenshots/16-double.png` |
 | DIGIT | Works correctly, active run reached. | `screenshots/17-digit.png` |
@@ -85,14 +85,14 @@ Mode observations:
 | GAUNTLET | Works correctly, countdown started without crash. | `screenshots/22-gauntlet.png` |
 | DROP | Works correctly, arcade loop started without crash. | `screenshots/23-drop.png` |
 | WHACK | Works correctly, arcade loop started without crash. | `screenshots/24-whack.png` |
-| CHAIN | Functional bug, game starts but close navigation lacks a ContentView dismissal path. | `screenshots/25-chain.png` |
-| GRID | Functional bug, game starts but close navigation lacks a ContentView dismissal path. | `screenshots/26-grid.png` |
+| CHAIN | Initial close navigation bug was fixed in Phase 3. Post-fix direct launch passed. | `screenshots/25-chain.png` |
+| GRID | Initial close navigation bug was fixed in Phase 3. Post-fix direct launch passed. | `screenshots/26-grid.png` |
 | AVOID | Works correctly, arcade loop started without crash. | `screenshots/27-avoid.png` |
 | MEMORY | Works correctly, arcade loop started without crash. | `screenshots/28-memory.png` |
 
-Findings:
+Findings from initial walkthrough:
 - Chain and Grid arcade screens are mounted directly by `ContentView` as `ChainArcadeView()` and `GridArcadeView()` without passing a dismissal closure, while their close buttons call `@Environment(\.dismiss)`. In this presentation path there is no sheet or navigation stack to dismiss, so the X button cannot reliably return to the home screen. Sources: `Sources/Reflex/ContentView.swift:68`, `Sources/Reflex/ContentView.swift:74`, `Sources/Reflex/ChainArcadeView.swift:154`, `Sources/Reflex/ChainArcadeView.swift:165`, `Sources/Reflex/GridArcadeView.swift:155`, `Sources/Reflex/GridArcadeView.swift:167`.
-- The first onboarding page says `21 precision tests`, but the catalog has 20 cognitive modes and 6 arcade modes. This is a minor content bug visible in `screenshots/01-launch.png`. Source: `Sources/Reflex/OnboardingView.swift:15`.
+- The first onboarding page said `21 precision tests`, but the catalog has 20 cognitive modes and 6 arcade modes. This was visible in the initial launch walkthrough before the Phase 3 screenshot refresh. Source: `Sources/Reflex/OnboardingView.swift:15`.
 
 ## Phase 3 fixes
 
@@ -100,3 +100,33 @@ Findings:
 - Fixed best-score storage so zero and negative timings are ignored and invalid existing values are treated as unset. Verified with focused unit test `TestStoreTests.testInvalidBestScoreDoesNotBlockFutureValidBest`.
 - Fixed Chain and Grid arcade dismissal by routing their close controls through explicit callbacks from `ContentView`. Verified with `xcodebuild -scheme Reflex -destination 'platform=iOS Simulator,name=iPhone 17' build`.
 - Corrected onboarding copy from 21 to 20 precision tests to match the non-arcade mode catalog. Verified with `xcodebuild -scheme Reflex -destination 'platform=iOS Simulator,name=iPhone 17' build`.
+
+## Final summary
+
+Status: completed.
+
+Final verification:
+- `xcodebuild test -scheme Reflex -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:ReflexTests`: passed, 18 unit tests, 0 failures.
+- `REFLEX_SCREENSHOT_DIR=/Users/paigeturner/.openclaw/workspace/projects/ReflexApp/screenshots xcodebuild test -scheme Reflex -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:ReflexUITests/WalkthroughUITests/testOpenEveryModeAndCaptureScreenshots`: passed, 1 UI test, 0 failures.
+- Screenshot inventory: 28 PNG files, including refreshed launch evidence with `20 precision tests`.
+- `rg -n "\x{2014}" Sources Tests GPT55_TEST_REPORT.md project.yml`: no matches.
+
+Totals:
+- Tests added: 19 total, 18 unit tests and 1 UI walkthrough test.
+- Final pass count: 19.
+- Final fail count: 0.
+- Bugs found: 4.
+- Bugs fixed: 4.
+- Bugs deferred: 0.
+
+Bugs fixed:
+- Correct no-tap CONTROL and N-BACK trials did not increment session progress.
+- Invalid zero or negative best-score values could block future valid best scores.
+- Chain and Grid close controls had no reliable route back to the home screen.
+- Onboarding copy listed 21 precision tests instead of 20.
+
+Approximate time spent:
+- Phase 1: 50 minutes.
+- Phase 2: 75 minutes.
+- Phase 3: 45 minutes.
+- Final verification and report: 25 minutes.
