@@ -64,6 +64,17 @@
                ReferencedContainer = "container:Reflex.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8B3495CD795C43BA3D109C43"
+               BuildableName = "ReflexUITests.xctest"
+               BlueprintName = "ReflexUITests"
+               ReferencedContainer = "container:Reflex.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>

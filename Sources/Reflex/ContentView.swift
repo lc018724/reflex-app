@@ -2,14 +2,49 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var engine = TestEngine()
-    @State private var activeMode: TestMode? = nil
-    @State private var showOnboarding = !UserDefaults.standard.bool(forKey: "didOnboard")
+    @State private var activeMode: TestMode? = Self.initialMode()
+    @State private var showDirectGauntlet = Self.shouldShowDirectGauntlet()
+    @State private var showOnboarding = Self.shouldShowOnboarding()
+    @State private var didStartInitialMode = false
+
+    private static func shouldShowOnboarding() -> Bool {
+        if ProcessInfo.processInfo.arguments.contains("REFLEX_SKIP_ONBOARDING") {
+            return false
+        }
+        return !UserDefaults.standard.bool(forKey: "didOnboard")
+    }
+
+    private static func shouldShowDirectGauntlet() -> Bool {
+        ProcessInfo.processInfo.arguments.contains("REFLEX_START_GAUNTLET")
+    }
+
+    private static func initialMode() -> TestMode? {
+        guard let rawValue = launchArgumentValue(after: "REFLEX_START_MODE") else {
+            return nil
+        }
+        return TestMode(rawValue: rawValue)
+    }
+
+    private static func launchArgumentValue(after key: String) -> String? {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: key) else {
+            return nil
+        }
+        let valueIndex = arguments.index(after: index)
+        guard arguments.indices.contains(valueIndex) else {
+            return nil
+        }
+        return arguments[valueIndex]
+    }
 
     var body: some View {
         ZStack {
             RTheme.bg.ignoresSafeArea()
 
-            if let mode = activeMode {
+            if showDirectGauntlet {
+                GauntletView { showDirectGauntlet = false }
+                    .transition(.opacity)
+            } else if let mode = activeMode {
                 if mode == .dropArcade {
                     DropArcadeView {
                         withAnimation(.easeInOut(duration: 0.2)) {
@@ -92,6 +127,13 @@ struct ContentView: View {
                 ))
                 .zIndex(99)
             }
+        }
+        .onAppear {
+            guard let mode = activeMode, !mode.isArcade, !didStartInitialMode else {
+                return
+            }
+            didStartInitialMode = true
+            engine.startSession(mode: mode)
         }
         .animation(.easeInOut(duration: 0.2), value: activeMode == nil)
         .animation(.spring(response: 0.4, dampingFraction: 0.85), value: showOnboarding)

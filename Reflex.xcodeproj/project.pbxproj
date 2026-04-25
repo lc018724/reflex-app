@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0DDEF8E85F15B66778229829 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C5B36563909BA528B229BB /* SettingsView.swift */; };
+		19C9928734D11AAACCB1236E /* WalkthroughUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85506FA7E0EDED2418D65689 /* WalkthroughUITests.swift */; };
 		1A8026571B2224A779CAE8A6 /* StimulusViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8459E653497BFDFD25FBB6 /* StimulusViews.swift */; };
 		2ABB36A21ACE7617918F0268 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506BF46EA4A1EBBE2821152F /* HomeView.swift */; };
 		2FD5E5DBE733338CC0D071A7 /* AvoidArcadeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6369809370D3ED17F0AD503 /* AvoidArcadeView.swift */; };
@@ -35,6 +36,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		239037D075E453FE08183F28 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1A5388A64CF148C546F840C8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 21502C22BC4A0FB01C9F15C5;
+			remoteInfo = Reflex;
+		};
 		C3F40EC5AD4D40A108325380 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1A5388A64CF148C546F840C8 /* Project object */;
@@ -45,6 +53,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		04A127841534B10C169CFFA7 /* ReflexUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ReflexUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EE323ACE7373D004E300FFF /* DropArcadeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropArcadeView.swift; sourceTree = "<group>"; };
 		14AFAE06CE74A46284E1A657 /* ConfettiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiView.swift; sourceTree = "<group>"; };
 		1A611F5D8FF81F09137983C9 /* WhackArcadeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhackArcadeView.swift; sourceTree = "<group>"; };
@@ -58,6 +67,7 @@
 		5FA910DC9BE3EE0240DCC7CA /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		6EFD45049FAF3E65E9A3BD0E /* TestEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestEngineTests.swift; sourceTree = "<group>"; };
 		7385D994A558227EAE357236 /* MemoryArcadeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryArcadeView.swift; sourceTree = "<group>"; };
+		85506FA7E0EDED2418D65689 /* WalkthroughUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalkthroughUITests.swift; sourceTree = "<group>"; };
 		944DFE813B108F5046B2349A /* TestStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestStoreTests.swift; sourceTree = "<group>"; };
 		9BC4C2D8EB629AC6230FA8EC /* RankingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankingsView.swift; sourceTree = "<group>"; };
 		A1C5B36563909BA528B229BB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -81,6 +91,7 @@
 			children = (
 				B4C9D59B29766C3CA0232DF3 /* Reflex */,
 				59F966580244AED31B5ECD0E /* ReflexTests */,
+				9D8B391EE1B6D38FB18ADFBB /* ReflexUITests */,
 				7350B4F4BC6D09093F775456 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -101,8 +112,18 @@
 			children = (
 				3EAE784E8E35762E81C8317F /* Reflex.app */,
 				CAA1310B2EF561C9D7F110C5 /* ReflexTests.xctest */,
+				04A127841534B10C169CFFA7 /* ReflexUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		9D8B391EE1B6D38FB18ADFBB /* ReflexUITests */ = {
+			isa = PBXGroup;
+			children = (
+				85506FA7E0EDED2418D65689 /* WalkthroughUITests.swift */,
+			);
+			name = ReflexUITests;
+			path = Tests/ReflexUITests;
 			sourceTree = "<group>";
 		};
 		B4C9D59B29766C3CA0232DF3 /* Reflex */ = {
@@ -174,6 +195,24 @@
 			productReference = CAA1310B2EF561C9D7F110C5 /* ReflexTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		8B3495CD795C43BA3D109C43 /* ReflexUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 401CA9A21E572950153A7C68 /* Build configuration list for PBXNativeTarget "ReflexUITests" */;
+			buildPhases = (
+				845035C1FE902B5803CC3ED4 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7180061921EBFCD23CEE172E /* PBXTargetDependency */,
+			);
+			name = ReflexUITests;
+			packageProductDependencies = (
+			);
+			productName = ReflexUITests;
+			productReference = 04A127841534B10C169CFFA7 /* ReflexUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -183,6 +222,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
+					8B3495CD795C43BA3D109C43 = {
+						TestTargetID = 21502C22BC4A0FB01C9F15C5;
+					};
 				};
 			};
 			buildConfigurationList = 354728B56DEF4A8E1A3CBB61 /* Build configuration list for PBXProject "Reflex" */;
@@ -201,6 +243,7 @@
 			targets = (
 				21502C22BC4A0FB01C9F15C5 /* Reflex */,
 				5D6F9BF8782F011C25172C6B /* ReflexTests */,
+				8B3495CD795C43BA3D109C43 /* ReflexUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -213,6 +256,14 @@
 				BE807D527DA9768E7FD990A9 /* ModelsTests.swift in Sources */,
 				3F321BBA76BB9F7F9FA9C24E /* TestEngineTests.swift in Sources */,
 				91912B472EF94D7105D9FC43 /* TestStoreTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		845035C1FE902B5803CC3ED4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				19C9928734D11AAACCB1236E /* WalkthroughUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,6 +299,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		7180061921EBFCD23CEE172E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 21502C22BC4A0FB01C9F15C5 /* Reflex */;
+			targetProxy = 239037D075E453FE08183F28 /* PBXContainerItemProxy */;
+		};
 		A08E69C2A9EF83AC7C98ACC3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 21502C22BC4A0FB01C9F15C5 /* Reflex */;
@@ -256,6 +312,25 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0EA5A7028635A3EAAC1E2A00 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lucky.ReflexUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Reflex;
+			};
+			name = Release;
+		};
 		1ED3470F5642A201EE12E3C3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -453,6 +528,25 @@
 			};
 			name = Debug;
 		};
+		B3C9C7460D8E0268B66D5EBD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lucky.ReflexUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Reflex;
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -461,6 +555,15 @@
 			buildConfigurations = (
 				3161197D70CACCEA5F3DF1E1 /* Debug */,
 				7C0BDA11119CE684CE080FA4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		401CA9A21E572950153A7C68 /* Build configuration list for PBXNativeTarget "ReflexUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B3C9C7460D8E0268B66D5EBD /* Debug */,
+				0EA5A7028635A3EAAC1E2A00 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

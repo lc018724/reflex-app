@@ -86,6 +86,8 @@ struct GauntletEntryCard: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("gauntlet-card")
+        .accessibilityLabel("GAUNTLET")
         .onAppear { pulse = true }
     }
 
