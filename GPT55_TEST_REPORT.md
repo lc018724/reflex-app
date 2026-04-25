@@ -97,3 +97,4 @@ Findings:
 ## Phase 3 fixes
 
 - Fixed correct no-tap session progression for CONTROL and N-BACK. Correct no-tap trials now increment trial progress before advancing. Verified with focused unit test `TestEngineTests.testCorrectNoTapTrialsCompleteNoGoSession`.
+- Fixed best-score storage so zero and negative timings are ignored and invalid existing values are treated as unset. Verified with focused unit test `TestStoreTests.testInvalidBestScoreDoesNotBlockFutureValidBest`.
