@@ -148,10 +148,11 @@ class ChainGame: ObservableObject {
 // MARK: - Main View
 
 struct ChainArcadeView: View {
+    let onDismiss: () -> Void
+
     @StateObject private var game = ChainGame()
     @State private var shakeOffset: CGFloat = 0
     @State private var prevLives = 3
-    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ZStack {
@@ -162,7 +163,7 @@ struct ChainArcadeView: View {
             VStack(spacing: 0) {
                 // Top bar
                 HStack {
-                    Button(action: { dismiss() }) {
+                    Button(action: onDismiss) {
                         Image(systemName: "xmark")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(RTheme.muted)
@@ -335,7 +336,7 @@ struct ChainArcadeView: View {
 
             HStack(spacing: 16) {
                 GoldButton(label: "PLAY AGAIN", action: { game.start() }, fullWidth: false)
-                Button(action: { dismiss() }) {
+                Button(action: onDismiss) {
                     Text("HOME")
                         .font(RTheme.mono(13, weight: .bold))
                         .foregroundStyle(RTheme.muted)

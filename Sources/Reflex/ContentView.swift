@@ -66,13 +66,21 @@ struct ContentView: View {
                         removal: .move(edge: .bottom).combined(with: .opacity)
                     ))
                 } else if mode == .chainArcade {
-                    ChainArcadeView()
+                    ChainArcadeView {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            activeMode = nil
+                        }
+                    }
                         .transition(.asymmetric(
                             insertion: .move(edge: .bottom).combined(with: .opacity),
                             removal: .move(edge: .bottom).combined(with: .opacity)
                         ))
                 } else if mode == .gridArcade {
-                    GridArcadeView()
+                    GridArcadeView {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            activeMode = nil
+                        }
+                    }
                         .transition(.asymmetric(
                             insertion: .move(edge: .bottom).combined(with: .opacity),
                             removal: .move(edge: .bottom).combined(with: .opacity)

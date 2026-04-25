@@ -98,3 +98,4 @@ Findings:
 
 - Fixed correct no-tap session progression for CONTROL and N-BACK. Correct no-tap trials now increment trial progress before advancing. Verified with focused unit test `TestEngineTests.testCorrectNoTapTrialsCompleteNoGoSession`.
 - Fixed best-score storage so zero and negative timings are ignored and invalid existing values are treated as unset. Verified with focused unit test `TestStoreTests.testInvalidBestScoreDoesNotBlockFutureValidBest`.
+- Fixed Chain and Grid arcade dismissal by routing their close controls through explicit callbacks from `ContentView`. Verified with `xcodebuild -scheme Reflex -destination 'platform=iOS Simulator,name=iPhone 17' build`.
