@@ -79,7 +79,7 @@ final class TestStore {
         if last == yesterday {
             streak += 1
         } else {
-            streak = 1  // Gap — reset
+            streak = 1  // Gap - reset
         }
         lastSessionDay = today
     }

@@ -829,7 +829,7 @@ struct ArcadeCard: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 16) {
-                // Animated mini preview — differs per mode
+                // Animated mini preview - differs per mode
                 arcadePreview
                     .frame(width: 64, height: 90)
 

@@ -109,7 +109,7 @@ struct RankingsView: View {
                                                 .font(RTheme.rounded(14))
                                                 .foregroundStyle(RTheme.faint)
                                             Spacer()
-                                            Text("—")
+                                            Text("-")
                                                 .font(RTheme.mono(12))
                                                 .foregroundStyle(RTheme.faint)
                                         }

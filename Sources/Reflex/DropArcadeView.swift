@@ -417,7 +417,7 @@ final class DropArcadeGame: ObservableObject {
         dropProgress = 0
         fallingIndex = -1
 
-        // Brief pause before next drop — shorter when in combo
+        // Brief pause before next drop - shorter when in combo
         let pause: Double = score == 0 ? 0.6 : (combo >= 3 ? 0.2 : 0.3)
 
         fallTask = Task {
@@ -437,7 +437,7 @@ final class DropArcadeGame: ObservableObject {
             guard !Task.isCancelled else { return }
 
             if fallingIndex == idx {
-                // Ball was not tapped — miss
+                // Ball was not tapped - miss
                 handleMiss(index: idx)
             }
         }
@@ -471,7 +471,7 @@ final class DropArcadeGame: ObservableObject {
             hitOpacity = 0
         }
 
-        // Burst particles (approximate position — resets anyway)
+        // Burst particles (approximate position - resets anyway)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             self.bursts.append(Burst(x: 0, y: 0))
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

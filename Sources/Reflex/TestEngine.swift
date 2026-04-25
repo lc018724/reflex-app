@@ -11,6 +11,7 @@ final class TestEngine: ObservableObject {
     private var delayTask: Task<Void, Never>?
     private var results: [Double] = []
     private var currentTrial: Int = 0
+    private let automaticallyAdvances: Bool
 
     // N-Back history
     private var nBackHistory: [String] = []
@@ -20,6 +21,10 @@ final class TestEngine: ObservableObject {
 
     // Double flash state
     private var flashesSeen: Int = 0
+
+    init(automaticallyAdvances: Bool = true) {
+        self.automaticallyAdvances = automaticallyAdvances
+    }
 
     // MARK: - Phase setter
     private func go(_ p: TestPhase) {
@@ -238,7 +243,7 @@ final class TestEngine: ObservableObject {
             return .doubleFlash(flashCount: 0)
 
         case .digitMatch:
-            // Shuffle 1-9, take 6 — guarantees no duplicate digits in the grid
+            // Shuffle 1-9, take 6 - guarantees no duplicate digits in the grid
             let digits = Array(Array(1...9).shuffled().prefix(6))
             let targetIdx = Int.random(in: 0..<6)
             return .digitMatch(items: digits, targetIndex: targetIdx)
@@ -459,6 +464,7 @@ final class TestEngine: ObservableObject {
     }
 
     private func scheduleAdvance(ms: Double?) {
+        guard automaticallyAdvances else { return }
         delayTask = Task {
             try? await Task.sleep(nanoseconds: 900_000_000)
             guard !Task.isCancelled else { return }

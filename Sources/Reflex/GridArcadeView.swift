@@ -2,7 +2,7 @@ import SwiftUI
 import AudioToolbox
 
 // MARK: - Grid Arcade Game
-// A fixed 4x4 grid of circles. One lights up at random — tap it before it fades.
+// A fixed 4x4 grid of circles. One lights up at random - tap it before it fades.
 // Multiple can light up at higher levels. Miss = lose a life.
 
 struct GridCell: Identifiable {

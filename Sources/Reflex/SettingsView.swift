@@ -248,7 +248,7 @@ struct SettingsView: View {
                             .font(RTheme.mono(13, weight: .bold))
                             .foregroundStyle(RTheme.gold)
                     } else {
-                        Text("—")
+                        Text("-")
                             .font(RTheme.mono(13))
                             .foregroundStyle(RTheme.faint)
                     }
@@ -271,7 +271,7 @@ struct SettingsView: View {
                         .font(RTheme.mono(13, weight: .bold))
                         .foregroundStyle(RTheme.red)
                 } else {
-                    Text("—")
+                    Text("-")
                         .font(RTheme.mono(13))
                         .foregroundStyle(RTheme.faint)
                 }

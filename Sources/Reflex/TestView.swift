@@ -229,7 +229,7 @@ struct TestView: View {
                         .foregroundStyle(msColor(ms).opacity(0.7))
                         .tracking(3)
 
-                    // NEW PB badge — only if this trial beats stored best
+                    // NEW PB badge - only if this trial beats stored best
                     if let pb = store.bestMS(for: mode), ms < pb {
                         HStack(spacing: 5) {
                             Image(systemName: "crown.fill")
@@ -513,7 +513,7 @@ struct SessionSummaryView: View {
     private var shareText: String {
         let label = ReactionBenchmarks.label(ms: avg).uppercased()
         let percentile = 100 - ReactionBenchmarks.percentile(ms: avg)
-        var text = "I just scored \(Int(avg))ms (\(label)) on \(mode.title) in REFLEX — top \(percentile)% worldwide."
+        var text = "I just scored \(Int(avg))ms (\(label)) on \(mode.title) in REFLEX - top \(percentile)% worldwide."
         if isNewBest { text += " New personal best! 🏆" }
         return text
     }

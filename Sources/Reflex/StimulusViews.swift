@@ -362,7 +362,7 @@ struct StroopView: View {
                     .foregroundStyle(correctColor.color)
             }
 
-            // Color buttons — always 4 choices, correct ink color guaranteed present
+            // Color buttons - always 4 choices, correct ink color guaranteed present
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                 ForEach(choices, id: \.name) { nc in
                     Button { onTap(nc.name) } label: {
@@ -629,7 +629,7 @@ struct SequenceInputView: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            Text("YOUR TURN — \(inputSoFar.count)/\(targetSteps.count)")
+            Text("YOUR TURN - \(inputSoFar.count)/\(targetSteps.count)")
                 .font(RTheme.mono(12, weight: .medium))
                 .foregroundStyle(RTheme.muted)
                 .tracking(3)
@@ -919,12 +919,12 @@ struct DualTrackView: View {
                 VStack(spacing: 6) {
                     switch phase {
                     case .showFirst(_):
-                        Text("WATCH — 1 OF 2")
+                        Text("WATCH - 1 OF 2")
                             .font(RTheme.mono(12, weight: .medium))
                             .foregroundStyle(RTheme.gold)
                             .tracking(3)
                     case .showSecond(_):
-                        Text("WATCH — 2 OF 2")
+                        Text("WATCH - 2 OF 2")
                             .font(RTheme.mono(12, weight: .medium))
                             .foregroundStyle(RTheme.gold)
                             .tracking(3)
