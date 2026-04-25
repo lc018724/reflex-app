@@ -93,3 +93,7 @@ Mode observations:
 Findings:
 - Chain and Grid arcade screens are mounted directly by `ContentView` as `ChainArcadeView()` and `GridArcadeView()` without passing a dismissal closure, while their close buttons call `@Environment(\.dismiss)`. In this presentation path there is no sheet or navigation stack to dismiss, so the X button cannot reliably return to the home screen. Sources: `Sources/Reflex/ContentView.swift:68`, `Sources/Reflex/ContentView.swift:74`, `Sources/Reflex/ChainArcadeView.swift:154`, `Sources/Reflex/ChainArcadeView.swift:165`, `Sources/Reflex/GridArcadeView.swift:155`, `Sources/Reflex/GridArcadeView.swift:167`.
 - The first onboarding page says `21 precision tests`, but the catalog has 20 cognitive modes and 6 arcade modes. This is a minor content bug visible in `screenshots/01-launch.png`. Source: `Sources/Reflex/OnboardingView.swift:15`.
+
+## Phase 3 fixes
+
+- Fixed correct no-tap session progression for CONTROL and N-BACK. Correct no-tap trials now increment trial progress before advancing. Verified with focused unit test `TestEngineTests.testCorrectNoTapTrialsCompleteNoGoSession`.

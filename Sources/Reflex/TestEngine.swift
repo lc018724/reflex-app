@@ -401,9 +401,9 @@ final class TestEngine: ObservableObject {
         guard case .stimulus(let stim) = phase else { return }
         switch stim {
         case .goNoGo(let isGo):
-            if isGo { recordError() } else { advanceTrial(ms: nil) }
+            if isGo { recordError() } else { recordCorrectNoTap() }
         case .nBack(_, let shouldTap):
-            if shouldTap { recordError() } else { advanceTrial(ms: nil) }
+            if shouldTap { recordError() } else { recordCorrectNoTap() }
         default:
             recordError()
         }
@@ -461,6 +461,11 @@ final class TestEngine: ObservableObject {
         let t = currentTrial; let total = mode.trialCount
         go(.result(ms: -1, trial: t, total: total, isError: true))
         scheduleAdvance(ms: nil)
+    }
+
+    private func recordCorrectNoTap() {
+        currentTrial += 1
+        advanceTrial(ms: nil)
     }
 
     private func scheduleAdvance(ms: Double?) {
