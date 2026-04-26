@@ -101,7 +101,7 @@ struct WhackArcadeView: View {
             VStack(spacing: 2) {
                 Text("\(game.score)")
                     .font(RTheme.mono(40, weight: .bold))
-                    .foregroundStyle(RTheme.gold)
+                    .foregroundStyle(RTheme.accent)
                     .contentTransition(.numericText())
                     .animation(.spring(response: 0.3), value: game.score)
                 Text("SCORE")
@@ -131,10 +131,10 @@ struct WhackArcadeView: View {
 
     private var levelColor: Color {
         switch game.level {
-        case 1: return RTheme.gold
+        case 1: return RTheme.accent
         case 2: return RTheme.green
         case 3...: return RTheme.red
-        default: return RTheme.gold
+        default: return RTheme.accent
         }
     }
 
@@ -175,17 +175,17 @@ struct WhackArcadeView: View {
         HStack(spacing: 5) {
             Image(systemName: "bolt.fill")
                 .font(.system(size: 10, weight: .bold))
-                .foregroundStyle(RTheme.bg)
+                .foregroundStyle(.white)
             Text("x\(game.combo) COMBO")
                 .font(RTheme.mono(11, weight: .bold))
-                .foregroundStyle(RTheme.bg)
+                .foregroundStyle(.white)
                 .tracking(2)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 5)
-        .background(RTheme.gold)
+        .background(RTheme.accent)
         .clipShape(Capsule())
-        .shadow(color: RTheme.gold.opacity(0.5), radius: 8)
+        .shadow(color: RTheme.accent.opacity(0.5), radius: 8)
         .transition(.scale(scale: 0.7).combined(with: .opacity))
     }
 
@@ -204,20 +204,20 @@ struct WhackArcadeView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "crown.fill")
                             .font(.system(size: 13))
-                            .foregroundStyle(RTheme.bg)
+                            .foregroundStyle(.white)
                         Text("NEW HIGH SCORE!")
                             .font(RTheme.mono(11, weight: .bold))
-                            .foregroundStyle(RTheme.bg)
+                            .foregroundStyle(.white)
                             .tracking(2)
                     }
                     .padding(.horizontal, 14)
                     .padding(.vertical, 7)
-                    .background(RTheme.gold)
+                    .background(RTheme.accent)
                     .clipShape(Capsule())
                 }
 
                 VStack(spacing: 16) {
-                    gameScoreRow("SCORE", "\(game.score)", RTheme.gold)
+                    gameScoreRow("SCORE", "\(game.score)", RTheme.accent)
                     gameScoreRow("HIGH SCORE", "\(game.best)", RTheme.green)
                     gameScoreRow("LEVEL", "\(game.level)", levelColor)
                 }
@@ -227,7 +227,7 @@ struct WhackArcadeView: View {
                 .padding(.horizontal, RTheme.pad)
 
                 VStack(spacing: 12) {
-                    GoldButton(label: "PLAY AGAIN", action: {
+                    PrimaryButton(label: "Play Again", action: {
                         withAnimation(.easeInOut(duration: 0.2)) { showGameOver = false }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                             game.reset()
@@ -316,7 +316,7 @@ struct FloatingScoreView: View {
     var body: some View {
         Text(fp.isCombo ? "+2 🔥" : "+1")
             .font(RTheme.mono(fp.isCombo ? 16 : 13, weight: .bold))
-            .foregroundStyle(fp.isCombo ? RTheme.gold : RTheme.green)
+            .foregroundStyle(fp.isCombo ? RTheme.accent : RTheme.green)
             .offset(y: offsetY)
             .opacity(opacity)
             .onAppear {
@@ -374,7 +374,7 @@ final class WhackGame: ObservableObject {
     var maxTargets: Int { min(4, 1 + (level / 2)) }
 
     private let targetColors: [Color] = [
-        RTheme.gold, RTheme.green, RTheme.red,
+        RTheme.accent, RTheme.green, RTheme.red,
         Color(red: 0.55, green: 0.35, blue: 0.95),
         Color(red: 0.30, green: 0.70, blue: 0.95)
     ]

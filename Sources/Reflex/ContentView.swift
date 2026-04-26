@@ -8,6 +8,9 @@ struct ContentView: View {
     @State private var didStartInitialMode = false
 
     private static func shouldShowOnboarding() -> Bool {
+        if ProcessInfo.processInfo.arguments.contains("REFLEX_FORCE_ONBOARDING") {
+            return true
+        }
         if ProcessInfo.processInfo.arguments.contains("REFLEX_SKIP_ONBOARDING") {
             return false
         }

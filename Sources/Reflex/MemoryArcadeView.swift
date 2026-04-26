@@ -99,7 +99,7 @@ struct MemoryArcadeView: View {
             VStack(spacing: 2) {
                 Text("\(game.score)")
                     .font(RTheme.mono(40, weight: .bold))
-                    .foregroundStyle(RTheme.gold)
+                    .foregroundStyle(RTheme.accent)
                     .contentTransition(.numericText())
                     .animation(.spring(response: 0.3), value: game.score)
                 Text("ROUNDS")
@@ -129,7 +129,7 @@ struct MemoryArcadeView: View {
 
     private var levelColor: Color {
         switch game.targetCount {
-        case ...4: return RTheme.gold
+        case ...4: return RTheme.accent
         case 5...6: return RTheme.green
         default: return RTheme.red
         }
@@ -141,7 +141,7 @@ struct MemoryArcadeView: View {
         VStack(spacing: 4) {
             Text(game.phaseLabel)
                 .font(RTheme.mono(18, weight: .bold))
-                .foregroundStyle(game.phase == .recall ? RTheme.white : RTheme.gold)
+                .foregroundStyle(game.phase == .recall ? RTheme.white : RTheme.accent)
                 .tracking(4)
                 .animation(.easeInOut(duration: 0.2), value: game.phaseLabel)
 
@@ -153,7 +153,7 @@ struct MemoryArcadeView: View {
                             .fill(RTheme.faint.opacity(0.3))
                             .frame(height: 3)
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(RTheme.gold)
+                            .fill(RTheme.accent)
                             .frame(width: geo.size.width * game.memorizeProgress, height: 3)
                             .animation(.linear(duration: 0.1), value: game.memorizeProgress)
                     }
@@ -222,20 +222,20 @@ struct MemoryArcadeView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "crown.fill")
                             .font(.system(size: 13))
-                            .foregroundStyle(RTheme.bg)
+                            .foregroundStyle(.white)
                         Text("NEW HIGH SCORE!")
                             .font(RTheme.mono(11, weight: .bold))
-                            .foregroundStyle(RTheme.bg)
+                            .foregroundStyle(.white)
                             .tracking(2)
                     }
                     .padding(.horizontal, 14)
                     .padding(.vertical, 7)
-                    .background(RTheme.gold)
+                    .background(RTheme.accent)
                     .clipShape(Capsule())
                 }
 
                 VStack(spacing: 16) {
-                    gameScoreRow("ROUNDS", "\(game.score)", RTheme.gold)
+                    gameScoreRow("ROUNDS", "\(game.score)", RTheme.accent)
                     gameScoreRow("BEST", "\(game.best)", RTheme.green)
                     gameScoreRow("MAX CELLS", "\(game.targetCount)", levelColor)
                 }
@@ -245,7 +245,7 @@ struct MemoryArcadeView: View {
                 .padding(.horizontal, RTheme.pad)
 
                 VStack(spacing: 12) {
-                    GoldButton(label: "PLAY AGAIN", action: {
+                    PrimaryButton(label: "Play Again", action: {
                         withAnimation(.easeInOut(duration: 0.2)) { showGameOver = false }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                             game.reset()
@@ -313,10 +313,10 @@ struct MemoryCellView: View {
     private var cellColor: Color {
         switch state {
         case .dark:    return RTheme.surface
-        case .lit:     return RTheme.gold
+        case .lit:     return RTheme.accent
         case .correct: return RTheme.green
         case .wrong:   return RTheme.red
-        case .missed:  return RTheme.gold.opacity(0.4)
+        case .missed:  return RTheme.accent.opacity(0.4)
         }
     }
 
@@ -326,7 +326,7 @@ struct MemoryCellView: View {
 
     private var glowColor: Color {
         switch state {
-        case .lit:     return RTheme.gold.opacity(0.6)
+        case .lit:     return RTheme.accent.opacity(0.6)
         case .correct: return RTheme.green.opacity(0.5)
         case .wrong:   return RTheme.red.opacity(0.5)
         default:       return .clear

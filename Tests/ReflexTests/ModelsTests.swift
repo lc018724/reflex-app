@@ -63,8 +63,8 @@ final class ModelsTests: XCTestCase {
     }
 
     func testValueTypeEqualityForSupportingModels() {
-        XCTAssertEqual(NamedColor(name: "GOLD", color: .yellow), NamedColor(name: "GOLD", color: .yellow))
-        XCTAssertNotEqual(NamedColor(name: "GOLD", color: .yellow), NamedColor(name: "BLUE", color: .blue))
+        XCTAssertEqual(NamedColor(name: "BLUE", color: .blue), NamedColor(name: "BLUE", color: .blue))
+        XCTAssertNotEqual(NamedColor(name: "BLUE", color: .blue), NamedColor(name: "GREEN", color: .green))
         XCTAssertEqual(LRDir.left, .left)
         XCTAssertNotEqual(LRDir.left, .right)
         XCTAssertEqual(OddStyle.symbol, .symbol)

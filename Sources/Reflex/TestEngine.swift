@@ -250,8 +250,8 @@ final class TestEngine: ObservableObject {
 
         case .simon:
             let colors: [NamedColor] = [
-                NamedColor(name: "GOLD", color: RTheme.gold),
-                NamedColor(name: "WHITE", color: .white)
+                NamedColor(name: "BLUE", color: RTheme.accent),
+                NamedColor(name: "GREEN", color: RTheme.green)
             ]
             let color = colors.randomElement()!
             let stimSide: LRDir = Bool.random() ? .left : .right

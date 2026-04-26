@@ -3,7 +3,7 @@ import UIKit
 import AudioToolbox
 
 // MARK: - Avoid Arcade Game
-// Danger balls bounce around the screen. Gold rings appear as targets.
+// Danger balls bounce around the screen. Rings appear as targets.
 // Tap a ring before it expires = +1 score. Tap a danger ball = -1 life.
 // More balls + faster rings each level.
 
@@ -264,7 +264,7 @@ struct AvoidArcadeView: View {
             VStack(spacing: 2) {
                 Text("\(game.score)")
                     .font(RTheme.mono(28, weight: .black))
-                    .foregroundStyle(RTheme.gold)
+                    .foregroundStyle(RTheme.accent)
                     .contentTransition(.numericText())
                 Text("SCORE").font(RTheme.mono(9)).foregroundStyle(RTheme.muted).tracking(2)
             }
@@ -319,11 +319,11 @@ struct AvoidArcadeView: View {
                             Spacer()
                             Text("x\(game.combo) COMBO")
                                 .font(RTheme.mono(11, weight: .black))
-                                .foregroundStyle(RTheme.gold)
+                                .foregroundStyle(RTheme.accent)
                                 .tracking(2)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 5)
-                                .background(RTheme.gold.opacity(0.12))
+                                .background(RTheme.accent.opacity(0.12))
                                 .clipShape(Capsule())
                                 .padding(.trailing, RTheme.pad)
                         }
@@ -350,7 +350,7 @@ struct AvoidArcadeView: View {
             VStack(spacing: 6) {
                 Text("\(game.score)")
                     .font(RTheme.mono(72, weight: .black))
-                    .foregroundStyle(RTheme.gold)
+                    .foregroundStyle(RTheme.accent)
                 Text("SCORE")
                     .font(RTheme.mono(11))
                     .foregroundStyle(RTheme.muted)
@@ -360,17 +360,17 @@ struct AvoidArcadeView: View {
             if game.score >= best && game.score > 0 {
                 Text("NEW HIGH SCORE")
                     .font(RTheme.mono(12, weight: .black))
-                    .foregroundStyle(RTheme.gold)
+                    .foregroundStyle(RTheme.accent)
                     .tracking(3)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 6)
-                    .background(RTheme.gold.opacity(0.12))
+                    .background(RTheme.accent.opacity(0.12))
                     .clipShape(Capsule())
-                    .overlay(Capsule().stroke(RTheme.gold.opacity(0.4), lineWidth: 1))
+                    .overlay(Capsule().stroke(RTheme.accent.opacity(0.4), lineWidth: 1))
             }
             Spacer()
             VStack(spacing: 12) {
-                GoldButton(label: "PLAY AGAIN", action: {
+                PrimaryButton(label: "Play Again", action: {
                     withAnimation { showGameOver = false }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         prevLives = 3
@@ -411,22 +411,22 @@ struct RingTargetView: View {
         ZStack {
             // Decay ring
             Circle()
-                .stroke(RTheme.gold.opacity(0.25), lineWidth: 4)
+                .stroke(RTheme.accent.opacity(0.25), lineWidth: 4)
                 .frame(width: size, height: size)
             Circle()
                 .trim(from: 0, to: progress)
-                .stroke(RTheme.gold, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                .stroke(RTheme.accent, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                 .frame(width: size, height: size)
                 .rotationEffect(.degrees(-90))
                 .animation(.linear(duration: ring.expiresAt.timeIntervalSinceNow), value: progress)
 
             // Inner target
             Circle()
-                .fill(RTheme.gold.opacity(0.15))
+                .fill(RTheme.accent.opacity(0.15))
                 .frame(width: size - 12, height: size - 12)
             Image(systemName: "plus")
                 .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(RTheme.gold)
+                .foregroundStyle(RTheme.accent)
         }
         .frame(width: size + 8, height: size + 8)
         .scaleEffect(scale)

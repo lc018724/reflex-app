@@ -103,7 +103,7 @@ struct DropArcadeView: View {
             VStack(spacing: 2) {
                 Text("\(game.score)")
                     .font(RTheme.mono(40, weight: .bold))
-                    .foregroundStyle(RTheme.gold)
+                    .foregroundStyle(RTheme.accent)
                     .contentTransition(.numericText())
                     .animation(.spring(response: 0.3), value: game.score)
                 if game.combo >= 3 {
@@ -131,7 +131,7 @@ struct DropArcadeView: View {
                     .animation(.spring(response: 0.3), value: game.level)
                 Text("BEST \(game.best)")
                     .font(RTheme.mono(9))
-                    .foregroundStyle(game.isNewBest ? RTheme.gold : RTheme.faint)
+                    .foregroundStyle(game.isNewBest ? RTheme.accent : RTheme.faint)
                     .tracking(2)
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
@@ -143,10 +143,10 @@ struct DropArcadeView: View {
 
     private var levelColor: Color {
         switch game.level {
-        case 1: return RTheme.gold
+        case 1: return RTheme.accent
         case 2: return RTheme.green
         case 3...: return RTheme.red
-        default: return RTheme.gold
+        default: return RTheme.accent
         }
     }
 
@@ -204,8 +204,8 @@ struct DropArcadeView: View {
         if isHit {
             // Explode out on hit
             Circle()
-                .fill(RTheme.gold)
-                .shadow(color: RTheme.gold, radius: 30)
+                .fill(RTheme.accent)
+                .shadow(color: RTheme.accent, radius: 30)
                 .frame(width: 52, height: 52)
                 .scaleEffect(game.hitScale)
                 .opacity(game.hitOpacity)
@@ -225,20 +225,20 @@ struct DropArcadeView: View {
                 // Trail
                 ForEach(0..<4, id: \.self) { t in
                     Circle()
-                        .fill(RTheme.gold.opacity(0.12 - Double(t) * 0.02))
+                        .fill(RTheme.accent.opacity(0.12 - Double(t) * 0.02))
                         .frame(width: 44 - CGFloat(t) * 4, height: 44 - CGFloat(t) * 4)
                         .offset(y: -CGFloat(t + 1) * 14 * game.dropProgress)
                 }
                 Circle()
                     .fill(
                         RadialGradient(
-                            colors: [Color.white.opacity(0.9), RTheme.gold],
+                            colors: [Color.white.opacity(0.9), RTheme.accent],
                             center: .center,
                             startRadius: 2,
                             endRadius: 22
                         )
                     )
-                    .shadow(color: RTheme.gold.opacity(0.9), radius: 18)
+                    .shadow(color: RTheme.accent.opacity(0.9), radius: 18)
                     .frame(width: 44, height: 44)
             }
             .position(x: xPos, y: fallY)
@@ -251,7 +251,7 @@ struct DropArcadeView: View {
                 .overlay(
                     Circle()
                         .stroke(
-                            game.fallingIndex < 0 ? RTheme.gold.opacity(0.5) : RTheme.faint,
+                            game.fallingIndex < 0 ? RTheme.accent.opacity(0.5) : RTheme.faint,
                             lineWidth: 2
                         )
                 )
@@ -276,20 +276,20 @@ struct DropArcadeView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "crown.fill")
                             .font(.system(size: 13))
-                            .foregroundStyle(RTheme.bg)
+                            .foregroundStyle(.white)
                         Text("NEW HIGH SCORE!")
                             .font(RTheme.mono(11, weight: .bold))
-                            .foregroundStyle(RTheme.bg)
+                            .foregroundStyle(.white)
                             .tracking(2)
                     }
                     .padding(.horizontal, 14)
                     .padding(.vertical, 7)
-                    .background(RTheme.gold)
+                    .background(RTheme.accent)
                     .clipShape(Capsule())
                 }
 
                 VStack(spacing: 16) {
-                    scoreRow(label: "SCORE", value: "\(game.score)", color: RTheme.gold)
+                    scoreRow(label: "SCORE", value: "\(game.score)", color: RTheme.accent)
                     scoreRow(label: "HIGH SCORE", value: "\(game.best)", color: RTheme.green)
                     scoreRow(label: "LEVEL", value: "\(game.level)", color: levelColor)
                 }
@@ -299,7 +299,7 @@ struct DropArcadeView: View {
                 .padding(.horizontal, RTheme.pad)
 
                 VStack(spacing: 12) {
-                    GoldButton(label: "PLAY AGAIN", action: {
+                    PrimaryButton(label: "Play Again", action: {
                         withAnimation(.easeInOut(duration: 0.2)) {
                             showGameOver = false
                         }
@@ -352,7 +352,7 @@ struct BurstView: View {
         ZStack {
             ForEach(0..<8, id: \.self) { i in
                 Circle()
-                    .fill(RTheme.gold.opacity(0.8))
+                    .fill(RTheme.accent.opacity(0.8))
                     .frame(width: 6, height: 6)
                     .offset(x: cos(Double(i) / 8 * .pi * 2) * 28 * scale,
                             y: sin(Double(i) / 8 * .pi * 2) * 28 * scale)

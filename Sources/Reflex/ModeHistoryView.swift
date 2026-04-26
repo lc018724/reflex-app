@@ -151,7 +151,7 @@ struct ModeHistoryView: View {
                                             if ms == history.min() {
                                                 Image(systemName: "crown.fill")
                                                     .font(.system(size: 9))
-                                                    .foregroundStyle(RTheme.gold)
+                                                    .foregroundStyle(RTheme.accent)
                                             }
                                         }
                                         .padding(.vertical, 8)
@@ -197,7 +197,7 @@ struct ModeHistoryView: View {
     private func msBarColor(_ ms: Double) -> Color {
         switch ms {
         case ..<200: return RTheme.green
-        case 200..<270: return RTheme.gold
+        case 200..<270: return RTheme.accent
         default: return RTheme.red
         }
     }
@@ -205,7 +205,7 @@ struct ModeHistoryView: View {
     private func msColor(_ ms: Double) -> Color {
         switch ms {
         case ..<200: return RTheme.green
-        case 200..<270: return RTheme.gold
+        case 200..<270: return RTheme.accent
         default: return RTheme.red
         }
     }

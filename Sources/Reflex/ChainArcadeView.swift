@@ -217,7 +217,7 @@ struct ChainArcadeView: View {
                                 .tracking(2)
                             Text("\(game.nextRequired)")
                                 .font(RTheme.mono(18, weight: .black))
-                                .foregroundStyle(RTheme.gold)
+                                .foregroundStyle(RTheme.accent)
                                 .animation(.spring(response: 0.2), value: game.nextRequired)
                         }
                     }
@@ -295,12 +295,12 @@ struct ChainArcadeView: View {
             Text("⛓️").font(.system(size: 64))
             Text("CHAIN")
                 .font(RTheme.serif(36, weight: .black))
-                .foregroundStyle(RTheme.gold)
+                .foregroundStyle(RTheme.accent)
                 .tracking(6)
             Text("Tap targets in order")
                 .font(RTheme.mono(14))
                 .foregroundStyle(RTheme.muted)
-            GoldButton(label: "START", action: { game.start() }, fullWidth: false)
+            PrimaryButton(label: "Start", action: { game.start() }, fullWidth: false)
         }
     }
 
@@ -324,7 +324,7 @@ struct ChainArcadeView: View {
             if game.score >= game.highScore && game.highScore > 0 {
                 Text("NEW HIGH SCORE!")
                     .font(RTheme.mono(11, weight: .bold))
-                    .foregroundStyle(RTheme.gold)
+                    .foregroundStyle(RTheme.accent)
                     .tracking(3)
                     .transition(.scale)
             } else {
@@ -335,7 +335,7 @@ struct ChainArcadeView: View {
             }
 
             HStack(spacing: 16) {
-                GoldButton(label: "PLAY AGAIN", action: { game.start() }, fullWidth: false)
+                PrimaryButton(label: "Play Again", action: { game.start() }, fullWidth: false)
                 Button(action: onDismiss) {
                     Text("HOME")
                         .font(RTheme.mono(13, weight: .bold))
@@ -377,22 +377,22 @@ struct ChainTargetView: View {
             // Decay ring
             Circle()
                 .trim(from: 0, to: timeLeft)
-                .stroke(isNext ? RTheme.gold : RTheme.faint.opacity(0.5), lineWidth: 3)
+                .stroke(isNext ? RTheme.accent : RTheme.faint.opacity(0.5), lineWidth: 3)
                 .frame(width: 52, height: 52)
                 .rotationEffect(.degrees(-90))
                 .animation(.linear(duration: 0.2), value: timeLeft)
 
             Circle()
-                .fill(isNext ? RTheme.gold.opacity(0.18) : RTheme.surface)
+                .fill(isNext ? RTheme.accent.opacity(0.18) : RTheme.surface)
                 .frame(width: 46, height: 46)
                 .overlay(
                     Circle()
-                        .stroke(isNext ? RTheme.gold : RTheme.faint, lineWidth: 1.5)
+                        .stroke(isNext ? RTheme.accent : RTheme.faint, lineWidth: 1.5)
                 )
 
             Text("\(target.number)")
                 .font(RTheme.mono(isNext ? 18 : 15, weight: .black))
-                .foregroundStyle(isNext ? RTheme.gold : RTheme.white.opacity(0.7))
+                .foregroundStyle(isNext ? RTheme.accent : RTheme.white.opacity(0.7))
         }
         .scaleEffect(appeared ? (isNext ? 1.1 : 1.0) : 0.01)
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: appeared)

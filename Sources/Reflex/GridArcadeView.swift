@@ -216,10 +216,10 @@ struct GridArcadeView: View {
                             HStack(spacing: 4) {
                                 Text("x\(game.combo)")
                                     .font(RTheme.mono(12, weight: .black))
-                                    .foregroundStyle(RTheme.gold)
+                                    .foregroundStyle(RTheme.accent)
                                 Text("COMBO")
                                     .font(RTheme.mono(9, weight: .bold))
-                                    .foregroundStyle(RTheme.gold.opacity(0.7))
+                                    .foregroundStyle(RTheme.accent.opacity(0.7))
                                     .tracking(2)
                             }
                             .transition(.scale.combined(with: .opacity))
@@ -283,12 +283,12 @@ struct GridArcadeView: View {
             Text("🟦").font(.system(size: 64))
             Text("GRID")
                 .font(RTheme.serif(36, weight: .black))
-                .foregroundStyle(RTheme.gold)
+                .foregroundStyle(RTheme.accent)
                 .tracking(6)
             Text("Tap the lit cell before it fades")
                 .font(RTheme.mono(14))
                 .foregroundStyle(RTheme.muted)
-            GoldButton(label: "START", action: { game.start() }, fullWidth: false)
+            PrimaryButton(label: "Start", action: { game.start() }, fullWidth: false)
         }
     }
 
@@ -312,7 +312,7 @@ struct GridArcadeView: View {
             if game.score >= game.highScore && game.highScore > 0 {
                 Text("NEW HIGH SCORE!")
                     .font(RTheme.mono(11, weight: .bold))
-                    .foregroundStyle(RTheme.gold)
+                    .foregroundStyle(RTheme.accent)
                     .tracking(3)
             } else {
                 Text("BEST: \(game.highScore)")
@@ -322,7 +322,7 @@ struct GridArcadeView: View {
             }
 
             HStack(spacing: 16) {
-                GoldButton(label: "PLAY AGAIN", action: { game.start() }, fullWidth: false)
+                PrimaryButton(label: "Play Again", action: { game.start() }, fullWidth: false)
                 Button(action: onDismiss) {
                     Text("HOME")
                         .font(RTheme.mono(13, weight: .bold))
@@ -358,13 +358,13 @@ struct GridCellView: View {
         ZStack {
             RoundedRectangle(cornerRadius: size * 0.22)
                 .fill(cell.isActive
-                    ? RTheme.gold.opacity(0.9)
+                    ? RTheme.accent.opacity(0.9)
                     : RTheme.surface)
                 .overlay(
                     RoundedRectangle(cornerRadius: size * 0.22)
-                        .stroke(cell.isActive ? RTheme.gold : RTheme.faint.opacity(0.4), lineWidth: 1.5)
+                        .stroke(cell.isActive ? RTheme.accent : RTheme.faint.opacity(0.4), lineWidth: 1.5)
                 )
-                .shadow(color: cell.isActive ? RTheme.gold.opacity(0.6) : .clear, radius: 10)
+                .shadow(color: cell.isActive ? RTheme.accent.opacity(0.6) : .clear, radius: 10)
                 .scaleEffect(cell.isActive ? 1.05 : 1.0)
         }
         .frame(width: size, height: size)

@@ -45,7 +45,9 @@ struct TestView: View {
                         waitingView
 
                     case .stimulus(let data):
-                        StimulusRouter(data: data, mode: mode, engine: engine)
+                        StimulusRouter(data: data, mode: mode, engine: engine) { color in
+                            bgFlash = color
+                        }
                             .transition(.opacity.combined(with: .scale(scale: 0.92)))
 
                     case .tooSoon:
@@ -90,17 +92,16 @@ struct TestView: View {
                     Image(systemName: "xmark")
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(RTheme.muted)
-                        .frame(width: 36, height: 36)
-                        .background(RTheme.surface)
+                        .frame(width: 44, height: 44)
+                        .background(RTheme.elevated)
                         .clipShape(Circle())
                 }
                 Spacer()
                 Text(mode.title)
-                    .font(RTheme.mono(13, weight: .medium))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(RTheme.muted)
-                    .tracking(3)
                 Spacer()
-                Color.clear.frame(width: 36, height: 36)
+                Color.clear.frame(width: 44, height: 44)
             }
 
             // Trial progress dots
@@ -108,7 +109,7 @@ struct TestView: View {
                 HStack(spacing: 6) {
                     ForEach(0..<total, id: \.self) { i in
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(i < trial ? RTheme.gold : RTheme.faint)
+                            .fill(i < trial ? RTheme.accent : RTheme.faint)
                             .frame(width: i < trial ? 16 : 10, height: 4)
                             .animation(.spring(response: 0.25), value: trial)
                     }
@@ -118,7 +119,7 @@ struct TestView: View {
                 HStack(spacing: 6) {
                     ForEach(0..<total, id: \.self) { i in
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(i < trialsDone ? RTheme.gold : RTheme.faint)
+                            .fill(i < trialsDone ? RTheme.accent : RTheme.faint)
                             .frame(width: i < trialsDone ? 16 : 10, height: 4)
                             .animation(.spring(response: 0.25), value: trialsDone)
                     }
@@ -154,7 +155,7 @@ struct TestView: View {
 
             Circle()
                 .trim(from: 0, to: n == 0 ? 0 : CGFloat(n) / 3.0)
-                .stroke(n == 0 ? RTheme.muted : RTheme.gold, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                .stroke(n == 0 ? RTheme.muted : RTheme.accent, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                 .rotationEffect(.degrees(-90))
                 .frame(width: 120, height: 120)
                 .animation(.easeOut(duration: 0.25), value: n)
@@ -163,7 +164,7 @@ struct TestView: View {
                 .font(n == 0
                       ? RTheme.rounded(28, weight: .black)
                       : RTheme.mono(72, weight: .bold))
-                .foregroundStyle(n == 0 ? RTheme.gold : RTheme.white)
+                .foregroundStyle(n == 0 ? RTheme.accent : RTheme.white)
                 .contentTransition(.numericText())
         }
     }
@@ -238,10 +239,10 @@ struct TestView: View {
                                 .font(RTheme.mono(9, weight: .bold))
                                 .tracking(2)
                         }
-                        .foregroundStyle(RTheme.bg)
+                        .foregroundStyle(.white)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 6)
-                        .background(RTheme.gold)
+                        .background(RTheme.accent)
                         .clipShape(Capsule())
                         .transition(.scale(scale: 0.5).combined(with: .opacity))
                     }
@@ -252,7 +253,7 @@ struct TestView: View {
             HStack(spacing: 8) {
                 ForEach(0..<total, id: \.self) { i in
                     Circle()
-                        .fill(i < trial ? (i == trial-1 && isError ? RTheme.red : RTheme.gold) : RTheme.faint)
+                        .fill(i < trial ? (i == trial-1 && isError ? RTheme.red : RTheme.accent) : RTheme.faint)
                         .frame(width: 8, height: 8)
                         .animation(.easeIn(duration: 0.15), value: trial)
                 }
@@ -292,11 +293,11 @@ struct TestView: View {
         case .stimulus(let data):
             impactLight.impactOccurred()
             if case .flash = data {
-                bgFlash = RTheme.gold
+                bgFlash = RTheme.accent
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.09) { bgFlash = RTheme.bg }
             }
             if case .antiTap = data {
-                bgFlash = RTheme.gold
+                bgFlash = RTheme.accent
             }
 
             // Auto-advance suppression
@@ -367,7 +368,7 @@ struct TestView: View {
     private func msColor(_ ms: Double) -> Color {
         switch ms {
         case ..<200: return RTheme.green
-        case 200..<270: return RTheme.gold
+        case 200..<270: return RTheme.accent
         default: return RTheme.red
         }
     }
@@ -396,22 +397,19 @@ struct InstructionView: View {
         VStack(spacing: 28) {
             Text(mode.emoji)
                 .font(.system(size: 64))
-                .shadow(color: RTheme.gold.opacity(0.3), radius: 20)
 
             VStack(spacing: 10) {
                 Text(mode.title)
-                    .font(RTheme.serif(32, weight: .black))
-                    .foregroundStyle(RTheme.gold)
-                    .tracking(4)
+                    .font(.title.weight(.bold))
+                    .foregroundStyle(RTheme.white)
                 Text(mode.subtitle.uppercased())
-                    .font(RTheme.mono(11))
+                    .font(.subheadline.weight(.medium))
                     .foregroundStyle(RTheme.muted)
-                    .tracking(3)
             }
 
             Text(mode.instruction)
-                .font(RTheme.mono(14))
-                .foregroundStyle(RTheme.white.opacity(0.75))
+                .font(.body)
+                .foregroundStyle(RTheme.muted)
                 .multilineTextAlignment(.center)
                 .lineSpacing(5)
                 .padding(.horizontal, 8)
@@ -440,20 +438,20 @@ struct InstructionView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "trophy.fill")
                         .font(.system(size: 11))
-                        .foregroundStyle(RTheme.gold)
+                        .foregroundStyle(RTheme.accent)
                     Text("PERSONAL BEST  \(Int(pb))ms")
                         .font(RTheme.mono(11, weight: .bold))
-                        .foregroundStyle(RTheme.gold)
+                        .foregroundStyle(RTheme.accent)
                         .tracking(2)
                 }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(RTheme.gold.opacity(0.12))
+                .background(RTheme.accent.opacity(0.12))
                 .clipShape(Capsule())
-                .overlay(Capsule().stroke(RTheme.gold.opacity(0.3), lineWidth: 1))
+                .overlay(Capsule().stroke(RTheme.accent.opacity(0.3), lineWidth: 1))
             }
 
-            GoldButton(label: "START", action: onStart, fullWidth: false)
+            PrimaryButton(label: "Start", action: onStart, fullWidth: false)
                 .padding(.top, 4)
         }
         .padding(.horizontal, 32)
@@ -461,7 +459,7 @@ struct InstructionView: View {
 
     private func tierColor(_ tier: Int) -> Color {
         switch tier {
-        case 1: return RTheme.gold
+        case 1: return RTheme.accent
         case 2: return RTheme.green
         case 3: return Color(red: 0.55, green: 0.35, blue: 0.95)
         case 4: return Color(red: 0.30, green: 0.70, blue: 0.95)
@@ -546,15 +544,15 @@ struct SessionSummaryView: View {
                         HStack(spacing: 6) {
                             Image(systemName: "crown.fill")
                                 .font(.system(size: 13))
-                                .foregroundStyle(RTheme.bg)
+                                .foregroundStyle(.white)
                             Text("NEW PERSONAL BEST!")
                                 .font(RTheme.mono(11, weight: .bold))
-                                .foregroundStyle(RTheme.bg)
+                                .foregroundStyle(.white)
                                 .tracking(2)
                         }
                         .padding(.horizontal, 14)
                         .padding(.vertical, 7)
-                        .background(RTheme.gold)
+                        .background(RTheme.accent)
                         .clipShape(Capsule())
                     }
 
@@ -578,7 +576,7 @@ struct SessionSummaryView: View {
                         }
                         Text(ReactionBenchmarks.label(ms: avg).uppercased())
                             .font(RTheme.rounded(13, weight: .bold))
-                            .foregroundStyle(RTheme.gold)
+                            .foregroundStyle(RTheme.accent)
                             .tracking(3)
                     } else {
                         Text("NO VALID RESULTS")
@@ -697,7 +695,7 @@ struct SessionSummaryView: View {
 
                             let buckets: [(String, ClosedRange<Double>, Color)] = [
                                 ("ELITE", 0...199, RTheme.green),
-                                ("FAST", 200...269, RTheme.gold),
+                                ("FAST", 200...269, RTheme.accent),
                                 ("AVERAGE", 270...349, RTheme.muted),
                                 ("SLOW", 350...9999, RTheme.red),
                             ]
@@ -761,10 +759,10 @@ struct SessionSummaryView: View {
                             Spacer()
                             Text(TestStore().bestMS(for: next) != nil ? "IMPROVE" : "NEW")
                                 .font(RTheme.mono(8, weight: .bold))
-                                .foregroundStyle(RTheme.bg)
+                                .foregroundStyle(.white)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 3)
-                                .background(TestStore().bestMS(for: next) != nil ? RTheme.gold : RTheme.green)
+                                .background(TestStore().bestMS(for: next) != nil ? RTheme.accent : RTheme.green)
                                 .clipShape(Capsule())
                         }
                         .padding(RTheme.padSm)
@@ -775,7 +773,7 @@ struct SessionSummaryView: View {
 
                 // Buttons
                 VStack(spacing: 12) {
-                    GoldButton(label: "PLAY AGAIN", action: onReplay, fullWidth: true)
+                    PrimaryButton(label: "Play Again", action: onReplay, fullWidth: true)
                     HStack(spacing: 16) {
                         Button(action: onHome) {
                             Text("HOME")
@@ -834,7 +832,7 @@ struct SessionSummaryView: View {
     private func msColor(_ ms: Double) -> Color {
         switch ms {
         case ..<200: return RTheme.green
-        case 200..<270: return RTheme.gold
+        case 200..<270: return RTheme.accent
         default: return RTheme.red
         }
     }
@@ -858,7 +856,7 @@ struct PulsingWaitDot: View {
 
     private var dot: some View {
         Circle()
-            .fill(RTheme.gold.opacity(0.6))
+            .fill(RTheme.accent.opacity(0.6))
             .frame(width: 10, height: 10)
     }
 
@@ -914,7 +912,7 @@ struct TrialBarChart: View {
     private func barColor(_ ms: Double) -> Color {
         switch ms {
         case ..<200: return RTheme.green
-        case 200..<270: return RTheme.gold
+        case 200..<270: return RTheme.accent
         default: return RTheme.red.opacity(0.8)
         }
     }
@@ -946,7 +944,7 @@ struct SparklineView: View {
                         path.closeSubpath()
                     }
                     .fill(LinearGradient(
-                        colors: [RTheme.gold.opacity(0.25), RTheme.gold.opacity(0.02)],
+                        colors: [RTheme.accent.opacity(0.25), RTheme.accent.opacity(0.02)],
                         startPoint: .top,
                         endPoint: .bottom
                     ))
@@ -959,15 +957,15 @@ struct SparklineView: View {
                         for p in pts.dropFirst() { path.addLine(to: p) }
                     }
                     .trim(from: 0, to: drawn ? 1 : 0)
-                    .stroke(RTheme.gold, style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                    .stroke(RTheme.accent, style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
                     .animation(.easeOut(duration: 0.8), value: drawn)
                 }
 
                 // Last dot
                 if let last = pts.last {
                     Circle()
-                        .fill(RTheme.gold)
-                        .shadow(color: RTheme.gold.opacity(0.8), radius: 6)
+                        .fill(RTheme.accent)
+                        .shadow(color: RTheme.accent.opacity(0.8), radius: 6)
                         .frame(width: 8, height: 8)
                         .position(last)
                 }

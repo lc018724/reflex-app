@@ -13,7 +13,7 @@ struct OnboardingView: View {
             emoji: "⚡️",
             title: "Train Your Reflexes",
             body: "20 precision tests measuring your reaction speed, pattern recognition, and cognitive control.",
-            accent: RTheme.gold
+            accent: RTheme.accent
         ),
         OnboardPage(
             emoji: "🎯",
@@ -37,7 +37,7 @@ struct OnboardingView: View {
             emoji: "⚡️",
             title: "Gauntlet",
             body: "10-mode rapid-fire sprint across all difficulty tiers. One trial per mode, no warm-up - pure reflexes under pressure.",
-            accent: RTheme.gold
+            accent: RTheme.accent
         ),
     ]
 
@@ -73,7 +73,7 @@ struct OnboardingView: View {
 
                 // CTA
                 VStack(spacing: 12) {
-                    GoldButton(label: page < pages.count - 1 ? "NEXT" : "LET'S GO") {
+                    PrimaryButton(label: page < pages.count - 1 ? "Next" : "Get Started") {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
                             if page < pages.count - 1 {
                                 page += 1
@@ -110,12 +110,12 @@ struct OnboardingView: View {
 
             VStack(spacing: 14) {
                 Text(p.title)
-                    .font(RTheme.rounded(26, weight: .bold))
+                    .font(.title2.weight(.bold))
                     .foregroundStyle(RTheme.white)
                     .multilineTextAlignment(.center)
 
                 Text(p.body)
-                    .font(RTheme.mono(14))
+                    .font(.body)
                     .foregroundStyle(RTheme.muted)
                     .multilineTextAlignment(.center)
                     .lineSpacing(5)

@@ -48,6 +48,28 @@ final class WalkthroughUITests: XCTestCase {
         }
     }
 
+    func testCaptureCoreScreens() throws {
+        try FileManager.default.createDirectory(at: screenshotDirectory, withIntermediateDirectories: true)
+
+        let home = launchApp(arguments: [])
+        RunLoop.current.run(until: Date().addingTimeInterval(0.8))
+        try saveScreenshot(named: "01-home")
+
+        let settingsButton = home.buttons["settings-button"].firstMatch
+        XCTAssertTrue(settingsButton.waitForExistence(timeout: 2))
+        settingsButton.tap()
+        RunLoop.current.run(until: Date().addingTimeInterval(0.8))
+        try saveScreenshot(named: "01-settings")
+        home.terminate()
+
+        let onboarding = XCUIApplication()
+        onboarding.launchArguments = ["REFLEX_FORCE_ONBOARDING"]
+        onboarding.launch()
+        RunLoop.current.run(until: Date().addingTimeInterval(0.8))
+        try saveScreenshot(named: "01-onboarding")
+        onboarding.terminate()
+    }
+
     private func launchApp(arguments: [String]) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["REFLEX_SKIP_ONBOARDING"] + arguments
@@ -66,10 +88,10 @@ final class WalkthroughUITests: XCTestCase {
             return
         }
 
-        let startButton = app.buttons["START"].firstMatch
+        let startButton = app.buttons["Start"].firstMatch
         if startButton.waitForExistence(timeout: 2) {
             startButton.tap()
-            RunLoop.current.run(until: Date().addingTimeInterval(3.2))
+            RunLoop.current.run(until: Date().addingTimeInterval(5.8))
         }
     }
 

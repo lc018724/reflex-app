@@ -37,7 +37,7 @@ struct GauntletEntryCard: View {
                             .tracking(2)
                         Text("RAPID FIRE")
                             .font(RTheme.mono(8, weight: .bold))
-                            .foregroundStyle(RTheme.bg)
+                            .foregroundStyle(.white)
                             .padding(.horizontal, 5)
                             .padding(.vertical, 2)
                             .background(RTheme.red)
@@ -94,7 +94,7 @@ struct GauntletEntryCard: View {
     private func speedColor(_ ms: Double) -> Color {
         switch ms {
         case ..<200: return RTheme.green
-        case 200..<270: return RTheme.gold
+        case 200..<270: return RTheme.accent
         default: return RTheme.red
         }
     }
@@ -212,7 +212,7 @@ struct GauntletView: View {
                     HStack(spacing: 6) {
                         Text("\(currentIndex + 1)")
                             .font(RTheme.mono(13, weight: .bold))
-                            .foregroundStyle(RTheme.gold)
+                            .foregroundStyle(RTheme.accent)
                         Text("of 10")
                             .font(RTheme.mono(13))
                             .foregroundStyle(RTheme.faint)
@@ -228,7 +228,7 @@ struct GauntletView: View {
         if i < currentIndex {
             return results[i].isError ? RTheme.red : RTheme.green
         } else if i == currentIndex {
-            return RTheme.gold
+            return RTheme.accent
         } else {
             return RTheme.faint
         }
@@ -268,7 +268,9 @@ struct GauntletView: View {
                     }
 
                 case .stimulus(let data):
-                    StimulusRouter(data: data, mode: currentIndex < gauntletModes.count ? gauntletModes[currentIndex] : .flash, engine: engine)
+                    StimulusRouter(data: data, mode: currentIndex < gauntletModes.count ? gauntletModes[currentIndex] : .flash, engine: engine) { color in
+                        bgFlash = color
+                    }
                         .transition(.opacity.combined(with: .scale(scale: 0.92)))
 
                 case .tooSoon:
@@ -345,7 +347,7 @@ struct GauntletView: View {
                 VStack(spacing: 8) {
                     Image(systemName: "bolt.fill")
                         .font(.system(size: 36))
-                        .foregroundStyle(RTheme.gold)
+                        .foregroundStyle(RTheme.accent)
                     Text("GAUNTLET DONE")
                         .font(RTheme.mono(20, weight: .bold))
                         .foregroundStyle(RTheme.white)
@@ -372,10 +374,10 @@ struct GauntletView: View {
                                         .font(RTheme.mono(9, weight: .bold))
                                         .tracking(2)
                                 }
-                                .foregroundStyle(RTheme.bg)
+                                .foregroundStyle(.white)
                                 .padding(.horizontal, 14)
                                 .padding(.vertical, 6)
-                                .background(RTheme.gold)
+                                .background(RTheme.accent)
                                 .clipShape(Capsule())
                                 .transition(.scale(scale: 0.5).combined(with: .opacity))
                             }
@@ -431,7 +433,7 @@ struct GauntletView: View {
                 .padding(.horizontal, RTheme.pad)
 
                 VStack(spacing: 12) {
-                    GoldButton(label: "RUN AGAIN", action: {
+                    PrimaryButton(label: "Run Again", action: {
                         gauntletModes = buildGauntletModes()
                         results = gauntletModes.map { (mode: $0, ms: nil, isError: false) }
                         currentIndex = 0
@@ -514,13 +516,13 @@ struct GauntletView: View {
                 .frame(width: 120, height: 120)
             Circle()
                 .trim(from: 0, to: n == 0 ? 0 : CGFloat(n) / 3.0)
-                .stroke(n == 0 ? RTheme.muted : RTheme.gold, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                .stroke(n == 0 ? RTheme.muted : RTheme.accent, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                 .rotationEffect(.degrees(-90))
                 .frame(width: 120, height: 120)
                 .animation(.easeOut(duration: 0.25), value: n)
             Text(n == 0 ? "GO" : "\(n)")
                 .font(n == 0 ? RTheme.rounded(28, weight: .black) : RTheme.mono(72, weight: .bold))
-                .foregroundStyle(n == 0 ? RTheme.gold : RTheme.white)
+                .foregroundStyle(n == 0 ? RTheme.accent : RTheme.white)
                 .contentTransition(.numericText())
         }
     }
@@ -561,10 +563,10 @@ struct GauntletView: View {
         case .stimulus(let data):
             impactLight.impactOccurred()
             if case .flash = data {
-                bgFlash = RTheme.gold
+                bgFlash = RTheme.accent
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.09) { bgFlash = RTheme.bg }
             }
-            if case .antiTap = data { bgFlash = RTheme.gold }
+            if case .antiTap = data { bgFlash = RTheme.accent }
             switch data {
             case .goNoGo(let isGo) where !isGo:
                 scheduleNoTap(delay: 1.5)
@@ -696,7 +698,7 @@ struct GauntletView: View {
     private func speedColor(_ ms: Double) -> Color {
         switch ms {
         case ..<200: return RTheme.green
-        case 200..<270: return RTheme.gold
+        case 200..<270: return RTheme.accent
         default: return RTheme.red
         }
     }
