@@ -12,13 +12,13 @@ struct OnboardingView: View {
         OnboardPage(
             emoji: "⚡️",
             title: "Train Your Reflexes",
-            body: "21 precision tests measuring your reaction speed, pattern recognition, and cognitive control.",
+            body: "20 precision tests measuring your reaction speed, pattern recognition, and cognitive control.",
             accent: RTheme.gold
         ),
         OnboardPage(
             emoji: "🎯",
             title: "Every Mode Is Different",
-            body: "From a simple flash tap to Stroop tests and rhythm prediction — each challenges your brain in a new way.",
+            body: "From a simple flash tap to Stroop tests and rhythm prediction - each challenges your brain in a new way.",
             accent: RTheme.green
         ),
         OnboardPage(
@@ -30,13 +30,13 @@ struct OnboardingView: View {
         OnboardPage(
             emoji: "🕹️",
             title: "Arcade Mode",
-            body: "DROP, WHACK, CHAIN, GRID, AVOID, and MEMORY — 6 score-chasing arcade games with speed ramps, lives, and combo multipliers.",
+            body: "DROP, WHACK, CHAIN, GRID, AVOID, and MEMORY - 6 score-chasing arcade games with speed ramps, lives, and combo multipliers.",
             accent: RTheme.red
         ),
         OnboardPage(
             emoji: "⚡️",
             title: "Gauntlet",
-            body: "10-mode rapid-fire sprint across all difficulty tiers. One trial per mode, no warm-up — pure reflexes under pressure.",
+            body: "10-mode rapid-fire sprint across all difficulty tiers. One trial per mode, no warm-up - pure reflexes under pressure.",
             accent: RTheme.gold
         ),
     ]

@@ -18,9 +18,10 @@ final class TestStore {
     }
 
     func updateBest(ms: Double, for mode: TestMode) {
+        guard ms > 0 else { return }
         let key = "best_\(mode.rawValue)"
         let existing = defaults.double(forKey: key)
-        if existing == 0 || ms < existing {
+        if existing <= 0 || ms < existing {
             defaults.set(ms, forKey: key)
         }
     }
@@ -79,7 +80,7 @@ final class TestStore {
         if last == yesterday {
             streak += 1
         } else {
-            streak = 1  // Gap — reset
+            streak = 1  // Gap - reset
         }
         lastSessionDay = today
     }

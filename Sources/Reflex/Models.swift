@@ -100,15 +100,15 @@ enum TestMode: String, CaseIterable, Identifiable {
         case .flash:
             return "Tap the moment the circle appears"
         case .fallingBall:
-            return "One ball falls — tap it before it hits the bottom"
+            return "One ball falls - tap it before it hits the bottom"
         case .find:
             return "The target is shown at top. Tap it in the grid"
         case .colorTap:
             return "Tap the circle that matches the color shown at top"
         case .stroop:
-            return "Tap the COLOR the word is drawn in — ignore what the word says"
+            return "Tap the COLOR the word is drawn in - ignore what the word says"
         case .reverseStroop:
-            return "The prompt shows a word. Tap the box whose TEXT matches — ignore its color"
+            return "The prompt shows a word. Tap the box whose TEXT matches - ignore its color"
         case .oddOneOut:
             return "Three are the same. Tap the one that is different"
         case .mirror:
@@ -134,21 +134,21 @@ enum TestMode: String, CaseIterable, Identifiable {
         case .speedSort:
             return "Tap the HIGHEST number as fast as you can"
         case .rhythm:
-            return "A beat plays — tap when you feel the 4th beat will land"
+            return "A beat plays - tap when you feel the 4th beat will land"
         case .dualTrack:
             return "Two targets will flash. Tap both in any order"
         case .dropArcade:
-            return "5 balls wait at the top. One drops — tap it before it lands. Speed increases. 3 lives."
+            return "5 balls wait at the top. One drops - tap it before it lands. Speed increases. 3 lives."
         case .whackArcade:
             return "Targets pop up around the screen. Tap each one before it disappears. Don't miss or you lose a life."
         case .chainArcade:
-            return "Numbered targets appear. Tap them in order — 1, 2, 3... as fast as you can. Wrong tap = life lost."
+            return "Numbered targets appear. Tap them in order - 1, 2, 3... as fast as you can. Wrong tap = life lost."
         case .gridArcade:
-            return "A 4x4 grid. Cells light up at random — tap each lit cell before it fades. Multiple cells at higher levels."
+            return "A 4x4 grid. Cells light up at random - tap each lit cell before it fades. Multiple cells at higher levels."
         case .avoidArcade:
-            return "Gold rings appear on screen — tap them fast. Danger balls bounce around. Tap a ball = life lost. Don't miss a ring."
+            return "Gold rings appear on screen - tap them fast. Danger balls bounce around. Tap a ball = life lost. Don't miss a ring."
         case .memoryArcade:
-            return "A grid flashes — memorize which cells lit up. Then tap them all from memory. More cells + less time as you advance. 3 lives."
+            return "A grid flashes - memorize which cells lit up. Then tap them all from memory. More cells + less time as you advance. 3 lives."
         }
     }
 

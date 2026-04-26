@@ -772,6 +772,8 @@ struct ModeCard: View {
             .scaleEffect(pressed ? 0.96 : 1.0)
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("mode-card-\(mode.rawValue)")
+        .accessibilityLabel(mode.title)
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in withAnimation(.easeIn(duration: 0.07)) { pressed = true } }
@@ -829,7 +831,7 @@ struct ArcadeCard: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 16) {
-                // Animated mini preview — differs per mode
+                // Animated mini preview - differs per mode
                 arcadePreview
                     .frame(width: 64, height: 90)
 
@@ -897,6 +899,8 @@ struct ArcadeCard: View {
             .scaleEffect(pressed ? 0.97 : 1.0)
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("arcade-card-\(mode.rawValue)")
+        .accessibilityLabel(mode.title)
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in withAnimation(.easeIn(duration: 0.07)) { pressed = true } }

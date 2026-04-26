@@ -19,3 +19,44 @@ targets:
         CURRENT_PROJECT_VERSION: "1"
         SWIFT_VERSION: "5.9"
         INFOPLIST_FILE: Sources/Reflex/Info.plist
+
+  ReflexTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Tests/ReflexTests
+    dependencies:
+      - target: Reflex
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lucky.ReflexTests
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "5.9"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Reflex.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Reflex"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+
+  ReflexUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Tests/ReflexUITests
+    dependencies:
+      - target: Reflex
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lucky.ReflexUITests
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "5.9"
+
+schemes:
+  Reflex:
+    build:
+      targets:
+        Reflex: all
+        ReflexTests: [test]
+    test:
+      targets:
+        - ReflexTests
+        - ReflexUITests

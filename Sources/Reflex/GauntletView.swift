@@ -86,6 +86,8 @@ struct GauntletEntryCard: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("gauntlet-card")
+        .accessibilityLabel("GAUNTLET")
         .onAppear { pulse = true }
     }
 
@@ -415,7 +417,7 @@ struct GauntletView: View {
                                         .tracking(1)
                                 }
                             } else {
-                                Text("—")
+                                Text("-")
                                     .font(RTheme.mono(13))
                                     .foregroundStyle(RTheme.faint)
                             }
