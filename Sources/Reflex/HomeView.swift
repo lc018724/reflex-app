@@ -71,7 +71,7 @@ struct HomeView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(ms)-DAY STREAK!")
                                 .font(RTheme.mono(12, weight: .black))
-                                .foregroundStyle(RTheme.gold)
+                                .foregroundStyle(RTheme.accent)
                                 .tracking(2)
                             Text("Keep it going!")
                                 .font(RTheme.mono(10))
@@ -83,8 +83,8 @@ struct HomeView: View {
                     .padding(.vertical, 14)
                     .background(RTheme.surface)
                     .clipShape(RoundedRectangle(cornerRadius: RTheme.radius))
-                    .overlay(RoundedRectangle(cornerRadius: RTheme.radius).stroke(RTheme.gold.opacity(0.4), lineWidth: 1))
-                    .shadow(color: RTheme.gold.opacity(0.2), radius: 12)
+                    .overlay(RoundedRectangle(cornerRadius: RTheme.radius).stroke(RTheme.accent.opacity(0.4), lineWidth: 1))
+                    .shadow(color: RTheme.accent.opacity(0.2), radius: 12)
                     .padding(.horizontal, RTheme.pad)
                     .padding(.bottom, 32)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -154,40 +154,42 @@ struct HomeView: View {
             HStack {
                 Spacer()
                 Button {
+                    RTheme.playSelectionHaptic()
                     showRankings = true
                 } label: {
                     Image(systemName: "trophy.fill")
                         .font(.system(size: 14, weight: .medium))
                         .foregroundStyle(RTheme.muted)
-                        .frame(width: 36, height: 36)
-                        .background(RTheme.surface)
+                        .frame(width: 44, height: 44)
+                        .background(RTheme.elevated)
                         .clipShape(Circle())
                 }
+                .accessibilityIdentifier("rankings-button")
                 Button {
+                    RTheme.playSelectionHaptic()
                     showSettings = true
                 } label: {
                     Image(systemName: "gearshape.fill")
                         .font(.system(size: 16, weight: .medium))
                         .foregroundStyle(RTheme.muted)
-                        .frame(width: 36, height: 36)
-                        .background(RTheme.surface)
+                        .frame(width: 44, height: 44)
+                        .background(RTheme.elevated)
                         .clipShape(Circle())
                 }
+                .accessibilityIdentifier("settings-button")
             }
             .padding(.horizontal, RTheme.pad)
             .padding(.top, 56)
 
             // Title lockup
             VStack(spacing: 6) {
-                Text("REFLEX")
-                    .font(RTheme.serif(56, weight: .black))
-                    .foregroundStyle(RTheme.gold)
-                    .tracking(14)
+                Text("Reflex")
+                    .font(.largeTitle.weight(.bold))
+                    .foregroundStyle(RTheme.white)
 
-                Text("REACTION TRAINING")
-                    .font(RTheme.mono(10, weight: .medium))
+                Text("Reaction training")
+                    .font(.subheadline.weight(.medium))
                     .foregroundStyle(RTheme.muted)
-                    .tracking(5)
             }
             .padding(.top, 8)
 
@@ -224,7 +226,7 @@ struct HomeView: View {
                                 .fill(RTheme.faint.opacity(0.3))
                                 .frame(height: 4)
                             RoundedRectangle(cornerRadius: 3)
-                                .fill(RTheme.gold)
+                                .fill(RTheme.accent)
                                 .frame(width: geo.size.width * CGFloat(completedCount) / 20.0, height: 4)
                                 .animation(.spring(response: 0.5), value: completedCount)
                         }
@@ -241,20 +243,19 @@ struct HomeView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "star.fill")
                         .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(RTheme.gold)
-                    Text("ALL MODES MASTERED")
-                        .font(RTheme.mono(10, weight: .bold))
-                        .foregroundStyle(RTheme.gold)
-                        .tracking(3)
+                        .foregroundStyle(RTheme.accent)
+                    Text("All modes complete")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(RTheme.accent)
                     Image(systemName: "star.fill")
                         .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(RTheme.gold)
+                        .foregroundStyle(RTheme.accent)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(RTheme.gold.opacity(0.12))
+                .background(RTheme.accent.opacity(0.12))
                 .clipShape(Capsule())
-                .overlay(Capsule().stroke(RTheme.gold.opacity(0.3), lineWidth: 1))
+                .overlay(Capsule().stroke(RTheme.accent.opacity(0.3), lineWidth: 1))
                 .padding(.top, 14)
             }
 
@@ -282,7 +283,7 @@ struct HomeView: View {
             ForEach(Array(days.enumerated()), id: \.0) { _, day in
                 VStack(spacing: 4) {
                     Circle()
-                        .fill(sessionDays.contains(day.key) ? RTheme.gold : RTheme.faint.opacity(0.25))
+                        .fill(sessionDays.contains(day.key) ? RTheme.accent : RTheme.faint.opacity(0.25))
                         .frame(width: 9, height: 9)
                     Text(day.label)
                         .font(RTheme.mono(8))
@@ -460,17 +461,18 @@ struct HomeView: View {
         let isCompleted = store.isDailyChallengeCompletedToday(mode: mode)
 
         return Button {
+            RTheme.playSelectionHaptic()
             onSelect(mode)
         } label: {
             HStack(spacing: 16) {
                 ZStack {
                     Circle()
-                        .fill(RTheme.gold.opacity(isCompleted ? 0.15 : 0.1))
+                        .fill(RTheme.accent.opacity(isCompleted ? 0.15 : 0.1))
                         .frame(width: 52, height: 52)
                     if isCompleted {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 26))
-                            .foregroundStyle(RTheme.gold)
+                            .foregroundStyle(RTheme.accent)
                     } else {
                         Text(mode.emoji)
                             .font(.system(size: 26))
@@ -479,14 +481,13 @@ struct HomeView: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 6) {
-                        Text("DAILY CHALLENGE")
-                            .font(RTheme.mono(9, weight: .bold))
-                            .foregroundStyle(RTheme.gold.opacity(0.85))
-                            .tracking(2)
+                            Text("Daily Challenge")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(RTheme.accent.opacity(0.85))
                         if isCompleted {
                             Text("DONE")
                                 .font(RTheme.mono(8, weight: .bold))
-                                .foregroundStyle(RTheme.bg)
+                                .foregroundStyle(.white)
                                 .padding(.horizontal, 5)
                                 .padding(.vertical, 2)
                                 .background(RTheme.green)
@@ -521,21 +522,15 @@ struct HomeView: View {
                 } else {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(RTheme.gold.opacity(0.7))
+                        .foregroundStyle(RTheme.accent.opacity(0.7))
                 }
             }
             .padding(RTheme.padSm)
-            .background(
-                LinearGradient(
-                    colors: [RTheme.surface, RTheme.gold.opacity(0.07)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .clipShape(RoundedRectangle(cornerRadius: RTheme.radius))
+            .background(RTheme.elevated)
+            .clipShape(RoundedRectangle(cornerRadius: RTheme.radius, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: RTheme.radius)
-                    .stroke(RTheme.gold.opacity(0.3), lineWidth: 1)
+                RoundedRectangle(cornerRadius: RTheme.radius, style: .continuous)
+                    .stroke(RTheme.faint.opacity(0.35), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -597,7 +592,7 @@ struct HomeView: View {
 
     private func tierAccentColor(_ tier: String) -> Color {
         switch tier {
-        case "SPEED":     return RTheme.gold
+        case "SPEED":     return RTheme.accent
         case "ATTENTION": return RTheme.green
         case "COGNITION": return Color(red: 0.55, green: 0.35, blue: 0.95)
         case "MEMORY":    return Color(red: 0.30, green: 0.70, blue: 0.95)
@@ -617,7 +612,7 @@ struct HomeView: View {
 
             HStack(spacing: 8) {
                 benchmarkBubble("F1 driver", "150ms", RTheme.green)
-                benchmarkBubble("Elite athlete", "175ms", RTheme.gold)
+                benchmarkBubble("Elite athlete", "175ms", RTheme.accent)
                 benchmarkBubble("Average", "235ms", RTheme.muted)
                 benchmarkBubble("Impaired", "300ms+", RTheme.red)
             }
@@ -654,10 +649,10 @@ struct HomeView: View {
             HStack {
                 Text("CHALLENGE")
                     .font(RTheme.mono(10, weight: .bold))
-                    .foregroundStyle(RTheme.gold.opacity(0.8))
+                    .foregroundStyle(RTheme.accent.opacity(0.8))
                     .tracking(4)
                 Rectangle()
-                    .fill(RTheme.gold.opacity(0.25))
+                    .fill(RTheme.accent.opacity(0.25))
                     .frame(height: 1)
             }
             .padding(.horizontal, RTheme.pad)
@@ -673,10 +668,10 @@ struct HomeView: View {
             HStack {
                 Text("ARCADE")
                     .font(RTheme.mono(10, weight: .bold))
-                    .foregroundStyle(RTheme.gold.opacity(0.8))
+                    .foregroundStyle(RTheme.accent.opacity(0.8))
                     .tracking(4)
                 Rectangle()
-                    .fill(RTheme.gold.opacity(0.25))
+                    .fill(RTheme.accent.opacity(0.25))
                     .frame(height: 1)
             }
             .padding(.horizontal, RTheme.pad)
@@ -692,7 +687,7 @@ struct HomeView: View {
     private func speedColor(_ ms: Double) -> Color {
         switch ms {
         case ..<200: return RTheme.green
-        case 200..<270: return RTheme.gold
+        case 200..<270: return RTheme.accent
         default: return RTheme.red
         }
     }
@@ -716,7 +711,10 @@ struct ModeCard: View {
     }
 
     var body: some View {
-        Button(action: onTap) {
+        Button {
+            RTheme.playSelectionHaptic()
+            onTap()
+        } label: {
             HStack(spacing: 0) {
                 // Left tier-color accent bar
                 RoundedRectangle(cornerRadius: 2)
@@ -767,8 +765,8 @@ struct ModeCard: View {
                 }
                 .padding(RTheme.padSm)
             }
-            .background(RTheme.surface)
-            .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
+            .background(RTheme.elevated)
+            .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm, style: .continuous))
             .scaleEffect(pressed ? 0.96 : 1.0)
         }
         .buttonStyle(.plain)
@@ -783,7 +781,7 @@ struct ModeCard: View {
 
     private var tierEdgeColor: Color {
         switch mode.tier {
-        case 1: return RTheme.gold
+        case 1: return RTheme.accent
         case 2: return RTheme.green
         case 3: return Color(red: 0.55, green: 0.35, blue: 0.95)
         case 4: return Color(red: 0.30, green: 0.70, blue: 0.95)
@@ -795,7 +793,7 @@ struct ModeCard: View {
     private func msColor(_ ms: Double) -> Color {
         switch ms {
         case ..<200: return RTheme.green
-        case 200..<270: return RTheme.gold
+        case 200..<270: return RTheme.accent
         default: return RTheme.red
         }
     }
@@ -829,7 +827,10 @@ struct ArcadeCard: View {
     }
 
     var body: some View {
-        Button(action: onTap) {
+        Button {
+            RTheme.playSelectionHaptic()
+            onTap()
+        } label: {
             HStack(spacing: 16) {
                 // Animated mini preview - differs per mode
                 arcadePreview
@@ -841,17 +842,17 @@ struct ArcadeCard: View {
                             .font(.system(size: 22))
                         Text(mode.title)
                             .font(RTheme.rounded(20, weight: .bold))
-                            .foregroundStyle(RTheme.gold)
+                            .foregroundStyle(RTheme.accent)
                             .tracking(2)
                         if let hs = store.highScore(for: mode) {
                             Spacer()
                             HStack(spacing: 3) {
                                 Image(systemName: "crown.fill")
                                     .font(.system(size: 9))
-                                    .foregroundStyle(RTheme.gold.opacity(0.8))
+                                    .foregroundStyle(RTheme.accent.opacity(0.8))
                                 Text("\(hs)")
                                     .font(RTheme.mono(11, weight: .bold))
-                                    .foregroundStyle(RTheme.gold.opacity(0.9))
+                                    .foregroundStyle(RTheme.accent.opacity(0.9))
                             }
                         }
                     }
@@ -877,24 +878,18 @@ struct ArcadeCard: View {
                 if store.highScore(for: mode) == nil {
                     Image(systemName: "play.fill")
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(RTheme.bg)
+                        .foregroundStyle(.white)
                         .frame(width: 36, height: 36)
-                        .background(RTheme.gold)
+                        .background(RTheme.accent)
                         .clipShape(Circle())
                 }
             }
             .padding(RTheme.padSm)
-            .background(
-                LinearGradient(
-                    colors: [RTheme.surface, RTheme.gold.opacity(0.05)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .clipShape(RoundedRectangle(cornerRadius: RTheme.radius))
+            .background(RTheme.elevated)
+            .clipShape(RoundedRectangle(cornerRadius: RTheme.radius, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: RTheme.radius)
-                    .stroke(RTheme.gold.opacity(0.25), lineWidth: 1)
+                RoundedRectangle(cornerRadius: RTheme.radius, style: .continuous)
+                    .stroke(RTheme.faint.opacity(0.35), lineWidth: 1)
             )
             .scaleEffect(pressed ? 0.97 : 1.0)
         }
@@ -950,17 +945,17 @@ struct ArcadeCard: View {
         HStack(spacing: 4) {
             ForEach(0..<5, id: \.self) { i in
                 Circle()
-                    .fill(i == 2 ? RTheme.gold : RTheme.surface)
+                    .fill(i == 2 ? RTheme.accent : RTheme.surface)
                     .overlay(Circle().stroke(i == 2 ? Color.clear : RTheme.faint, lineWidth: 1))
                     .frame(width: 9, height: 9)
-                    .shadow(color: i == 2 ? RTheme.gold.opacity(0.7) : .clear, radius: 5)
+                    .shadow(color: i == 2 ? RTheme.accent.opacity(0.7) : .clear, radius: 5)
                     .offset(y: i == 2 ? animBall * 55 : 0)
             }
         }
         .offset(y: -22)
     }
 
-    private let whackColors: [Color] = [RTheme.gold, RTheme.green, RTheme.red]
+    private let whackColors: [Color] = [RTheme.accent, RTheme.green, RTheme.red]
     private let whackPositions: [(CGFloat, CGFloat)] = [(0.3, 0.2), (0.7, 0.55), (0.35, 0.78)]
 
     private var whackPreview: some View {
@@ -1011,11 +1006,11 @@ struct ArcadeCard: View {
             ForEach(0..<3, id: \.self) { i in
                 ZStack {
                     Circle()
-                        .stroke(i == 0 ? RTheme.gold : RTheme.faint, lineWidth: 1.5)
+                        .stroke(i == 0 ? RTheme.accent : RTheme.faint, lineWidth: 1.5)
                         .frame(width: 20, height: 20)
                     Text("\(i + 1)")
                         .font(RTheme.mono(9, weight: .black))
-                        .foregroundStyle(i == 0 ? RTheme.gold : RTheme.white.opacity(0.5))
+                        .foregroundStyle(i == 0 ? RTheme.accent : RTheme.white.opacity(0.5))
                 }
                 .scaleEffect(animTargets[i])
                 .opacity(animTargets[i])
@@ -1039,12 +1034,12 @@ struct ArcadeCard: View {
                 let row = i / 4
                 let col = i % 4
                 RoundedRectangle(cornerRadius: 3)
-                    .fill(i == gridActiveCell ? RTheme.gold : RTheme.surface)
+                    .fill(i == gridActiveCell ? RTheme.accent : RTheme.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 3)
-                            .stroke(i == gridActiveCell ? RTheme.gold : RTheme.faint.opacity(0.4), lineWidth: 1)
+                            .stroke(i == gridActiveCell ? RTheme.accent : RTheme.faint.opacity(0.4), lineWidth: 1)
                     )
-                    .shadow(color: i == gridActiveCell ? RTheme.gold.opacity(0.7) : .clear, radius: 5)
+                    .shadow(color: i == gridActiveCell ? RTheme.accent.opacity(0.7) : .clear, radius: 5)
                     .frame(width: cellSize, height: cellSize)
                     .scaleEffect(i == gridActiveCell ? 1.15 : 1.0)
                     .animation(.spring(response: 0.2), value: gridActiveCell)
@@ -1099,17 +1094,17 @@ struct ArcadeCard: View {
                         x: geo.size.width / 2 + avoidBallOffset.x,
                         y: geo.size.height / 2 + avoidBallOffset.y
                     )
-                // Ring target (gold)
+                // Ring target
                 ZStack {
                     Circle()
-                        .stroke(RTheme.gold.opacity(0.4), lineWidth: 2)
+                        .stroke(RTheme.accent.opacity(0.4), lineWidth: 2)
                         .frame(width: 22, height: 22)
                     Circle()
-                        .fill(RTheme.gold.opacity(0.1))
+                        .fill(RTheme.accent.opacity(0.1))
                         .frame(width: 18, height: 18)
                     Image(systemName: "plus")
                         .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(RTheme.gold)
+                        .foregroundStyle(RTheme.accent)
                 }
                 .scaleEffect(avoidRingScale)
                 .opacity(avoidRingScale)

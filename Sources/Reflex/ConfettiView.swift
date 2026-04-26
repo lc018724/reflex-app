@@ -10,7 +10,7 @@ struct ConfettiView: View {
     @State private var displayLink: Timer?
 
     private let colors: [Color] = [
-        .init(red: 1, green: 0.84, blue: 0),      // gold
+        .init(red: 0.0, green: 0.48, blue: 1.0),
         .init(red: 0.27, green: 0.91, blue: 0.55), // green
         .init(red: 1, green: 0.27, blue: 0.27),    // red
         .init(red: 0.55, green: 0.35, blue: 0.95), // purple

@@ -224,7 +224,7 @@ struct RankingsView: View {
 
     private var podiumSection: some View {
         let medals = ["🥇", "🥈", "🥉"]
-        let medalColors: [Color] = [RTheme.gold, Color(white: 0.75), Color(red: 0.8, green: 0.5, blue: 0.2)]
+        let medalColors: [Color] = [RTheme.accent, Color(white: 0.75), Color(red: 0.8, green: 0.5, blue: 0.2)]
 
         return HStack(alignment: .bottom, spacing: 8) {
             ForEach([1, 0, 2], id: \.self) { idx in
@@ -312,7 +312,7 @@ struct RankingsView: View {
 
     private func rankBg(_ rank: Int) -> Color {
         switch rank {
-        case 1: return RTheme.gold.opacity(0.2)
+        case 1: return RTheme.accent.opacity(0.2)
         case 2: return Color(white: 0.75).opacity(0.15)
         case 3: return Color(red: 0.8, green: 0.5, blue: 0.2).opacity(0.15)
         default: return RTheme.bg
@@ -321,7 +321,7 @@ struct RankingsView: View {
 
     private func rankFg(_ rank: Int) -> Color {
         switch rank {
-        case 1: return RTheme.gold
+        case 1: return RTheme.accent
         case 2: return Color(white: 0.75)
         case 3: return Color(red: 0.8, green: 0.5, blue: 0.2)
         default: return RTheme.faint
@@ -340,7 +340,7 @@ struct RankingsView: View {
     private func msColor(_ ms: Double) -> Color {
         switch ms {
         case ..<200: return RTheme.green
-        case 200..<270: return RTheme.gold
+        case 200..<270: return RTheme.accent
         default: return RTheme.red
         }
     }

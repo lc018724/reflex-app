@@ -130,7 +130,7 @@ enum TestMode: String, CaseIterable, Identifiable {
         case .digitMatch:
             return "The target number is shown at top. Tap it in the grid"
         case .simon:
-            return "Gold = left, White = right. But tap the OPPOSITE side"
+            return "Blue or green flashes. Tap the OPPOSITE side"
         case .speedSort:
             return "Tap the HIGHEST number as fast as you can"
         case .rhythm:
@@ -146,7 +146,7 @@ enum TestMode: String, CaseIterable, Identifiable {
         case .gridArcade:
             return "A 4x4 grid. Cells light up at random - tap each lit cell before it fades. Multiple cells at higher levels."
         case .avoidArcade:
-            return "Gold rings appear on screen - tap them fast. Danger balls bounce around. Tap a ball = life lost. Don't miss a ring."
+            return "Rings appear on screen. Tap them fast. Danger balls bounce around. Tap a ball = life lost. Don't miss a ring."
         case .memoryArcade:
             return "A grid flashes - memorize which cells lit up. Then tap them all from memory. More cells + less time as you advance. 3 lives."
         }
@@ -223,12 +223,12 @@ struct NamedColor: Equatable {
     let color: Color
 
     static let all: [NamedColor] = [
-        NamedColor(name: "GOLD",   color: RTheme.gold),
-        NamedColor(name: "RED",    color: Color(red: 0.92, green: 0.28, blue: 0.28)),
-        NamedColor(name: "BLUE",   color: Color(red: 0.28, green: 0.60, blue: 0.98)),
-        NamedColor(name: "GREEN",  color: Color(red: 0.25, green: 0.85, blue: 0.50)),
-        NamedColor(name: "PURPLE", color: Color(red: 0.70, green: 0.35, blue: 0.95)),
-        NamedColor(name: "WHITE",  color: Color.white),
+        NamedColor(name: "BLUE",   color: RTheme.accent),
+        NamedColor(name: "RED",    color: RTheme.red),
+        NamedColor(name: "GREEN",  color: RTheme.green),
+        NamedColor(name: "ORANGE", color: RTheme.orange),
+        NamedColor(name: "PURPLE", color: RTheme.purple),
+        NamedColor(name: "TEAL",   color: RTheme.teal),
     ]
 
     static func random(_ count: Int, excluding: [NamedColor] = []) -> [NamedColor] {

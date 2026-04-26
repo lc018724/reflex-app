@@ -6,6 +6,7 @@ struct StimulusRouter: View {
     let data: StimulusData
     let mode: TestMode
     let engine: TestEngine
+    var onBackgroundChange: (Color) -> Void = { _ in }
 
     var body: some View {
         switch data {
@@ -19,7 +20,7 @@ struct StimulusRouter: View {
         case .fallingBall(let index, let count):
             FallingBallView(fallingIndex: index, total: count, engine: engine)
         case .antiTap:
-            AntiTapView(engine: engine)
+            AntiTapView(engine: engine, onBackgroundChange: onBackgroundChange)
         case .find(let items, let targetIndex):
             FindView(items: items, target: items[targetIndex]) { i in
                 engine.handleTap(data: .index(i))
@@ -89,9 +90,9 @@ struct FlashStimulusView: View {
 
     var body: some View {
         Circle()
-            .fill(RTheme.gold)
+            .fill(RTheme.accent)
             .frame(width: 160, height: 160)
-            .shadow(color: RTheme.gold.opacity(0.7), radius: 40)
+            .shadow(color: RTheme.accent.opacity(0.7), radius: 40)
             .scaleEffect(scale)
             .onAppear {
                 withAnimation(.spring(response: 0.25, dampingFraction: 0.55)) {
@@ -146,7 +147,7 @@ struct FallingBallView: View {
                     if i != fallingIndex {
                         Circle()
                             .fill(RTheme.surface)
-                            .overlay(Circle().stroke(RTheme.gold.opacity(0.4), lineWidth: 2))
+                            .overlay(Circle().stroke(RTheme.accent.opacity(0.4), lineWidth: 2))
                             .frame(width: ballSize, height: ballSize)
                             .position(x: spacing * CGFloat(i + 1),
                                       y: geo.size.height * topY)
@@ -159,7 +160,7 @@ struct FallingBallView: View {
                         // Trail
                         ForEach(0..<5, id: \.self) { t in
                             Circle()
-                                .fill(RTheme.gold.opacity(0.08 - Double(t) * 0.012))
+                                .fill(RTheme.accent.opacity(0.08 - Double(t) * 0.012))
                                 .frame(width: ballSize - CGFloat(t) * 4, height: ballSize - CGFloat(t) * 4)
                                 .offset(y: -CGFloat(t + 1) * 12 * fallProgress)
                         }
@@ -167,13 +168,13 @@ struct FallingBallView: View {
                         Circle()
                             .fill(
                                 RadialGradient(
-                                    colors: [Color.white.opacity(0.85), RTheme.gold],
+                                    colors: [Color.white.opacity(0.85), RTheme.accent],
                                     center: UnitPoint(x: 0.35, y: 0.3),
                                     startRadius: 2,
                                     endRadius: 26
                                 )
                             )
-                            .shadow(color: RTheme.gold.opacity(0.8), radius: 18)
+                            .shadow(color: RTheme.accent.opacity(0.8), radius: 18)
                             .frame(width: ballSize, height: ballSize)
                     }
                     .position(x: xFall, y: yFall)
@@ -197,8 +198,8 @@ struct FallingBallView: View {
                 } else {
                     // Hit burst
                     Circle()
-                        .fill(RTheme.gold)
-                        .shadow(color: RTheme.gold, radius: 30)
+                        .fill(RTheme.accent)
+                        .shadow(color: RTheme.accent, radius: 30)
                         .frame(width: ballSize, height: ballSize)
                         .scaleEffect(hitScale)
                         .opacity(hitOpacity)
@@ -219,30 +220,32 @@ struct FallingBallView: View {
 
 struct AntiTapView: View {
     let engine: TestEngine
+    let onBackgroundChange: (Color) -> Void
     @State private var isLit = true
 
     var body: some View {
         ZStack {
-            (isLit ? RTheme.gold : RTheme.bg)
-                .ignoresSafeArea()
-                .animation(.easeOut(duration: 0.06), value: isLit)
+            Color.clear
 
             VStack(spacing: 20) {
                 if isLit {
                     Text("WAIT...")
                         .font(RTheme.mono(28, weight: .bold))
-                        .foregroundStyle(RTheme.bg)
+                        .foregroundStyle(.white)
                 } else {
                     Text("NOW!")
                         .font(RTheme.mono(28, weight: .bold))
-                        .foregroundStyle(RTheme.muted)
+                        .foregroundStyle(.white)
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
+            onBackgroundChange(RTheme.accent)
             let delay = Double.random(in: 0.6...2.2)
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                 isLit = false
+                onBackgroundChange(RTheme.darkSignal)
                 engine.resetStimulusTime()  // reaction timer starts when screen actually goes dark
             }
         }
@@ -266,7 +269,7 @@ struct FindView: View {
                     .tracking(3)
                 Text(target)
                     .font(RTheme.mono(56, weight: .bold))
-                    .foregroundStyle(RTheme.gold)
+                    .foregroundStyle(RTheme.accent)
             }
             .padding(.vertical, 20)
             .frame(maxWidth: .infinity)
@@ -369,7 +372,7 @@ struct StroopView: View {
                         Text(nc.name)
                             .font(RTheme.mono(16, weight: .bold))
                             .tracking(2)
-                            .foregroundStyle(RTheme.bg)
+                            .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 60)
                             .background(nc.color)
@@ -399,7 +402,7 @@ struct ReverseStroopView: View {
                     .tracking(2)
                 Text(prompt)
                     .font(RTheme.mono(44, weight: .bold))
-                    .foregroundStyle(RTheme.gold)
+                    .foregroundStyle(RTheme.accent)
             }
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
@@ -468,22 +471,22 @@ struct GoNoGoView: View {
                 // Pulsing ring for GO
                 if isGo {
                     Circle()
-                        .stroke(RTheme.gold.opacity(0.3), lineWidth: 3)
+                        .stroke(RTheme.accent.opacity(0.3), lineWidth: 3)
                         .frame(width: pulse ? 240 : 200, height: pulse ? 240 : 200)
                         .opacity(pulse ? 0 : 0.6)
                         .animation(.easeOut(duration: 0.7).repeatForever(autoreverses: false), value: pulse)
                 }
 
                 Circle()
-                    .fill(isGo ? RTheme.gold : RTheme.red.opacity(0.9))
+                    .fill(isGo ? RTheme.accent : RTheme.red.opacity(0.9))
                     .frame(width: 180, height: 180)
-                    .shadow(color: (isGo ? RTheme.gold : RTheme.red).opacity(0.6), radius: 30)
+                    .shadow(color: (isGo ? RTheme.accent : RTheme.red).opacity(0.6), radius: 30)
 
                 if isGo {
                     Circle().fill(Color.white.opacity(0.15)).frame(width: 80, height: 80)
                     Image(systemName: "hand.tap.fill")
                         .font(.system(size: 64, weight: .bold))
-                        .foregroundStyle(RTheme.bg)
+                        .foregroundStyle(.white)
                 } else {
                     Image(systemName: "xmark")
                         .font(.system(size: 72, weight: .black))
@@ -499,7 +502,7 @@ struct GoNoGoView: View {
 
             Text(isGo ? "TAP NOW" : "DON'T TAP")
                 .font(RTheme.rounded(16, weight: .bold))
-                .foregroundStyle(isGo ? RTheme.gold : RTheme.red)
+                .foregroundStyle(isGo ? RTheme.accent : RTheme.red)
                 .tracking(4)
         }
     }
@@ -520,7 +523,7 @@ struct MirrorView: View {
 
             Image(systemName: shown == .left ? "arrow.left" : "arrow.right")
                 .font(.system(size: 80, weight: .black))
-                .foregroundStyle(RTheme.gold)
+                .foregroundStyle(RTheme.accent)
 
             HStack(spacing: 24) {
                 sideButton(.left)
@@ -534,10 +537,10 @@ struct MirrorView: View {
         Button { onTap(side) } label: {
             Image(systemName: side == .left ? "arrow.left" : "arrow.right")
                 .font(.system(size: 28, weight: .bold))
-                .foregroundStyle(RTheme.bg)
+                .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 70)
-                .background(RTheme.gold)
+                .background(RTheme.accent)
                 .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
         }
         .buttonStyle(.plain)
@@ -584,7 +587,7 @@ struct SequencePlaybackView: View {
     let activeStep: Int?
 
     private let labels = ["1","2","3","4"]
-    private let colors: [Color] = [RTheme.gold, RTheme.green, RTheme.red,
+    private let colors: [Color] = [RTheme.accent, RTheme.green, RTheme.red,
                                     Color(red: 0.55, green: 0.35, blue: 0.95)]
 
     var body: some View {
@@ -624,7 +627,7 @@ struct SequenceInputView: View {
     let engine: TestEngine
 
     private let labels = ["1","2","3","4"]
-    private let colors: [Color] = [RTheme.gold, RTheme.green, RTheme.red,
+    private let colors: [Color] = [RTheme.accent, RTheme.green, RTheme.red,
                                     Color(red: 0.55, green: 0.35, blue: 0.95)]
 
     var body: some View {
@@ -643,7 +646,7 @@ struct SequenceInputView: View {
                             .overlay(
                                 Text(labels[i])
                                     .font(RTheme.mono(32, weight: .bold))
-                                    .foregroundStyle(RTheme.bg)
+                                    .foregroundStyle(.white)
                             )
                     }
                     .buttonStyle(.plain)
@@ -672,7 +675,7 @@ struct NBackView: View {
 
             Text(symbol)
                 .font(RTheme.mono(120, weight: .bold))
-                .foregroundStyle(RTheme.gold)
+                .foregroundStyle(RTheme.accent)
                 .scaleEffect(scale)
                 .onAppear {
                     withAnimation(.spring(response: 0.2, dampingFraction: 0.6)) { scale = 1.0 }
@@ -682,9 +685,9 @@ struct NBackView: View {
                 Text("MATCH")
                     .font(RTheme.rounded(18, weight: .bold))
                     .tracking(4)
-                    .foregroundStyle(RTheme.bg)
+                    .foregroundStyle(.white)
                     .frame(width: 200, height: 56)
-                    .background(RTheme.gold)
+                    .background(RTheme.accent)
                     .clipShape(RoundedRectangle(cornerRadius: RTheme.radius))
             }
             .buttonStyle(.plain)
@@ -711,8 +714,8 @@ struct PeripheralView: View {
 
                 if appeared {
                     Circle()
-                        .fill(RTheme.gold)
-                        .shadow(color: RTheme.gold.opacity(0.8), radius: 20)
+                        .fill(RTheme.accent)
+                        .shadow(color: RTheme.accent.opacity(0.8), radius: 20)
                         .frame(width: 52, height: 52)
                         .position(x: geo.size.width * normX,
                                   y: geo.size.height * normY)
@@ -749,7 +752,7 @@ struct DoubleFlashView: View {
                 HStack(spacing: 12) {
                     ForEach(0..<2, id: \.self) { i in
                         Circle()
-                            .fill(i < flashCount ? RTheme.gold : RTheme.faint)
+                            .fill(i < flashCount ? RTheme.accent : RTheme.faint)
                             .frame(width: 20, height: 20)
                     }
                 }
@@ -772,7 +775,7 @@ struct DoubleFlashView: View {
     }
 
     private func flash() {
-        withAnimation(.easeOut(duration: 0.05)) { bgColor = RTheme.gold }
+        withAnimation(.easeOut(duration: 0.05)) { bgColor = RTheme.accent }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
             withAnimation(.easeIn(duration: 0.1)) { bgColor = RTheme.bg }
         }
@@ -795,7 +798,7 @@ struct DigitMatchView: View {
                     .tracking(3)
                 Text("\(target)")
                     .font(RTheme.mono(64, weight: .bold))
-                    .foregroundStyle(RTheme.gold)
+                    .foregroundStyle(RTheme.accent)
             }
 
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 12) {
@@ -847,20 +850,20 @@ struct SimonView: View {
                 Button { onTap(.left) } label: {
                     Image(systemName: "arrow.left")
                         .font(.system(size: 28, weight: .bold))
-                        .foregroundStyle(RTheme.bg)
+                        .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 70)
-                        .background(RTheme.gold)
+                        .background(RTheme.accent)
                         .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
                 }
                 .buttonStyle(.plain)
                 Button { onTap(.right) } label: {
                     Image(systemName: "arrow.right")
                         .font(.system(size: 28, weight: .bold))
-                        .foregroundStyle(RTheme.bg)
+                        .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 70)
-                        .background(RTheme.gold)
+                        .background(RTheme.accent)
                         .clipShape(RoundedRectangle(cornerRadius: RTheme.radiusSm))
                 }
                 .buttonStyle(.plain)
@@ -921,12 +924,12 @@ struct DualTrackView: View {
                     case .showFirst(_):
                         Text("WATCH - 1 OF 2")
                             .font(RTheme.mono(12, weight: .medium))
-                            .foregroundStyle(RTheme.gold)
+                            .foregroundStyle(RTheme.accent)
                             .tracking(3)
                     case .showSecond(_):
                         Text("WATCH - 2 OF 2")
                             .font(RTheme.mono(12, weight: .medium))
-                            .foregroundStyle(RTheme.gold)
+                            .foregroundStyle(RTheme.accent)
                             .tracking(3)
                     case .awaitTaps(_):
                         Text("TAP BOTH TARGETS")
@@ -940,7 +943,7 @@ struct DualTrackView: View {
                 // Targets
                 switch phase {
                 case .showFirst(let idx):
-                    flashTarget(pos: positions[idx], geo: geo, color: RTheme.gold, number: 1)
+                    flashTarget(pos: positions[idx], geo: geo, color: RTheme.accent, number: 1)
                         .transition(.scale(scale: 0.2).combined(with: .opacity))
 
                 case .showSecond(let idx):
@@ -953,15 +956,15 @@ struct DualTrackView: View {
                         let isTapped = tappedIndices.contains(idx)
                         ZStack {
                             Circle()
-                                .fill(isTapped ? RTheme.green.opacity(0.3) : RTheme.gold)
-                                .shadow(color: isTapped ? .clear : RTheme.gold.opacity(0.7), radius: 18)
+                                .fill(isTapped ? RTheme.green.opacity(0.3) : RTheme.accent)
+                                .shadow(color: isTapped ? .clear : RTheme.accent.opacity(0.7), radius: 18)
                                 .frame(width: 58, height: 58)
                                 .scaleEffect(isTapped ? 1.8 : 1.0)
                                 .opacity(isTapped ? 0 : 1.0)
                             if !isTapped {
                                 Image(systemName: "hand.tap.fill")
                                     .font(.system(size: 20))
-                                    .foregroundStyle(RTheme.bg)
+                                    .foregroundStyle(.white)
                             }
                         }
                         .position(x: geo.size.width * pos.x, y: geo.size.height * pos.y)
@@ -992,7 +995,7 @@ struct DualTrackView: View {
                 .frame(width: 58, height: 58)
             Text("\(number)")
                 .font(RTheme.mono(22, weight: .bold))
-                .foregroundStyle(RTheme.bg)
+                .foregroundStyle(.white)
         }
         .position(x: geo.size.width * pos.x, y: geo.size.height * pos.y)
     }
@@ -1036,8 +1039,8 @@ struct RhythmView: View {
                 ForEach(0..<4, id: \.self) { i in
                     ZStack {
                         Circle()
-                            .fill(i < beatsShown ? RTheme.gold : RTheme.surface)
-                            .shadow(color: i < beatsShown ? RTheme.gold.opacity(0.7) : .clear,
+                            .fill(i < beatsShown ? RTheme.accent : RTheme.surface)
+                            .shadow(color: i < beatsShown ? RTheme.accent.opacity(0.7) : .clear,
                                     radius: i < beatsShown ? 12 : 0)
                             .frame(width: 44, height: 44)
                             .scaleEffect(pulseScales[i])
@@ -1054,7 +1057,7 @@ struct RhythmView: View {
             if canTap {
                 Text("TAP NOW!")
                     .font(RTheme.rounded(22, weight: .bold))
-                    .foregroundStyle(RTheme.gold)
+                    .foregroundStyle(RTheme.accent)
                     .transition(.scale.combined(with: .opacity))
                     .onTapGesture { onTap() }
             } else {
