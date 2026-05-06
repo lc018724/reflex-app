@@ -91,4 +91,102 @@ final class TestStoreTests: XCTestCase {
         XCTAssertEqual(store.gauntletHistory.first, 103)
         XCTAssertEqual(store.gauntletHistory.last, 112)
     }
+
+    // MARK: - Daily streak
+
+    private func isoDay(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        return f.string(from: date)
+    }
+
+    private func setLastSessionDay(_ date: Date) {
+        defaults.set(isoDay(date), forKey: "lastSessionDay")
+    }
+
+    func testRecordSessionDayFirstEverInitializesStreakToOne() {
+        XCTAssertEqual(store.streak, 0)
+
+        store.recordSessionDay()
+
+        XCTAssertEqual(store.streak, 1)
+    }
+
+    func testRecordSessionDaySameDayDoesNotIncrementStreak() {
+        store.recordSessionDay()
+        let firstStreak = store.streak
+
+        store.recordSessionDay()
+        store.recordSessionDay()
+
+        XCTAssertEqual(store.streak, firstStreak)
+        XCTAssertEqual(store.streak, 1)
+    }
+
+    func testRecordSessionDayOnConsecutiveDayIncrementsStreak() {
+        // Simulate having trained yesterday with streak 4
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: Date())!
+        setLastSessionDay(yesterday)
+        store.streak = 4
+
+        store.recordSessionDay()
+
+        XCTAssertEqual(store.streak, 5)
+    }
+
+    func testRecordSessionDayAfterGapResetsStreakToOne() {
+        // Simulate a 3-day gap with previously-strong streak
+        let threeDaysAgo = Calendar.current.date(byAdding: .day, value: -3, to: Date())!
+        setLastSessionDay(threeDaysAgo)
+        store.streak = 12
+
+        store.recordSessionDay()
+
+        XCTAssertEqual(store.streak, 1)
+    }
+
+    func testRecordSessionDayPopulatesSessionDaysWithToday() {
+        XCTAssertEqual(store.sessionDays, [])
+
+        store.recordSessionDay()
+
+        XCTAssertEqual(store.sessionDays, [isoDay(Date())])
+    }
+
+    func testRecordSessionDayDoesNotDuplicateSessionDaysWhenCalledTwiceSameDay() {
+        store.recordSessionDay()
+        store.recordSessionDay()
+        store.recordSessionDay()
+
+        XCTAssertEqual(store.sessionDays, [isoDay(Date())])
+    }
+
+    // MARK: - Daily challenge
+
+    func testIsDailyChallengeCompletedTodayIsFalseByDefault() {
+        XCTAssertFalse(store.isDailyChallengeCompletedToday(mode: .flash))
+        XCTAssertFalse(store.isDailyChallengeCompletedToday(mode: .stroop))
+    }
+
+    func testMarkDailyChallengeCompletedFlipsTodayCheckForThatMode() {
+        store.markDailyChallengeCompleted(mode: .flash)
+
+        XCTAssertTrue(store.isDailyChallengeCompletedToday(mode: .flash))
+    }
+
+    func testDailyChallengeCompletionIsScopedToTheCompletedMode() {
+        store.markDailyChallengeCompleted(mode: .flash)
+
+        XCTAssertTrue(store.isDailyChallengeCompletedToday(mode: .flash))
+        XCTAssertFalse(store.isDailyChallengeCompletedToday(mode: .stroop))
+        XCTAssertFalse(store.isDailyChallengeCompletedToday(mode: .nBack))
+    }
+
+    func testMarkDailyChallengeCompletedOverwritesPreviousModeForToday() {
+        store.markDailyChallengeCompleted(mode: .flash)
+        store.markDailyChallengeCompleted(mode: .stroop)
+
+        XCTAssertFalse(store.isDailyChallengeCompletedToday(mode: .flash))
+        XCTAssertTrue(store.isDailyChallengeCompletedToday(mode: .stroop))
+    }
 }
