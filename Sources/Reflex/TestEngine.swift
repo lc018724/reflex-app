@@ -21,6 +21,7 @@ final class TestEngine: ObservableObject {
 
     // Double flash state
     private var flashesSeen: Int = 0
+    private var dualTrackTappedTargets: Set<Int> = []
 
     init(automaticallyAdvances: Bool = true) {
         self.automaticallyAdvances = automaticallyAdvances
@@ -48,6 +49,7 @@ final class TestEngine: ObservableObject {
         nBackHistory = []
         currentSequence = []
         flashesSeen = 0
+        dualTrackTappedTargets = []
         go(.instruction)
     }
 
@@ -129,6 +131,7 @@ final class TestEngine: ObservableObject {
             guard !Task.isCancelled else { return }
             // Now show both for tapping - start timing here
             stimulusTime = CACurrentMediaTime()
+            dualTrackTappedTargets = []
             go(.stimulus(.dualTrack(positions: positions, phase: .awaitTaps(targets))))
         }
     }
@@ -381,8 +384,8 @@ final class TestEngine: ObservableObject {
             case .peripheral:
                 recordResult(ms: elapsed)
 
-            case .dualTrack:
-                recordResult(ms: elapsed)
+            case .dualTrack(_, let phase):
+                handleDualTrackTap(data: data, phase: phase, elapsed: elapsed)
 
             default:
                 // flash, antiTap
@@ -442,6 +445,24 @@ final class TestEngine: ObservableObject {
             recordResult(ms: elapsed)
         } else {
             go(.sequenceInput(steps: steps, inputSoFar: inputSoFar, targetSteps: target))
+        }
+    }
+
+    private func handleDualTrackTap(data: TapData, phase: DualPhase, elapsed: Double) {
+        guard case .awaitTaps(let targets) = phase,
+              case .index(let index) = data else {
+            return
+        }
+
+        guard targets.contains(index),
+              !dualTrackTappedTargets.contains(index) else {
+            recordError()
+            return
+        }
+
+        dualTrackTappedTargets.insert(index)
+        if dualTrackTappedTargets.count == targets.count {
+            recordResult(ms: elapsed)
         }
     }
 
