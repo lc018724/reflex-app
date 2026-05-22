@@ -105,4 +105,55 @@ final class TestEngineTests: XCTestCase {
             XCTFail("Expected correct no-tap trials to complete the session")
         }
     }
+
+    func testDualTrackRequiresBothTargetTapsBeforeResult() {
+        let engine = TestEngine(automaticallyAdvances: false)
+        let positions = [
+            DualPos(x: 0.2, y: 0.2),
+            DualPos(x: 0.8, y: 0.2),
+            DualPos(x: 0.2, y: 0.8),
+            DualPos(x: 0.8, y: 0.8)
+        ]
+        engine.mode = .dualTrack
+        engine.phase = .stimulus(.dualTrack(positions: positions, phase: .awaitTaps([1, 3])))
+        engine.resetStimulusTime()
+
+        engine.handleTap(data: .index(1))
+
+        if case .stimulus(.dualTrack(_, .awaitTaps)) = engine.phase {
+        } else {
+            XCTFail("Expected first target tap to keep waiting for the second target")
+        }
+
+        engine.handleTap(data: .index(3))
+
+        guard case .result(let ms, let trial, let total, false) = engine.phase else {
+            return XCTFail("Expected second target tap to record a valid result")
+        }
+        XCTAssertGreaterThanOrEqual(ms, 0)
+        XCTAssertEqual(trial, 1)
+        XCTAssertEqual(total, TestMode.dualTrack.trialCount)
+    }
+
+    func testDualTrackWrongTargetRecordsError() {
+        let engine = TestEngine(automaticallyAdvances: false)
+        let positions = [
+            DualPos(x: 0.2, y: 0.2),
+            DualPos(x: 0.8, y: 0.2),
+            DualPos(x: 0.2, y: 0.8),
+            DualPos(x: 0.8, y: 0.8)
+        ]
+        engine.mode = .dualTrack
+        engine.phase = .stimulus(.dualTrack(positions: positions, phase: .awaitTaps([0, 2])))
+        engine.resetStimulusTime()
+
+        engine.handleTap(data: .index(1))
+
+        guard case .result(let ms, let trial, let total, true) = engine.phase else {
+            return XCTFail("Expected wrong target tap to record an error")
+        }
+        XCTAssertEqual(ms, -1)
+        XCTAssertEqual(trial, 1)
+        XCTAssertEqual(total, TestMode.dualTrack.trialCount)
+    }
 }

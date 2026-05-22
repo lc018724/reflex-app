@@ -971,9 +971,7 @@ struct DualTrackView: View {
                             withAnimation(.easeOut(duration: 0.25)) {
                                 _ = tappedIndices.insert(idx)
                             }
-                            if tappedIndices.count == targets.count {
-                                engine.handleTap()
-                            }
+                            engine.handleTap(data: .index(idx))
                         }
                         .animation(.spring(response: 0.25, dampingFraction: 0.65), value: isTapped)
                     }
